@@ -1,0 +1,133 @@
+{
+  "version": "1.2",
+  "title": "Daily Worklogs H",
+  "icon": "fa-clock",
+  "datagrid": {
+    "defaults": {
+      "page_size": [
+        25,
+        50,
+        100
+      ]
+    },
+    "columns": {
+      "worklog_sid": {
+        "visible": true,
+        "labels": {
+          "en": "Worklog Sid",
+          "hu": "worklog_sid"
+        }
+      },
+      "worklog_key": {
+        "visible": true,
+        "labels": {
+          "en": "Worklog Key",
+          "hu": "worklog_key"
+        }
+      },
+      "calendar_id": {
+        "visible": true,
+        "labels": {
+          "en": "Calendar Id",
+          "hu": "calendar_id"
+        }
+      },
+      "user_sid": {
+        "visible": true,
+        "labels": {
+          "en": "User Sid",
+          "hu": "user_sid"
+        }
+      },
+      "project_sid": {
+        "visible": true,
+        "labels": {
+          "en": "Project Sid",
+          "hu": "project_sid"
+        }
+      },
+      "issue_sid": {
+        "visible": true,
+        "labels": {
+          "en": "Issue Sid",
+          "hu": "issue_sid"
+        }
+      },
+      "seconds_worked": {
+        "visible": true,
+        "labels": {
+          "en": "Seconds Worked",
+          "hu": "seconds_worked"
+        }
+      },
+      "hours_worked": {
+        "visible": true,
+        "labels": {
+          "en": "Hours Worked",
+          "hu": "hours_worked"
+        }
+      },
+      "valid_period": {
+        "visible": false,
+        "labels": {
+          "en": "Valid Period",
+          "hu": "valid_period"
+        }
+      }
+    }
+  },
+  "objects": [
+    {
+      "name": "dwh.fact_daily_worklogs_h",
+      "type": "table",
+      "description": "DWH table fact_daily_worklogs_h",
+      "columns": [
+        {
+          "name": "worklog_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "worklog_key",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "calendar_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "user_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "project_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "issue_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "seconds_worked",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "hours_worked",
+          "type": "NUMERIC",
+          "description": ""
+        },
+        {
+          "name": "valid_period",
+          "type": "TSTZRANGE",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

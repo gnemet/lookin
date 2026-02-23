@@ -1,0 +1,124 @@
+# LookIn Configuration
+# YAML-controlled interactive architecture drill-down viewer
+
+title: "Project Ecosystem"
+subtitle: "Click any node to drill deeper"
+theme: handDrawn
+languages: [en, hu]
+
+# ── Sources: connected project repos ────────────────────────────
+sources:
+  jiramntr:
+    label: "Jiramntr"
+    label_hu: "Jiramntr"
+    path: "../jiramntr"
+    catalogs: "internal/catalog/*.json"
+    diagrams: "docs/architecture/*.mmd"
+    color: "#3498db"
+
+  johanna:
+    label: "Johanna"
+    label_hu: "Johanna"
+    path: "../johanna"
+    diagrams: "docs/*.mmd"
+    color: "#27ae60"
+
+  datagrid:
+    label: "Datagrid"
+    label_hu: "Datagrid"
+    path: "../datagrid"
+    diagrams: "docs/*.mmd"
+    color: "#e67e22"
+
+# ── Layers: drill-down hierarchy ────────────────────────────────
+layers:
+  # Level 1: Business overview (for managers)
+  - id: overview
+    title: "Business Flow"
+    title_hu: "Üzleti Folyamat"
+    file: layers/overview.mmd
+    nodes:
+      JIRA:
+        tooltip: "Jira project management"
+      DWH:
+        drilldown: architecture
+        tooltip: "Data Warehouse"
+      JOHANNA:
+        drilldown: johanna
+        tooltip: "AI Assistant"
+
+  # Level 2: Technical architecture
+  - id: architecture
+    title: "System Architecture"
+    title_hu: "Rendszerarchitektúra"
+    file: layers/architecture.mmd
+    source: jiramntr
+    nodes:
+      OLTP:
+        drilldown: ingestion
+      DWH:
+        drilldown: star_schema
+      MCP:
+        drilldown: mcp_detail
+      APP:
+        drilldown: application
+      AI:
+        drilldown: ai_pipeline
+
+  # Level 2b: Johanna architecture
+  - id: johanna
+    title: "Johanna AI Chat"
+    title_hu: "Johanna AI Chat"
+    file: layers/johanna.mmd
+    source: johanna
+    nodes:
+      RAG:
+        drilldown: rag_detail
+      LLM:
+        drilldown: ai_pipeline
+
+  # Level 3: Star Schema detail
+  - id: star_schema
+    title: "Star Schema (DWH)"
+    title_hu: "Csillagséma (DWH)"
+    file: layers/star_schema.mmd
+    source: jiramntr
+    nodes:
+      fact_daily_worklogs_h:
+        drilldown: table
+        catalog: fact_daily_worklogs_h.json
+      fact_sla_events:
+        drilldown: table
+        catalog: fact_sla_events.json
+      dim_issue_h:
+        drilldown: table
+        catalog: dim_issue_h.json
+      dim_user_h:
+        drilldown: table
+        catalog: dim_user_h.json
+      dim_calendar:
+        drilldown: table
+        catalog: dim_calendar.json
+      dim_project_h:
+        drilldown: table
+        catalog: dim_project_h.json
+
+  # Level 3: AI Pipeline
+  - id: ai_pipeline
+    title: "AI Self-Teaching Pipeline"
+    title_hu: "AI Öntanulási Pipeline"
+    file: layers/ai_pipeline.mmd
+    source: jiramntr
+
+  # Level 3: RAG detail
+  - id: rag_detail
+    title: "RAG Pipeline"
+    title_hu: "RAG Pipeline"
+    file: layers/rag_detail.mmd
+    source: jiramntr
+
+  # Level 4: Table column detail (auto-generated from catalog JSON)
+  - id: table
+    title: "Table Detail"
+    title_hu: "Tábla Részletek"
+    type: catalog_viewer

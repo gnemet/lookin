@@ -1,0 +1,229 @@
+{
+  "version": "1.2",
+  "title": "Issue H",
+  "icon": "fa-tasks",
+  "datagrid": {
+    "defaults": {
+      "page_size": [
+        25,
+        50,
+        100
+      ]
+    },
+    "columns": {
+      "issue_sid": {
+        "visible": true,
+        "labels": {
+          "en": "Issue Sid",
+          "hu": "issue_sid"
+        }
+      },
+      "issue_key": {
+        "visible": true,
+        "labels": {
+          "en": "Issue Key",
+          "hu": "issue_key"
+        }
+      },
+      "issue_id": {
+        "visible": true,
+        "labels": {
+          "en": "Issue Id",
+          "hu": "issue_id"
+        }
+      },
+      "summary": {
+        "visible": true,
+        "labels": {
+          "en": "Summary",
+          "hu": "summary"
+        }
+      },
+      "description": {
+        "visible": true,
+        "labels": {
+          "en": "Description",
+          "hu": "description"
+        }
+      },
+      "issuetype": {
+        "visible": true,
+        "labels": {
+          "en": "Issuetype",
+          "hu": "issuetype"
+        }
+      },
+      "issuestatus": {
+        "visible": true,
+        "labels": {
+          "en": "Issuestatus",
+          "hu": "issuestatus"
+        }
+      },
+      "priority": {
+        "visible": true,
+        "labels": {
+          "en": "Priority",
+          "hu": "priority"
+        }
+      },
+      "resolution": {
+        "visible": true,
+        "labels": {
+          "en": "Resolution",
+          "hu": "resolution"
+        }
+      },
+      "assignee": {
+        "visible": true,
+        "labels": {
+          "en": "Assignee",
+          "hu": "assignee"
+        }
+      },
+      "reporter": {
+        "visible": true,
+        "labels": {
+          "en": "Reporter",
+          "hu": "reporter"
+        }
+      },
+      "valid_period": {
+        "visible": false,
+        "labels": {
+          "en": "Valid Period",
+          "hu": "valid_period"
+        }
+      },
+      "created_at": {
+        "visible": true,
+        "labels": {
+          "en": "Created At",
+          "hu": "created_at"
+        }
+      },
+      "resolved_at": {
+        "visible": true,
+        "labels": {
+          "en": "Resolved At",
+          "hu": "resolved_at"
+        }
+      },
+      "updated_at": {
+        "visible": true,
+        "labels": {
+          "en": "Updated At",
+          "hu": "updated_at"
+        }
+      },
+      "parent_id": {
+        "visible": true,
+        "labels": {
+          "en": "Parent Id",
+          "hu": "parent_id"
+        }
+      },
+      "ltree_path": {
+        "visible": true,
+        "labels": {
+          "en": "Ltree Path",
+          "hu": "ltree_path"
+        }
+      }
+    }
+  },
+  "objects": [
+    {
+      "name": "dwh.dim_issue_h",
+      "type": "table",
+      "description": "DWH table dim_issue_h",
+      "columns": [
+        {
+          "name": "issue_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "issue_key",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "issue_id",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "issuetype",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "issuestatus",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "priority",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "resolution",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "assignee",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "reporter",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "valid_period",
+          "type": "TSTZRANGE",
+          "description": ""
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "description": "JIRA issue creation timestamp"
+        },
+        {
+          "name": "resolved_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "description": "JIRA issue resolution timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "description": "JIRA issue last update timestamp"
+        },
+        {
+          "name": "parent_id",
+          "type": "BIGINT",
+          "description": "Parent issue ID. NULL for root issues."
+        },
+        {
+          "name": "ltree_path",
+          "type": "LTREE",
+          "description": "Materialized hierarchy path using numeric issue_id labels."
+        }
+      ]
+    }
+  ]
+}

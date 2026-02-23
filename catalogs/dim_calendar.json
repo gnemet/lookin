@@ -1,0 +1,445 @@
+{
+  "version": "1.2",
+  "title": "Calendar",
+  "icon": "fa-tag",
+  "datagrid": {
+    "defaults": {
+      "page_size": [
+        25,
+        50,
+        100
+      ]
+    },
+    "columns": {
+      "calendar_date": {
+        "visible": true,
+        "labels": {
+          "en": "Calendar Date",
+          "hu": "calendar_date"
+        }
+      },
+      "date_actual": {
+        "visible": true,
+        "labels": {
+          "en": "Date Actual",
+          "hu": "date_actual"
+        }
+      },
+      "id": {
+        "visible": true,
+        "labels": {
+          "en": "Id",
+          "hu": "id"
+        }
+      },
+      "year_id": {
+        "visible": true,
+        "labels": {
+          "en": "Year Id",
+          "hu": "year_id"
+        }
+      },
+      "quarter_id": {
+        "visible": true,
+        "labels": {
+          "en": "Quarter Id",
+          "hu": "quarter_id"
+        }
+      },
+      "month_id": {
+        "visible": true,
+        "labels": {
+          "en": "Month Id",
+          "hu": "month_id"
+        }
+      },
+      "week_id": {
+        "visible": true,
+        "labels": {
+          "en": "Week Id",
+          "hu": "week_id"
+        }
+      },
+      "day_id": {
+        "visible": true,
+        "labels": {
+          "en": "Day Id",
+          "hu": "day_id"
+        }
+      },
+      "financial_year": {
+        "visible": true,
+        "labels": {
+          "en": "Financial Year",
+          "hu": "financial_year"
+        }
+      },
+      "year": {
+        "visible": true,
+        "labels": {
+          "en": "Year",
+          "hu": "year"
+        }
+      },
+      "year_text": {
+        "visible": true,
+        "labels": {
+          "en": "Year Text",
+          "hu": "year_text"
+        }
+      },
+      "quarter": {
+        "visible": true,
+        "labels": {
+          "en": "Quarter",
+          "hu": "quarter"
+        }
+      },
+      "quarter_enum": {
+        "visible": true,
+        "labels": {
+          "en": "Quarter Enum",
+          "hu": "quarter_enum"
+        }
+      },
+      "quarter_text": {
+        "visible": true,
+        "labels": {
+          "en": "Quarter Text",
+          "hu": "quarter_text"
+        }
+      },
+      "month_enum": {
+        "visible": true,
+        "labels": {
+          "en": "Month Enum",
+          "hu": "month_enum"
+        }
+      },
+      "month_short_name": {
+        "visible": true,
+        "labels": {
+          "en": "Month Short Name",
+          "hu": "month_short_name"
+        }
+      },
+      "month_name": {
+        "visible": true,
+        "labels": {
+          "en": "Month Name",
+          "hu": "month_name"
+        }
+      },
+      "month_num": {
+        "visible": true,
+        "labels": {
+          "en": "Month Num",
+          "hu": "month_num"
+        }
+      },
+      "month_text": {
+        "visible": true,
+        "labels": {
+          "en": "Month Text",
+          "hu": "month_text"
+        }
+      },
+      "week_year": {
+        "visible": true,
+        "labels": {
+          "en": "Week Year",
+          "hu": "week_year"
+        }
+      },
+      "week_month": {
+        "visible": true,
+        "labels": {
+          "en": "Week Month",
+          "hu": "week_month"
+        }
+      },
+      "week_text": {
+        "visible": true,
+        "labels": {
+          "en": "Week Text",
+          "hu": "week_text"
+        }
+      },
+      "day": {
+        "visible": true,
+        "labels": {
+          "en": "Day",
+          "hu": "day"
+        }
+      },
+      "day_enum": {
+        "visible": true,
+        "labels": {
+          "en": "Day Enum",
+          "hu": "day_enum"
+        }
+      },
+      "day_year": {
+        "visible": true,
+        "labels": {
+          "en": "Day Year",
+          "hu": "day_year"
+        }
+      },
+      "day_week": {
+        "visible": true,
+        "labels": {
+          "en": "Day Week",
+          "hu": "day_week"
+        }
+      },
+      "day_name": {
+        "visible": true,
+        "labels": {
+          "en": "Day Name",
+          "hu": "day_name"
+        }
+      },
+      "day_short_name": {
+        "visible": true,
+        "labels": {
+          "en": "Day Short Name",
+          "hu": "day_short_name"
+        }
+      },
+      "calendar_enum": {
+        "visible": true,
+        "labels": {
+          "en": "Calendar Enum",
+          "hu": "calendar_enum"
+        }
+      },
+      "calendar_text": {
+        "visible": true,
+        "labels": {
+          "en": "Calendar Text",
+          "hu": "calendar_text"
+        }
+      },
+      "year_range": {
+        "visible": true,
+        "labels": {
+          "en": "Year Range",
+          "hu": "year_range"
+        }
+      },
+      "quarter_range": {
+        "visible": true,
+        "labels": {
+          "en": "Quarter Range",
+          "hu": "quarter_range"
+        }
+      },
+      "month_range": {
+        "visible": true,
+        "labels": {
+          "en": "Month Range",
+          "hu": "month_range"
+        }
+      },
+      "week_range": {
+        "visible": true,
+        "labels": {
+          "en": "Week Range",
+          "hu": "week_range"
+        }
+      },
+      "is_workday": {
+        "visible": true,
+        "labels": {
+          "en": "Is Workday",
+          "hu": "is_workday"
+        }
+      }
+    }
+  },
+  "objects": [
+    {
+      "name": "dwh.dim_calendar",
+      "type": "table",
+      "description": "DWH table dim_calendar",
+      "columns": [
+        {
+          "name": "calendar_date",
+          "type": "DATE",
+          "description": ""
+        },
+        {
+          "name": "date_actual",
+          "type": "DATE",
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "year_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "quarter_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "month_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "week_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "day_id",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "financial_year",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "year",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "year_text",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "quarter",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "quarter_enum",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "quarter_text",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "month_enum",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "month_short_name",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "month_name",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "month_num",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "month_text",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "week_year",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "week_month",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "week_text",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "day",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "day_enum",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "day_year",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "day_week",
+          "type": "INTEGER",
+          "description": ""
+        },
+        {
+          "name": "day_name",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "day_short_name",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "calendar_enum",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "calendar_text",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "year_range",
+          "type": "DATERANGE",
+          "description": ""
+        },
+        {
+          "name": "quarter_range",
+          "type": "DATERANGE",
+          "description": ""
+        },
+        {
+          "name": "month_range",
+          "type": "DATERANGE",
+          "description": ""
+        },
+        {
+          "name": "week_range",
+          "type": "DATERANGE",
+          "description": ""
+        },
+        {
+          "name": "is_workday",
+          "type": "BOOLEAN",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

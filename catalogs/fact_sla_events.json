@@ -1,0 +1,97 @@
+{
+  "version": "1.2",
+  "title": "Sla Events",
+  "icon": "fa-chart-bar",
+  "datagrid": {
+    "defaults": {
+      "page_size": [
+        25,
+        50,
+        100
+      ]
+    },
+    "columns": {
+      "sla_sid": {
+        "visible": true,
+        "labels": {
+          "en": "Sla Sid",
+          "hu": "sla_sid"
+        }
+      },
+      "issue_id": {
+        "visible": true,
+        "labels": {
+          "en": "Issue Id",
+          "hu": "issue_id"
+        }
+      },
+      "priority_id": {
+        "visible": true,
+        "labels": {
+          "en": "Priority Id",
+          "hu": "priority_id"
+        }
+      },
+      "event_type": {
+        "visible": true,
+        "labels": {
+          "en": "Event Type",
+          "hu": "event_type"
+        }
+      },
+      "duration_sec": {
+        "visible": true,
+        "labels": {
+          "en": "Duration Sec",
+          "hu": "duration_sec"
+        }
+      },
+      "is_breached": {
+        "visible": true,
+        "labels": {
+          "en": "Is Breached",
+          "hu": "is_breached"
+        }
+      }
+    }
+  },
+  "objects": [
+    {
+      "name": "dwh.fact_sla_events",
+      "type": "table",
+      "description": "DWH table fact_sla_events",
+      "columns": [
+        {
+          "name": "sla_sid",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "issue_id",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "priority_id",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "event_type",
+          "type": "TEXT",
+          "description": ""
+        },
+        {
+          "name": "duration_sec",
+          "type": "BIGINT",
+          "description": ""
+        },
+        {
+          "name": "is_breached",
+          "type": "BOOLEAN",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

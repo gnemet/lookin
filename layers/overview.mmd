@@ -1,0 +1,19 @@
+graph LR
+    JIRA["🟠 Jira<br/>Issues, Worklogs"]
+    LDAP["🔵 Active Directory<br/>Users, Teams"]
+    TER["🟢 Leave System<br/>Absences"]
+    DWH["📊 Data Warehouse<br/>Consolidated Data"]
+    JOHANNA["🤖 Johanna<br/>AI Assistant"]
+    KPI["📈 KPI Dashboard"]
+    BI["📊 BI Reports"]
+    USERS["👥 Users"]
+
+    JIRA --> DWH
+    LDAP --> DWH
+    TER --> DWH
+    DWH --> JOHANNA
+    DWH --> KPI
+    DWH --> BI
+    JOHANNA --> USERS
+    KPI --> USERS
+    BI --> USERS

@@ -1,0 +1,31 @@
+graph TB
+    subgraph PHASE1["🧙 Phase 1: Teacher Answer Key"]
+        TESTS["131 Test Questions"]
+        TEACHER["Teacher (Gemini)"]
+        GOLD["Gold Standard SQL"]
+        TESTS --> TEACHER --> GOLD
+    end
+
+    subgraph PHASE2["🤖 Phase 2: Student Test"]
+        STUDENT["Student (Ollama)"]
+        RESULTS["Student Answers"]
+        TESTS --> STUDENT --> RESULTS
+    end
+
+    subgraph PHASE3["📝 Phase 3: Grading"]
+        GRADE["Compare & Score"]
+        CORRECTIONS["Correction Blueprints"]
+        TRAINING["training.jsonl"]
+        GOLD --> GRADE
+        RESULTS --> GRADE
+        GRADE -->|"Failed"| CORRECTIONS --> TRAINING
+    end
+
+    subgraph FEEDBACK["📝 Feedback Loop"]
+        SQLERR["sqlerr.yaml"]
+        WARN["warning.yaml"]
+        MANUAL["Manual 👍/👎"]
+    end
+
+    GRADE --> SQLERR & WARN
+    TRAINING -->|"Fine-tune"| STUDENT
