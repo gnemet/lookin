@@ -54,6 +54,65 @@
                 goBack();
             }
         });
+
+        // Pan-zoom on diagram
+        setupPanZoom();
+    }
+
+    // ── Pan & Zoom ──────────────────────────────────────────────
+    let scale = 1, panX = 0, panY = 0, isPanning = false, startX, startY;
+
+    function setupPanZoom() {
+        const container = document.getElementById('diagram-container');
+
+        // Wheel zoom
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            scale = Math.min(5, Math.max(0.3, scale * delta));
+            applyTransform();
+        }, { passive: false });
+
+        // Drag pan
+        container.addEventListener('mousedown', (e) => {
+            // Only pan on middle-click or if not clicking a node
+            if (e.button === 1 || (e.button === 0 && !e.target.closest('.node-drill, .node-doc'))) {
+                isPanning = true;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+                container.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            applyTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isPanning = false;
+            document.getElementById('diagram-container').style.cursor = '';
+        });
+
+        // Double-click to reset
+        container.addEventListener('dblclick', (e) => {
+            if (!e.target.closest('.node-drill, .node-doc')) {
+                resetZoom();
+            }
+        });
+    }
+
+    function applyTransform() {
+        $diagram.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        $diagram.style.transformOrigin = 'center center';
+    }
+
+    function resetZoom() {
+        scale = 1; panX = 0; panY = 0;
+        applyTransform();
     }
 
     // ── Navigation ──────────────────────────────────────────────
@@ -76,6 +135,7 @@
         updateTitle();
         updateSourceBadge();
         closePanel();
+        resetZoom();
 
         await renderDiagram(layer);
     }
