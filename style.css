@@ -4,15 +4,15 @@
 
 /* ── Design Tokens (from jiramntr base.css) ──────────────────── */
 :root {
-    --primary-bg: #0f172a;
-    --secondary-bg: #1e293b;
-    --card-bg: #1e293b;
+    --primary-bg: #2b2b2b;
+    --secondary-bg: #333333;
+    --card-bg: #363636;
     --accent-color: #C42728;
     --accent-rgb: 196, 39, 40;
     --accent-hover: #A31F21;
-    --text-color: #f1f2f6;
-    --text-muted: #a4b0be;
-    --border-color: #334155;
+    --text-color: #f0e6d3;
+    --text-muted: #b8a990;
+    --border-color: #555;
     --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     --success-color: #26de81;
     --danger-color: #eb4d4b;
@@ -36,6 +36,9 @@
 body {
     font-family: var(--font-ui);
     background: var(--primary-bg);
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(40, 60, 40, 0.3) 0%, transparent 70%),
+        radial-gradient(ellipse at 80% 50%, rgba(30, 50, 50, 0.2) 0%, transparent 70%);
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
@@ -202,8 +205,32 @@ header h1 {
     width: 100% !important;
     max-height: 70vh;
     height: auto !important;
-    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
     overflow: visible;
+}
+
+/* ── Chalkboard SVG overrides ────────────────────────────────── */
+#diagram .nodeLabel {
+    font-family: 'Caveat', cursive !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    fill: #f0e6d3 !important;
+    color: #f0e6d3 !important;
+}
+
+#diagram .edgeLabel {
+    font-family: 'Caveat', cursive !important;
+    font-size: 14px !important;
+}
+
+/* Chalk-white arrow lines */
+#diagram .flowchart-link {
+    stroke: #999 !important;
+    stroke-width: 1.5px !important;
+}
+
+/* Chalk marker arrowheads */
+#diagram marker path {
+    fill: #999 !important;
 }
 
 /* ── 3 Node Types: drill / doc / static ────────────────────── */
