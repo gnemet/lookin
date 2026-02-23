@@ -171,7 +171,8 @@
                 const nodeGroup = nodeEl.closest('.node') || nodeEl;
 
                 nodeGroup.style.cursor = 'pointer';
-                nodeGroup.classList.add('clickable');
+                const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
+                nodeGroup.classList.add(cssClass);
 
                 if (nodeConfig.tooltip) {
                     nodeGroup.setAttribute('title', nodeConfig.tooltip);
@@ -203,7 +204,8 @@
                         nodeId.toUpperCase().includes(text.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4))) {
 
                         n.style.cursor = 'pointer';
-                        n.classList.add('clickable');
+                        const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
+                        n.classList.add(cssClass);
 
                         n.addEventListener('click', (e) => {
                             e.stopPropagation();

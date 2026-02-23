@@ -206,66 +206,41 @@ header h1 {
     overflow: visible;
 }
 
-/* Golden 3D glow — applied to the whole group, not individual paths */
-#diagram .clickable {
+/* ── 3 Node Types: drill / doc / static ────────────────────── */
+
+/* All interactive nodes: pointer cursor */
+#diagram .node-drill,
+#diagram .node-doc {
     cursor: pointer !important;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: sketch-jiggle 4s ease-in-out infinite;
-    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(243, 156, 18, 0.3));
 }
 
-/* Stagger so nodes don't all move together */
-#diagram .clickable:nth-child(2n) {
-    animation-delay: 0.7s;
+/* DRILL nodes — golden border + shadow (click to go deeper) */
+#diagram .node-drill {
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 4px rgba(243, 156, 18, 0.4));
 }
 
-#diagram .clickable:nth-child(3n) {
-    animation-delay: 1.4s;
-}
-
-#diagram .clickable:nth-child(5n) {
-    animation-delay: 2.1s;
-}
-
-#diagram .clickable:nth-child(7n) {
-    animation-delay: 0.3s;
-}
-
-#diagram .clickable .nodeLabel {
+#diagram .node-drill .nodeLabel {
     font-weight: 700;
 }
 
-/* Stop jiggle on hover, bigger glow */
-#diagram .clickable:hover {
-    animation-play-state: paused;
-    filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(243, 156, 18, 0.5)) brightness(1.2);
+#diagram .node-drill:hover {
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(243, 156, 18, 0.6)) brightness(1.3);
 }
 
-@keyframes sketch-jiggle {
-
-    0%,
-    80%,
-    100% {
-        transform: rotate(0deg) translate(0, 0);
-    }
-
-    84% {
-        transform: rotate(0.5deg) translate(0.6px, -0.4px);
-    }
-
-    88% {
-        transform: rotate(-0.4deg) translate(-0.5px, 0.3px);
-    }
-
-    92% {
-        transform: rotate(0.3deg) translate(0.3px, 0.4px);
-    }
-
-    96% {
-        transform: rotate(-0.2deg) translate(-0.2px, -0.2px);
-    }
+/* DOC nodes — blue border + shadow (click to view docs) */
+#diagram .node-doc {
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 4px rgba(52, 152, 219, 0.4));
 }
+
+#diagram .node-doc .nodeLabel {
+    font-weight: 600;
+}
+
+#diagram .node-doc:hover {
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(52, 152, 219, 0.6)) brightness(1.3);
+}
+
+/* STATIC nodes — default, no glow */
 
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
 #table-panel {
