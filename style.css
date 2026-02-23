@@ -236,16 +236,15 @@ header h1 {
 #diagram .clickable polygon,
 #diagram .clickable circle,
 #diagram .clickable path.border {
-    stroke-dasharray: 8 4 !important;
+    stroke: #f39c12 !important;
     stroke-width: 2.5px !important;
-    stroke: var(--accent-color) !important;
+    stroke-dasharray: none !important;
+    fill: rgba(243, 156, 18, 0.08) !important;
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5));
 }
 
 #diagram .clickable .nodeLabel {
-    text-decoration: underline;
-    text-decoration-style: wavy;
-    text-underline-offset: 3px;
-    text-decoration-color: rgba(var(--accent-rgb), 0.5);
+    font-weight: 600;
 }
 
 /* Stop jiggle on hover for clean click */
@@ -257,12 +256,10 @@ header h1 {
 #diagram .clickable:hover polygon,
 #diagram .clickable:hover circle,
 #diagram .clickable:hover path.border {
-    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.6));
+    stroke: #e67e22 !important;
     stroke-width: 3px !important;
-}
-
-#diagram .clickable:hover .nodeLabel {
-    text-decoration-color: var(--accent-color);
+    fill: rgba(243, 156, 18, 0.15) !important;
+    filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(243, 156, 18, 0.3));
 }
 
 @keyframes sketch-jiggle {
