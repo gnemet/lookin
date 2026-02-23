@@ -1,23 +1,30 @@
-/* LookIn — Hand-drawn Architecture Viewer
-   Premium dark theme with glassmorphism accents */
+/* LookIn — Ported from Jiramntr/Johanna UI Standard v2.0 */
 
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* ── Design Tokens (from jiramntr base.css) ──────────────────── */
 :root {
-    --bg-primary: #0f0f1a;
-    --bg-secondary: #1a1a2e;
-    --bg-glass: rgba(26, 26, 46, 0.85);
-    --text-primary: #e8e8f0;
-    --text-muted: #8888a8;
-    --accent-blue: #3498db;
-    --accent-green: #27ae60;
-    --accent-orange: #e67e22;
-    --accent-purple: #9b59b6;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --shadow-glow: 0 0 30px rgba(52, 152, 219, 0.15);
+    --primary-bg: #0f172a;
+    --secondary-bg: #1e293b;
+    --card-bg: #1e293b;
+    --accent-color: #C42728;
+    --accent-rgb: 196, 39, 40;
+    --accent-hover: #A31F21;
+    --text-color: #f1f2f6;
+    --text-muted: #a4b0be;
+    --border-color: #334155;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --success-color: #26de81;
+    --danger-color: #eb4d4b;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    --bg-hover: rgba(255, 255, 255, 0.1);
     --radius: 12px;
+    --compact-height: 2.22rem;
+    --header-h: 50px;
+    --footer-h: 36px;
     --font-hand: 'Caveat', cursive;
-    --font-ui: 'Inter', sans-serif;
+    --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -28,68 +35,79 @@
 
 body {
     font-family: var(--font-ui);
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    background: var(--primary-bg);
+    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    line-height: 1.5;
 }
 
-/* ── Header ──────────────────────────────────────────────────── */
+/* ── Header (from jiramntr .top-header) ──────────────────────── */
 header {
+    height: var(--header-h);
+    background: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-subtle);
-    position: sticky;
+    padding: 0 16px;
+    position: fixed;
     top: 0;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .logo {
-    font-size: 28px;
-    filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.4));
+    font-size: 1.4rem;
+    color: var(--accent-color);
 }
 
 header h1 {
     font-family: var(--font-hand);
-    font-size: 28px;
+    font-size: 1.4rem;
     font-weight: 600;
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--accent-color);
+}
+
+.header-separator {
+    color: var(--border-color);
+    font-size: 1.2rem;
+    font-weight: 200;
+    margin: 0 4px;
 }
 
 .header-center {
     flex: 1;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Breadcrumb */
 #breadcrumb {
     display: inline-flex;
     gap: 6px;
     align-items: center;
-    font-size: 14px;
+    font-size: 0.85rem;
 }
 
 #breadcrumb .crumb {
     cursor: pointer;
-    color: var(--accent-blue);
+    color: var(--info-color);
     transition: color 0.2s;
+    font-weight: 500;
 }
 
 #breadcrumb .crumb:hover {
-    color: var(--accent-orange);
+    color: var(--accent-color);
 }
 
 #breadcrumb .sep {
@@ -97,53 +115,69 @@ header h1 {
 }
 
 #breadcrumb .current {
-    color: var(--text-primary);
+    color: var(--text-color);
     font-weight: 600;
 }
 
 .header-right {
     display: flex;
-    gap: 8px;
-}
-
-.btn-icon {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-primary);
-    font-size: 18px;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
+    gap: 6px;
     align-items: center;
-    justify-content: center;
 }
 
-.btn-icon:hover {
-    background: rgba(52, 152, 219, 0.2);
-    border-color: var(--accent-blue);
+/* ── Pill Buttons (from jiramntr .btn-loop / Johanna style) ──── */
+.btn-loop {
+    background: rgba(128, 128, 128, 0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    font-family: var(--font-ui);
+}
+
+.btn-loop:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--accent-color);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.1);
+}
+
+.btn-loop:active {
+    transform: translateY(0);
+}
+
+.btn-loop .icon {
+    font-size: 14px;
+    opacity: 0.8;
 }
 
 /* ── Layer Info ───────────────────────────────────────────────── */
 #layer-info {
     text-align: center;
-    padding: 20px 24px 8px;
+    padding: 16px 24px 4px;
+    margin-top: var(--header-h);
 }
 
 #layer-title {
     font-family: var(--font-hand);
-    font-size: 36px;
+    font-size: 2rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-color);
 }
 
 #layer-subtitle {
-    font-size: 13px;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 /* ── Diagram ─────────────────────────────────────────────────── */
@@ -152,7 +186,7 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 24px;
+    padding: 8px 24px;
     min-height: 400px;
 }
 
@@ -171,26 +205,29 @@ header h1 {
 
 /* Clickable nodes */
 #diagram .node {
-    cursor: pointer;
+    cursor: default;
 }
 
-#diagram .node:hover {
-    filter: brightness(1.3) drop-shadow(0 0 12px rgba(52, 152, 219, 0.5));
+#diagram .clickable {
+    cursor: pointer !important;
+}
+
+#diagram .clickable:hover {
+    filter: brightness(1.4) drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.5));
     transition: filter 0.2s;
 }
 
-/* ── Table Panel ─────────────────────────────────────────────── */
+/* ── Table Panel (from jiramntr card pattern) ────────────────── */
 #table-panel {
     position: fixed;
     right: 0;
     top: 0;
     width: 420px;
     height: 100vh;
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    border-left: 1px solid var(--border-subtle);
+    background: var(--secondary-bg);
+    border-left: 1px solid var(--border-color);
     box-shadow: -8px 0 30px rgba(0, 0, 0, 0.4);
-    z-index: 200;
+    z-index: 2000;
     overflow-y: auto;
     transform: translateX(100%);
     transition: transform 0.3s ease;
@@ -208,74 +245,80 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    background: var(--bg-secondary);
+    background: var(--secondary-bg);
 }
 
 .panel-header h3 {
     font-family: var(--font-hand);
-    font-size: 24px;
-    color: var(--accent-blue);
+    font-size: 1.5rem;
+    color: var(--accent-color);
 }
 
 #table-content {
-    padding: 16px 20px;
+    padding: 12px 16px;
 }
 
 #table-content table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 0.85rem;
 }
 
 #table-content th {
     text-align: left;
     padding: 8px 10px;
+    background: var(--primary-bg);
     color: var(--text-muted);
-    font-weight: 400;
-    font-size: 11px;
+    font-weight: 600;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border-subtle);
 }
 
 #table-content td {
     padding: 6px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border-color);
 }
 
 #table-content tr:hover td {
-    background: rgba(52, 152, 219, 0.06);
+    background: rgba(var(--accent-rgb), 0.05);
 }
 
 .col-name {
-    color: var(--accent-blue);
+    color: var(--info-color);
     font-weight: 600;
 }
 
 .col-type {
-    color: var(--accent-orange);
-    font-family: monospace;
-    font-size: 12px;
+    color: var(--warning-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
 }
 
 .col-desc {
     color: var(--text-muted);
 }
 
-/* ── Footer ──────────────────────────────────────────────────── */
+/* ── Footer (from jiramntr footer) ───────────────────────────── */
 footer {
+    height: var(--footer-h);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 24px;
-    background: var(--bg-glass);
-    border-top: 1px solid var(--border-subtle);
-    font-size: 12px;
+    padding: 0 16px;
+    background: var(--secondary-bg);
+    border-top: 1px solid var(--border-color);
+    font-size: 0.7rem;
     color: var(--text-muted);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
 }
 
 #source-badge {
@@ -284,8 +327,7 @@ footer {
     gap: 6px;
     padding: 3px 10px;
     border-radius: 20px;
-    background: rgba(52, 152, 219, 0.15);
-    font-size: 11px;
+    font-size: 0.7rem;
     font-weight: 600;
 }
 
@@ -300,7 +342,7 @@ footer {
     justify-content: center;
     height: 300px;
     font-family: var(--font-hand);
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--text-muted);
     animation: pulse 1.5s infinite;
 }
@@ -324,10 +366,10 @@ footer {
     }
 
     header {
-        padding: 8px 12px;
+        padding: 0 8px;
     }
 
     #layer-title {
-        font-size: 24px;
+        font-size: 1.5rem;
     }
 }

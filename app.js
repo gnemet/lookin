@@ -38,6 +38,7 @@
     // ── Events ──────────────────────────────────────────────────
     function setupEvents() {
         document.getElementById('btn-home').addEventListener('click', () => navigateTo('overview'));
+        document.getElementById('btn-back').addEventListener('click', goBack);
         document.getElementById('btn-lang').addEventListener('click', toggleLang);
         document.getElementById('btn-close-panel').addEventListener('click', closePanel);
 
@@ -60,7 +61,7 @@
     async function navigateTo(layerId, catalog) {
         const layer = config.layers.find(l => l.id === layerId);
         if (!layer) {
-            console.warn(`Layer ${layerId} not found`);
+            console.warn(`Layer "${layerId}" not found`);
             return;
         }
 
@@ -95,14 +96,19 @@
         try {
             let mmdText;
             if (layer.file) {
-                mmdText = await fetch(layer.file).then(r => r.text());
+                mmdText = await fetch(layer.file).then(r => {
+                    if (!r.ok) throw new Error(`Failed to load ${layer.file}: ${r.status}`);
+                    return r.text();
+                });
             } else {
                 mmdText = generateAutoMermaid(layer);
             }
 
-            // Inject handDrawn look if not already in the file
+            // Inject handDrawn look if not already present
             if (!mmdText.includes('init')) {
                 mmdText = `%%{init: {'look': 'handDrawn', 'theme': 'dark'}}%%\n` + mmdText;
+            } else if (!mmdText.includes('handDrawn')) {
+                mmdText = mmdText.replace("{'theme'", "{'look': 'handDrawn', 'theme'");
             }
 
             const id = 'mmd-' + Date.now();
@@ -111,51 +117,104 @@
 
             // Attach click handlers to nodes
             attachNodeClicks(layer);
+
+            console.log(`[LookIn] Rendered layer: ${layer.id}`);
         } catch (err) {
             $diagram.innerHTML = `<div class="loading">Render error: ${err.message}</div>`;
             console.error('Render error:', err);
         }
     }
 
-    // ── Click Handlers ──────────────────────────────────────────
+    // ── Click Handlers (fixed: match by SVG node ID) ────────────
     function attachNodeClicks(layer) {
         if (!layer.nodes) return;
 
-        const svgNodes = $diagram.querySelectorAll('.node');
-        svgNodes.forEach(node => {
-            const label = node.querySelector('.nodeLabel');
-            if (!label) return;
+        // Mermaid generates SVG nodes with IDs like:
+        // "flowchart-NODEID-0", "flowchart-NODEID-1", etc.
+        // We match the YAML nodeId against the SVG element ID attribute.
+        const svgEl = $diagram.querySelector('svg');
+        if (!svgEl) return;
 
-            const text = label.textContent.trim();
+        let matchCount = 0;
 
-            // Find matching node config
-            for (const [nodeId, nodeConfig] of Object.entries(layer.nodes)) {
-                // Match by node ID or label text (flexible matching)
-                if (text.includes(nodeId) || nodeId.toLowerCase() === text.toLowerCase()) {
-                    node.style.cursor = 'pointer';
+        for (const [nodeId, nodeConfig] of Object.entries(layer.nodes)) {
+            // Strategy 1: Find by SVG element ID containing the node name
+            // Mermaid uses IDs like "flowchart-DWH-0" or "flowchart-JOHANNA-12"
+            const nodeEl = svgEl.querySelector(`[id*="flowchart-${nodeId}-"]`) ||
+                svgEl.querySelector(`[id*="${nodeId}"]`);
 
-                    if (nodeConfig.tooltip) {
-                        node.setAttribute('title', nodeConfig.tooltip);
+            if (nodeEl) {
+                // Find the closest .node group element
+                const nodeGroup = nodeEl.closest('.node') || nodeEl;
+
+                nodeGroup.style.cursor = 'pointer';
+                nodeGroup.classList.add('clickable');
+
+                if (nodeConfig.tooltip) {
+                    nodeGroup.setAttribute('title', nodeConfig.tooltip);
+                }
+
+                nodeGroup.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    console.log(`[LookIn] Clicked: ${nodeId} → ${nodeConfig.drilldown || 'table'}`);
+
+                    if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                        showTableDetail(nodeConfig.catalog);
+                    } else if (nodeConfig.drilldown) {
+                        navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
                     }
+                });
 
-                    node.addEventListener('click', () => {
-                        if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
-                            showTableDetail(nodeConfig.catalog);
-                        } else if (nodeConfig.drilldown) {
-                            navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
-                        }
-                    });
-                    break;
+                matchCount++;
+                console.log(`[LookIn] Bound click: ${nodeId} (${nodeConfig.drilldown || 'table'})`);
+            } else {
+                // Strategy 2: Fallback — search all .node elements by label text
+                const allNodes = svgEl.querySelectorAll('.node');
+                for (const n of allNodes) {
+                    const label = n.querySelector('.nodeLabel');
+                    if (!label) continue;
+                    const text = label.textContent.trim();
+
+                    // Flexible match: check if label contains the nodeId
+                    if (text.toUpperCase().includes(nodeId.toUpperCase()) ||
+                        nodeId.toUpperCase().includes(text.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4))) {
+
+                        n.style.cursor = 'pointer';
+                        n.classList.add('clickable');
+
+                        n.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            console.log(`[LookIn] Clicked (fallback): ${nodeId}`);
+                            if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                                showTableDetail(nodeConfig.catalog);
+                            } else if (nodeConfig.drilldown) {
+                                navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
+                            }
+                        });
+
+                        matchCount++;
+                        console.log(`[LookIn] Bound click (fallback): ${nodeId} via text "${text}"`);
+                        break;
+                    }
                 }
             }
-        });
+        }
+
+        console.log(`[LookIn] Matched ${matchCount}/${Object.keys(layer.nodes).length} clickable nodes`);
+
+        // Add visual hint: pulse animation on clickable nodes
+        const style = document.createElement('style');
+        style.textContent = `.clickable:hover { filter: brightness(1.4) drop-shadow(0 0 12px rgba(52, 152, 219, 0.6)); transition: filter 0.2s; }`;
+        svgEl.appendChild(style);
     }
 
     // ── Table Detail Panel ──────────────────────────────────────
     async function showTableDetail(catalogFile) {
         try {
-            // Try to load from catalogs/ directory
-            const data = await fetch(`catalogs/${catalogFile}`).then(r => r.json());
+            const data = await fetch(`catalogs/${catalogFile}`).then(r => {
+                if (!r.ok) throw new Error(`${r.status}`);
+                return r.json();
+            });
 
             $tableName.textContent = data.title || catalogFile.replace('.json', '');
 
@@ -169,9 +228,9 @@
                 const type = col.type || col.data_type || '';
                 const desc = col.label || col.description || col.comment || '';
                 html += `<tr>`;
-                html += `<td class="col-name">${name}</td>`;
-                html += `<td class="col-type">${type}</td>`;
-                html += `<td class="col-desc">${desc}</td>`;
+                html += `<td class="col-name">${escapeHtml(name)}</td>`;
+                html += `<td class="col-type">${escapeHtml(type)}</td>`;
+                html += `<td class="col-desc">${escapeHtml(desc)}</td>`;
                 html += `</tr>`;
             });
 
@@ -181,7 +240,7 @@
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
         } catch (err) {
-            $tableContent.innerHTML = `<p style="color: var(--text-muted)">Catalog not found: ${catalogFile}</p>`;
+            $tableContent.innerHTML = `<p style="color: var(--text-muted)">Catalog not found: ${catalogFile}<br><small>${err.message}</small></p>`;
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
         }
@@ -194,7 +253,6 @@
 
     // ── Auto-generate Mermaid ───────────────────────────────────
     function generateAutoMermaid(layer) {
-        // Fallback: generate a simple diagram from node config
         let mmd = `graph LR\n`;
         if (layer.nodes) {
             const nodeIds = Object.keys(layer.nodes);
@@ -213,8 +271,8 @@
             : currentLayer.title;
         $title.textContent = title;
         $subtitle.textContent = currentLayer.nodes
-            ? 'Click any node to drill deeper'
-            : '';
+            ? '👆 Click any node to drill deeper'
+            : '← Press Escape to go back';
     }
 
     function updateBreadcrumb() {
@@ -250,13 +308,18 @@
 
     function toggleLang() {
         lang = lang === 'en' ? 'hu' : 'en';
+        document.getElementById('btn-lang').textContent = lang === 'en' ? '🌐' : '🇭🇺';
         updateTitle();
         updateBreadcrumb();
     }
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     // ── Global navigation API ───────────────────────────────────
     window.lookInNav = function (layerId) {
-        // Reset history to this point
         const idx = history.indexOf(layerId);
         if (idx >= 0) history = history.slice(0, idx);
         navigateTo(layerId);

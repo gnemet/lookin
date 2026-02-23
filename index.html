@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LookIn 🔭 — Interactive Architecture Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
@@ -20,18 +22,29 @@
 </head>
 
 <body>
-    <!-- Top bar -->
-    <header id="header">
+    <!-- Top Header (jiramntr .top-header pattern) -->
+    <header>
         <div class="header-left">
-            <span class="logo">🔭</span>
-            <h1 id="app-title">LookIn</h1>
+            <i class="ph ph-binoculars logo"></i>
+            <h1>LookIn</h1>
+            <span class="header-separator">|</span>
         </div>
         <div class="header-center">
             <nav id="breadcrumb"></nav>
         </div>
         <div class="header-right">
-            <button id="btn-lang" class="btn-icon" title="Toggle EN/HU">🌐</button>
-            <button id="btn-home" class="btn-icon" title="Back to overview">🏠</button>
+            <button id="btn-lang" class="btn-loop" title="Toggle EN/HU">
+                <i class="ph ph-globe"></i>
+                <span id="lang-label">EN</span>
+            </button>
+            <button id="btn-back" class="btn-loop" title="Go back (Escape)">
+                <i class="ph ph-arrow-left"></i>
+                <span>Back</span>
+            </button>
+            <button id="btn-home" class="btn-loop" title="Back to overview">
+                <i class="ph ph-house"></i>
+                <span>Home</span>
+            </button>
         </div>
     </header>
 
@@ -46,19 +59,19 @@
         <div id="diagram"></div>
     </main>
 
-    <!-- Table detail panel (Level 4) -->
+    <!-- Table detail panel -->
     <aside id="table-panel" class="hidden">
         <div class="panel-header">
             <h3 id="table-name"></h3>
-            <button id="btn-close-panel" class="btn-icon">✕</button>
+            <button id="btn-close-panel" class="btn-loop"><i class="ph ph-x"></i></button>
         </div>
         <div id="table-content"></div>
     </aside>
 
-    <!-- Footer -->
+    <!-- Footer (jiramntr footer pattern) -->
     <footer>
-        <span id="source-badge"></span>
-        <span class="hint">Click nodes to drill down • Press Escape or 🏠 to go back</span>
+        <span id="source-badge"><i class="ph ph-binoculars"></i> LookIn</span>
+        <span class="hint">Click nodes to drill down • Escape to go back</span>
     </footer>
 
     <script src="app.js"></script>
