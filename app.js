@@ -26,7 +26,6 @@
         try {
             const yamlText = await fetch('lookin.yaml').then(r => r.text());
             config = jsyaml.load(yamlText);
-            document.getElementById('app-title').textContent = 'LookIn';
             setupEvents();
             await navigateTo('overview');
         } catch (err) {
