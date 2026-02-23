@@ -203,13 +203,33 @@ header h1 {
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
 }
 
-/* Clickable nodes — hand-drawn style markers */
+/* Clickable nodes — hand-drawn style markers (pure CSS) */
 #diagram .node {
     cursor: default;
 }
 
 #diagram .clickable {
     cursor: pointer !important;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sketch-jiggle 4s ease-in-out infinite;
+}
+
+/* Stagger so nodes don't all move together */
+#diagram .clickable:nth-child(2n) {
+    animation-delay: 0.7s;
+}
+
+#diagram .clickable:nth-child(3n) {
+    animation-delay: 1.4s;
+}
+
+#diagram .clickable:nth-child(5n) {
+    animation-delay: 2.1s;
+}
+
+#diagram .clickable:nth-child(7n) {
+    animation-delay: 0.3s;
 }
 
 #diagram .clickable rect,
@@ -228,6 +248,11 @@ header h1 {
     text-decoration-color: rgba(var(--accent-rgb), 0.5);
 }
 
+/* Stop jiggle on hover for clean click */
+#diagram .clickable:hover {
+    animation-play-state: paused;
+}
+
 #diagram .clickable:hover rect,
 #diagram .clickable:hover polygon,
 #diagram .clickable:hover circle,
@@ -238,6 +263,31 @@ header h1 {
 
 #diagram .clickable:hover .nodeLabel {
     text-decoration-color: var(--accent-color);
+}
+
+@keyframes sketch-jiggle {
+
+    0%,
+    80%,
+    100% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    84% {
+        transform: rotate(0.5deg) translate(0.6px, -0.4px);
+    }
+
+    88% {
+        transform: rotate(-0.4deg) translate(-0.5px, 0.3px);
+    }
+
+    92% {
+        transform: rotate(0.3deg) translate(0.3px, 0.4px);
+    }
+
+    96% {
+        transform: rotate(-0.2deg) translate(-0.2px, -0.2px);
+    }
 }
 
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
