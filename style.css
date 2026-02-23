@@ -203,7 +203,7 @@ header h1 {
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
 }
 
-/* Clickable nodes */
+/* Clickable nodes — hand-drawn style markers */
 #diagram .node {
     cursor: default;
 }
@@ -212,9 +212,45 @@ header h1 {
     cursor: pointer !important;
 }
 
-#diagram .clickable:hover {
-    filter: brightness(1.4) drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.5));
-    transition: filter 0.2s;
+#diagram .clickable rect,
+#diagram .clickable polygon,
+#diagram .clickable circle,
+#diagram .clickable path {
+    stroke-dasharray: 8 4 !important;
+    stroke-width: 2.5px !important;
+    stroke: var(--accent-color) !important;
+    animation: sketch-pulse 2s ease-in-out infinite;
+}
+
+#diagram .clickable .nodeLabel {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(var(--accent-rgb), 0.5);
+}
+
+#diagram .clickable:hover rect,
+#diagram .clickable:hover polygon,
+#diagram .clickable:hover circle,
+#diagram .clickable:hover path {
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.6));
+    stroke-width: 3px !important;
+}
+
+#diagram .clickable:hover .nodeLabel {
+    text-decoration-color: var(--accent-color);
+}
+
+@keyframes sketch-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
