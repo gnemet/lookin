@@ -117,6 +117,27 @@ layers:
     file: layers/rag_detail.mmd
     source: jiramntr
 
+  # Level 3: Ingestion pipeline
+  - id: ingestion
+    title: "Data Ingestion"
+    title_hu: "Adat Betöltés"
+    file: layers/ingestion.mmd
+    source: jiramntr
+
+  # Level 3: MCP detail
+  - id: mcp_detail
+    title: "MCP Catalog Pipeline"
+    title_hu: "MCP Katalógus Pipeline"
+    file: layers/mcp_detail.mmd
+    source: jiramntr
+
+  # Level 3: Application
+  - id: application
+    title: "Application Stack"
+    title_hu: "Alkalmazás"
+    file: layers/application.mmd
+    source: jiramntr
+
   # Level 4: Table column detail (auto-generated from catalog JSON)
   - id: table
     title: "Table Detail"
