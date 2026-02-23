@@ -240,9 +240,11 @@
 
                 nodeGroup.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    console.log(`[LookIn] Clicked: ${nodeId} → ${nodeConfig.drilldown || 'table'}`);
+                    console.log(`[LookIn] Clicked: ${nodeId} → ${nodeConfig.drilldown || nodeConfig.doc || 'table'}`);
 
-                    if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                    if (nodeConfig.doc) {
+                        showDocPanel(nodeConfig.doc);
+                    } else if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
                         showTableDetail(nodeConfig.catalog);
                     } else if (nodeConfig.drilldown) {
                         navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
@@ -270,7 +272,9 @@
                         n.addEventListener('click', (e) => {
                             e.stopPropagation();
                             console.log(`[LookIn] Clicked (fallback): ${nodeId}`);
-                            if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                            if (nodeConfig.doc) {
+                                showDocPanel(nodeConfig.doc);
+                            } else if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
                                 showTableDetail(nodeConfig.catalog);
                             } else if (nodeConfig.drilldown) {
                                 navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
@@ -299,20 +303,34 @@
             $tableName.textContent = data.title || catalogFile.replace('.json', '');
 
             let html = '<table><thead><tr>';
-            html += '<th>Column</th><th>Type</th><th>Description</th>';
+            html += '<th>Column</th><th>Label (EN)</th><th>Label (HU)</th>';
             html += '</tr></thead><tbody>';
 
-            const columns = data.columns || data.fields || [];
-            columns.forEach(col => {
-                const name = col.field || col.name || col.column_name;
-                const type = col.type || col.data_type || '';
-                const desc = col.label || col.description || col.comment || '';
-                html += `<tr>`;
-                html += `<td class="col-name">${escapeHtml(name)}</td>`;
-                html += `<td class="col-type">${escapeHtml(type)}</td>`;
-                html += `<td class="col-desc">${escapeHtml(desc)}</td>`;
-                html += `</tr>`;
-            });
+            // Handle jiramntr catalog format: { datagrid: { columns: { col_name: {...} } } }
+            const columnsObj = (data.datagrid && data.datagrid.columns) || data.columns || {};
+
+            if (typeof columnsObj === 'object' && !Array.isArray(columnsObj)) {
+                // Nested object format
+                for (const [colName, colConfig] of Object.entries(columnsObj)) {
+                    const labelEn = colConfig.labels?.en || colName;
+                    const labelHu = colConfig.labels?.hu || '';
+                    html += `<tr>`;
+                    html += `<td class="col-name">${escapeHtml(colName)}</td>`;
+                    html += `<td class="col-desc">${escapeHtml(labelEn)}</td>`;
+                    html += `<td class="col-desc">${escapeHtml(labelHu)}</td>`;
+                    html += `</tr>`;
+                }
+            } else if (Array.isArray(columnsObj)) {
+                // Flat array format
+                columnsObj.forEach(col => {
+                    const name = col.field || col.name || '';
+                    const desc = col.label || col.description || '';
+                    html += `<tr>`;
+                    html += `<td class="col-name">${escapeHtml(name)}</td>`;
+                    html += `<td class="col-desc" colspan="2">${escapeHtml(desc)}</td>`;
+                    html += `</tr>`;
+                });
+            }
 
             html += '</tbody></table>';
             $tableContent.innerHTML = html;
@@ -321,6 +339,32 @@
             $tablePanel.classList.add('visible');
         } catch (err) {
             $tableContent.innerHTML = `<p style="color: var(--text-muted)">Catalog not found: ${catalogFile}<br><small>${err.message}</small></p>`;
+            $tablePanel.classList.remove('hidden');
+            $tablePanel.classList.add('visible');
+        }
+    }
+
+    // ── Markdown Doc Panel ──────────────────────────────────────
+    async function showDocPanel(docFile) {
+        try {
+            const mdText = await fetch(`docs/${docFile}`).then(r => {
+                if (!r.ok) throw new Error(`${r.status}`);
+                return r.text();
+            });
+
+            $tableName.textContent = docFile.replace('.md', '').replace(/_/g, ' ');
+
+            // Use marked.js if available, otherwise show as preformatted
+            if (window.marked) {
+                $tableContent.innerHTML = `<div class="md-content">${window.marked.parse(mdText)}</div>`;
+            } else {
+                $tableContent.innerHTML = `<pre class="md-content">${escapeHtml(mdText)}</pre>`;
+            }
+
+            $tablePanel.classList.remove('hidden');
+            $tablePanel.classList.add('visible');
+        } catch (err) {
+            $tableContent.innerHTML = `<p style="color: var(--text-muted)">Doc not found: docs/${docFile}<br><small>${err.message}</small></p>`;
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
         }

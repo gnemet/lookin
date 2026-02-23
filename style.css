@@ -242,6 +242,90 @@ header h1 {
 
 /* STATIC nodes — default, no glow */
 
+/* ── Markdown Content in Panel ────────────────────────────────── */
+.md-content {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+    font-family: var(--font-hand);
+    color: var(--accent-color);
+    margin: 12px 0 6px;
+}
+
+.md-content h1 {
+    font-size: 1.4rem;
+}
+
+.md-content h2 {
+    font-size: 1.2rem;
+}
+
+.md-content h3 {
+    font-size: 1rem;
+}
+
+.md-content p {
+    margin: 6px 0;
+}
+
+.md-content code {
+    background: var(--primary-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--warning-color);
+}
+
+.md-content pre {
+    background: var(--primary-bg);
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.md-content pre code {
+    padding: 0;
+    background: none;
+    color: var(--text-color);
+}
+
+.md-content a {
+    color: var(--info-color);
+}
+
+.md-content ul,
+.md-content ol {
+    padding-left: 20px;
+    margin: 6px 0;
+}
+
+.md-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.md-content th,
+.md-content td {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+    font-size: 0.8rem;
+}
+
+.md-content th {
+    background: var(--primary-bg);
+    color: var(--text-muted);
+}
+
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
 #table-panel {
     position: fixed;
