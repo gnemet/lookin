@@ -264,15 +264,13 @@
                     e.stopPropagation();
                     if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
                     console.log(`[LookIn] DblClick: ${nodeId} → show doc`);
-                    // Show the drilldown layer's .mmd as doc, or use explicit doc property
+
                     if (nodeConfig.doc) {
+                        // Explicit doc property
                         showDocPanel(nodeConfig.doc);
                     } else if (nodeConfig.drilldown && nodeConfig.drilldown !== 'table') {
-                        // Find the target layer and show its .mmd file
-                        const targetLayer = config.layers.find(l => l.id === nodeConfig.drilldown);
-                        if (targetLayer && targetLayer.file) {
-                            showMmdAsDoc(targetLayer.file, targetLayer.title || nodeConfig.drilldown);
-                        }
+                        // Try docs/{drilldown}.md first, then fall back to .mmd
+                        showDocPanel(nodeConfig.drilldown + '.md');
                     } else if (nodeConfig.catalog) {
                         showTableDetail(nodeConfig.catalog);
                     }
