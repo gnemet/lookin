@@ -2,11 +2,7 @@
 
 > *The AI gets smarter with every question*
 
-## 💡 How it works
-A **self-learning loop** where Johanna improves SQL generation accuracy based on user feedback and pattern analysis.
-
 ## 🔄 The Loop
-
 | Step | What happens |
 |---|---|
 | 1️⃣ | 🗣️ User asks a question |
@@ -17,18 +13,6 @@ A **self-learning loop** where Johanna improves SQL generation accuracy based on
 | 6️⃣ | 📚 Self-Study analyzes failures |
 | 7️⃣ | 🔄 Good patterns fed back into chain MCPs |
 
-## 📊 Feedback Loop
-```
-Question → SQL → Execute → Result
-                               ↓
-                         User Feedback
-                               ↓
-                     Self-Study Analysis
-                               ↓
-                       MCP Knowledge Update
-                               ↓
-                      Better SQL Next Time ✨
-```
 
 ## 🌐 Multi-Provider AI
 | Provider | Use case |

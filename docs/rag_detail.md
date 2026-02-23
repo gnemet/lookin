@@ -2,11 +2,7 @@
 
 > *Retrieval-Augmented Generation — the AI's knowledge engine*
 
-## 💡 What is RAG?
-Instead of sending the entire DWH schema to the LLM, RAG **finds only the relevant chunks** based on the user's question. This keeps prompts focused and accurate.
-
 ## 🔄 How It Works
-
 | Step | What happens |
 |---|---|
 | 1️⃣ | 📝 MCP `.md` files split into chunks |
@@ -16,12 +12,13 @@ Instead of sending the entire DWH schema to the LLM, RAG **finds only the releva
 | 5️⃣ | 🔍 Cosine similarity finds top-K chunks |
 | 6️⃣ | 📋 Relevant chunks injected into LLM prompt |
 
-## 🔀 Two Modes
 
+## 🔀 Two Modes
 | Mode | When | How |
 |---|---|---|
 | 🎯 **pgvector HNSW** | Default | Semantic similarity search |
 | 📄 **Direct MCP** | Fallback | Full template if RAG fails |
+
 
 ## 🧬 Embedding Model
 - **Provider**: Google Gemini
@@ -29,10 +26,11 @@ Instead of sending the entire DWH schema to the LLM, RAG **finds only the releva
 - **Dimensions**: 768
 - **Index**: HNSW (Hierarchical Navigable Small World)
 
+
 ## 📚 Knowledge Sources
 | Source | Content |
 |---|---|
-| 🔗 12 Chain MCPs | Domain-specific DWH knowledge |
+| 🔗 Chain MCPs | Domain-specific DWH knowledge |
 | 📊 Schema descriptions | Table/column metadata |
 | 👥 LDAP hierarchy | User org structure |
 | 📋 BI catalog | Saved query definitions |
