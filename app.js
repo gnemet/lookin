@@ -201,10 +201,59 @@
 
         console.log(`[LookIn] Matched ${matchCount}/${Object.keys(layer.nodes).length} clickable nodes`);
 
-        // Add visual hint: pulse animation on clickable nodes
-        const style = document.createElement('style');
-        style.textContent = `.clickable:hover { filter: brightness(1.4) drop-shadow(0 0 12px rgba(52, 152, 219, 0.6)); transition: filter 0.2s; }`;
-        svgEl.appendChild(style);
+        // Add jiggle animation to clickable nodes (JS for SVG compatibility)
+        startJiggle();
+    }
+
+    // ── SVG Jiggle Animation (CSS transforms don't work on SVG <g>) ──
+    let jiggleTimers = [];
+
+    function startJiggle() {
+        // Clear any existing timers
+        jiggleTimers.forEach(t => clearInterval(t));
+        jiggleTimers = [];
+
+        const clickables = $diagram.querySelectorAll('.clickable');
+        clickables.forEach((node, i) => {
+            // Each node gets a different random interval
+            const delay = 2000 + (i * 700) + Math.random() * 1500;
+
+            const timer = setInterval(() => {
+                // Only jiggle if not hovered
+                if (node.matches(':hover')) return;
+
+                // Get current transform (preserve existing Mermaid translate)
+                const existing = node.getAttribute('transform') || '';
+                const baseTransform = existing.replace(/translate\([^)]*\)\s*rotate\([^)]*\)/g, '').trim()
+                    || existing;
+
+                // Quick 3-step wobble
+                const steps = [
+                    { offset: 0, r: 0, tx: 0, ty: 0 },
+                    { offset: 50, r: 0.6, tx: 0.8, ty: -0.5 },
+                    { offset: 100, r: -0.4, tx: -0.5, ty: 0.3 },
+                    { offset: 150, r: 0.2, tx: 0.3, ty: 0.2 },
+                    { offset: 200, r: 0, tx: 0, ty: 0 }
+                ];
+
+                steps.forEach(step => {
+                    setTimeout(() => {
+                        if (step.r === 0) {
+                            node.setAttribute('transform', baseTransform);
+                        } else {
+                            // Get node center for rotation
+                            const bbox = node.getBBox ? node.getBBox() : { x: 0, y: 0, width: 0, height: 0 };
+                            const cx = bbox.x + bbox.width / 2;
+                            const cy = bbox.y + bbox.height / 2;
+                            node.setAttribute('transform',
+                                `${baseTransform} translate(${step.tx}, ${step.ty}) rotate(${step.r}, ${cx}, ${cy})`);
+                        }
+                    }, step.offset);
+                });
+            }, delay);
+
+            jiggleTimers.push(timer);
+        });
     }
 
     // ── Table Detail Panel ──────────────────────────────────────

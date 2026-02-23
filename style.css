@@ -208,19 +208,17 @@ header h1 {
     cursor: default;
 }
 
+#diagram .clickable {
+    cursor: pointer !important;
+}
+
 #diagram .clickable rect,
 #diagram .clickable polygon,
 #diagram .clickable circle,
-#diagram .clickable path {
+#diagram .clickable path.border {
     stroke-dasharray: 8 4 !important;
     stroke-width: 2.5px !important;
     stroke: var(--accent-color) !important;
-}
-
-#diagram .clickable {
-    cursor: pointer !important;
-    animation: sketch-jiggle 3s ease-in-out infinite;
-    transform-origin: center;
 }
 
 #diagram .clickable .nodeLabel {
@@ -233,55 +231,13 @@ header h1 {
 #diagram .clickable:hover rect,
 #diagram .clickable:hover polygon,
 #diagram .clickable:hover circle,
-#diagram .clickable:hover path {
+#diagram .clickable:hover path.border {
     filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.6));
     stroke-width: 3px !important;
 }
 
 #diagram .clickable:hover .nodeLabel {
     text-decoration-color: var(--accent-color);
-}
-
-#diagram .clickable:hover {
-    animation: none;
-}
-
-/* Stagger animations so they don't all move in sync */
-#diagram .clickable:nth-child(2n) {
-    animation-delay: 0.5s;
-}
-
-#diagram .clickable:nth-child(3n) {
-    animation-delay: 1.2s;
-}
-
-#diagram .clickable:nth-child(5n) {
-    animation-delay: 0.8s;
-}
-
-@keyframes sketch-jiggle {
-
-    0%,
-    85%,
-    100% {
-        transform: rotate(0deg) translate(0, 0);
-    }
-
-    88% {
-        transform: rotate(0.4deg) translate(0.5px, -0.3px);
-    }
-
-    91% {
-        transform: rotate(-0.3deg) translate(-0.4px, 0.2px);
-    }
-
-    94% {
-        transform: rotate(0.2deg) translate(0.3px, 0.4px);
-    }
-
-    97% {
-        transform: rotate(-0.1deg) translate(-0.2px, -0.2px);
-    }
 }
 
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
