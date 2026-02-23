@@ -1,97 +1,36 @@
 {
-  "version": "1.2",
-  "title": "Sla Events",
-  "icon": "fa-chart-bar",
-  "datagrid": {
-    "defaults": {
-      "page_size": [
-        25,
-        50,
-        100
-      ]
+  "title": "SLA Events",
+  "description": "SLA breach/success events. Tracks response and resolution time against targets.",
+  "schema": "dwh",
+  "table_type": "Fact Table",
+  "columns": {
+    "sla_event_id": {
+      "type": "bigint",
+      "desc": "Primary key"
     },
-    "columns": {
-      "sla_sid": {
-        "visible": true,
-        "labels": {
-          "en": "Sla Sid",
-          "hu": "sla_sid"
-        }
-      },
-      "issue_id": {
-        "visible": true,
-        "labels": {
-          "en": "Issue Id",
-          "hu": "issue_id"
-        }
-      },
-      "priority_id": {
-        "visible": true,
-        "labels": {
-          "en": "Priority Id",
-          "hu": "priority_id"
-        }
-      },
-      "event_type": {
-        "visible": true,
-        "labels": {
-          "en": "Event Type",
-          "hu": "event_type"
-        }
-      },
-      "duration_sec": {
-        "visible": true,
-        "labels": {
-          "en": "Duration Sec",
-          "hu": "duration_sec"
-        }
-      },
-      "is_breached": {
-        "visible": true,
-        "labels": {
-          "en": "Is Breached",
-          "hu": "is_breached"
-        }
-      }
+    "issue_id": {
+      "type": "bigint",
+      "desc": "FK \u2192 dim_issue_h.issue_id"
+    },
+    "priority_id": {
+      "type": "bigint",
+      "desc": "FK \u2192 dim_priority_h.priority_id (cast to bigint)"
+    },
+    "sla_type": {
+      "type": "text",
+      "desc": "SLA type (response_time, resolution_time)"
+    },
+    "breached": {
+      "type": "boolean",
+      "desc": "True if SLA was breached"
+    },
+    "elapsed_ms": {
+      "type": "bigint",
+      "desc": "Elapsed time in milliseconds"
+    },
+    "target_ms": {
+      "type": "bigint",
+      "desc": "SLA target in milliseconds"
     }
-  },
-  "objects": [
-    {
-      "name": "dwh.fact_sla_events",
-      "type": "table",
-      "description": "DWH table fact_sla_events",
-      "columns": [
-        {
-          "name": "sla_sid",
-          "type": "BIGINT",
-          "description": ""
-        },
-        {
-          "name": "issue_id",
-          "type": "BIGINT",
-          "description": ""
-        },
-        {
-          "name": "priority_id",
-          "type": "BIGINT",
-          "description": ""
-        },
-        {
-          "name": "event_type",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "duration_sec",
-          "type": "BIGINT",
-          "description": ""
-        },
-        {
-          "name": "is_breached",
-          "type": "BOOLEAN",
-          "description": ""
-        }
-      ]
-    }
-  ]
+  }
 }

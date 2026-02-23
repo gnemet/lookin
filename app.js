@@ -230,9 +230,13 @@
                 // Find the closest .node group element
                 const nodeGroup = nodeEl.closest('.node') || nodeEl;
 
-                nodeGroup.style.cursor = 'pointer';
-                const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
-                nodeGroup.classList.add(cssClass);
+                // Only mark as interactive if node has an action
+                const hasAction = nodeConfig.drilldown || nodeConfig.doc || nodeConfig.catalog;
+                if (hasAction) {
+                    nodeGroup.style.cursor = 'pointer';
+                    const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
+                    nodeGroup.classList.add(cssClass);
+                }
 
                 if (nodeConfig.tooltip) {
                     nodeGroup.setAttribute('title', nodeConfig.tooltip);
@@ -265,9 +269,13 @@
                     if (text.toUpperCase().includes(nodeId.toUpperCase()) ||
                         nodeId.toUpperCase().includes(text.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4))) {
 
-                        n.style.cursor = 'pointer';
-                        const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
-                        n.classList.add(cssClass);
+                        // Only mark as interactive if node has an action
+                        const hasAction = nodeConfig.drilldown || nodeConfig.doc || nodeConfig.catalog;
+                        if (hasAction) {
+                            n.style.cursor = 'pointer';
+                            const cssClass = nodeConfig.doc ? 'node-doc' : 'node-drill';
+                            n.classList.add(cssClass);
+                        }
 
                         n.addEventListener('click', (e) => {
                             e.stopPropagation();
@@ -302,34 +310,50 @@
 
             $tableName.textContent = data.title || catalogFile.replace('.json', '');
 
-            let html = '<table><thead><tr>';
-            html += '<th>Column</th><th>Label (EN)</th><th>Label (HU)</th>';
-            html += '</tr></thead><tbody>';
+            let html = '';
 
-            // Handle jiramntr catalog format: { datagrid: { columns: { col_name: {...} } } }
-            const columnsObj = (data.datagrid && data.datagrid.columns) || data.columns || {};
+            // Show table metadata header
+            if (data.description || data.schema || data.table_type) {
+                html += `<div style="margin-bottom:12px; padding:10px; background:var(--primary-bg); border-radius:8px; font-size:0.82rem;">`;
+                if (data.description) html += `<p style="color:var(--text-color); margin:0 0 6px;">${escapeHtml(data.description)}</p>`;
+                if (data.schema) html += `<span style="color:var(--info-color); margin-right:12px;">📦 ${escapeHtml(data.schema)}</span>`;
+                if (data.table_type) html += `<span style="color:var(--warning-color);">📋 ${escapeHtml(data.table_type)}</span>`;
+                html += `</div>`;
+            }
+
+            html += '<table><thead><tr>';
+
+            // Detect format: enriched (has type/desc) vs old datagrid format
+            const columnsObj = data.columns || (data.datagrid && data.datagrid.columns) || {};
 
             if (typeof columnsObj === 'object' && !Array.isArray(columnsObj)) {
-                // Nested object format
-                for (const [colName, colConfig] of Object.entries(columnsObj)) {
-                    const labelEn = colConfig.labels?.en || colName;
-                    const labelHu = colConfig.labels?.hu || '';
-                    html += `<tr>`;
-                    html += `<td class="col-name">${escapeHtml(colName)}</td>`;
-                    html += `<td class="col-desc">${escapeHtml(labelEn)}</td>`;
-                    html += `<td class="col-desc">${escapeHtml(labelHu)}</td>`;
-                    html += `</tr>`;
+                const firstVal = Object.values(columnsObj)[0] || {};
+
+                if (firstVal.type || firstVal.desc) {
+                    // Enriched format: { col_name: { type, desc } }
+                    html += '<th>Column</th><th>Type</th><th>Description</th>';
+                    html += '</tr></thead><tbody>';
+                    for (const [colName, colConfig] of Object.entries(columnsObj)) {
+                        html += `<tr>`;
+                        html += `<td class="col-name">${escapeHtml(colName)}</td>`;
+                        html += `<td class="col-type">${escapeHtml(colConfig.type || '')}</td>`;
+                        html += `<td class="col-desc">${escapeHtml(colConfig.desc || '')}</td>`;
+                        html += `</tr>`;
+                    }
+                } else {
+                    // Old datagrid format: { col_name: { labels: {en, hu} } }
+                    html += '<th>Column</th><th>Label (EN)</th><th>Label (HU)</th>';
+                    html += '</tr></thead><tbody>';
+                    for (const [colName, colConfig] of Object.entries(columnsObj)) {
+                        const labelEn = colConfig.labels?.en || colName;
+                        const labelHu = colConfig.labels?.hu || '';
+                        html += `<tr>`;
+                        html += `<td class="col-name">${escapeHtml(colName)}</td>`;
+                        html += `<td class="col-desc">${escapeHtml(labelEn)}</td>`;
+                        html += `<td class="col-desc">${escapeHtml(labelHu)}</td>`;
+                        html += `</tr>`;
+                    }
                 }
-            } else if (Array.isArray(columnsObj)) {
-                // Flat array format
-                columnsObj.forEach(col => {
-                    const name = col.field || col.name || '';
-                    const desc = col.label || col.description || '';
-                    html += `<tr>`;
-                    html += `<td class="col-name">${escapeHtml(name)}</td>`;
-                    html += `<td class="col-desc" colspan="2">${escapeHtml(desc)}</td>`;
-                    html += `</tr>`;
-                });
             }
 
             html += '</tbody></table>';

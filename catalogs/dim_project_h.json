@@ -1,145 +1,32 @@
 {
-  "version": "1.2",
-  "title": "Project H",
-  "icon": "fa-project-diagram",
-  "datagrid": {
-    "defaults": {
-      "page_size": [
-        25,
-        50,
-        100
-      ]
+  "title": "Projects (Historical)",
+  "description": "Jira projects with project lead and key.",
+  "schema": "dwh",
+  "table_type": "Dimension Table (SCD2)",
+  "columns": {
+    "project_sid": {
+      "type": "bigint",
+      "desc": "Surrogate key"
     },
-    "columns": {
-      "project_sid": {
-        "visible": true,
-        "labels": {
-          "en": "Project Sid",
-          "hu": "project_sid"
-        }
-      },
-      "project_key": {
-        "visible": true,
-        "labels": {
-          "en": "Project Key",
-          "hu": "project_key"
-        }
-      },
-      "project_name": {
-        "visible": true,
-        "labels": {
-          "en": "Project Name",
-          "hu": "project_name"
-        }
-      },
-      "project_lead": {
-        "visible": true,
-        "labels": {
-          "en": "Project Lead",
-          "hu": "project_lead"
-        }
-      },
-      "project_type": {
-        "visible": true,
-        "labels": {
-          "en": "Project Type",
-          "hu": "project_type"
-        }
-      },
-      "category": {
-        "visible": true,
-        "labels": {
-          "en": "Category",
-          "hu": "category"
-        }
-      },
-      "ulyprojekt_id": {
-        "visible": true,
-        "labels": {
-          "en": "Ulyprojekt Id",
-          "hu": "ulyprojekt_id"
-        }
-      },
-      "cost_center": {
-        "visible": true,
-        "labels": {
-          "en": "Cost Center",
-          "hu": "cost_center"
-        }
-      },
-      "description": {
-        "visible": true,
-        "labels": {
-          "en": "Description",
-          "hu": "description"
-        }
-      },
-      "valid_period": {
-        "visible": false,
-        "labels": {
-          "en": "Valid Period",
-          "hu": "valid_period"
-        }
-      }
+    "project_id": {
+      "type": "bigint",
+      "desc": "Jira project ID"
+    },
+    "project_key": {
+      "type": "text",
+      "desc": "Project key (e.g., ADMIN)"
+    },
+    "project_name": {
+      "type": "text",
+      "desc": "Project name"
+    },
+    "project_lead": {
+      "type": "text",
+      "desc": "Project lead user_key"
+    },
+    "valid": {
+      "type": "tstzrange",
+      "desc": "SCD2 validity range"
     }
-  },
-  "objects": [
-    {
-      "name": "dwh.dim_project_h",
-      "type": "table",
-      "description": "DWH table dim_project_h",
-      "columns": [
-        {
-          "name": "project_sid",
-          "type": "BIGINT",
-          "description": ""
-        },
-        {
-          "name": "project_key",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "project_name",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "project_lead",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "project_type",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "category",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "ulyprojekt_id",
-          "type": "INTEGER",
-          "description": ""
-        },
-        {
-          "name": "cost_center",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "description",
-          "type": "TEXT",
-          "description": ""
-        },
-        {
-          "name": "valid_period",
-          "type": "TSTZRANGE",
-          "description": ""
-        }
-      ]
-    }
-  ]
+  }
 }
