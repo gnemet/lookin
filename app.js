@@ -243,16 +243,38 @@
                     nodeGroup.setAttribute('title', nodeConfig.tooltip);
                 }
 
+                // Single-click = drill down, Double-click = show doc
+                let clickTimer = null;
+
                 nodeGroup.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    console.log(`[LookIn] Clicked: ${nodeId} → ${nodeConfig.drilldown || nodeConfig.doc || 'table'}`);
+                    if (clickTimer) return; // ignore if waiting for dblclick
+                    clickTimer = setTimeout(() => {
+                        clickTimer = null;
+                        console.log(`[LookIn] Click: ${nodeId} → ${nodeConfig.drilldown || 'table'}`);
+                        if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                            showTableDetail(nodeConfig.catalog);
+                        } else if (nodeConfig.drilldown) {
+                            navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
+                        }
+                    }, 250);
+                });
 
+                nodeGroup.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+                    console.log(`[LookIn] DblClick: ${nodeId} → show doc`);
+                    // Show the drilldown layer's .mmd as doc, or use explicit doc property
                     if (nodeConfig.doc) {
                         showDocPanel(nodeConfig.doc);
-                    } else if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                    } else if (nodeConfig.drilldown && nodeConfig.drilldown !== 'table') {
+                        // Find the target layer and show its .mmd file
+                        const targetLayer = config.layers.find(l => l.id === nodeConfig.drilldown);
+                        if (targetLayer && targetLayer.file) {
+                            showMmdAsDoc(targetLayer.file, targetLayer.title || nodeConfig.drilldown);
+                        }
+                    } else if (nodeConfig.catalog) {
                         showTableDetail(nodeConfig.catalog);
-                    } else if (nodeConfig.drilldown) {
-                        navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
                     }
                 });
 
@@ -372,14 +394,13 @@
     // ── Markdown Doc Panel ──────────────────────────────────────
     async function showDocPanel(docFile) {
         try {
-            const mdText = await fetch(`docs/${docFile}`).then(r => {
+            const mdText = await fetch(`docs/${docFile}?v=${Date.now()}`).then(r => {
                 if (!r.ok) throw new Error(`${r.status}`);
                 return r.text();
             });
 
             $tableName.textContent = docFile.replace('.md', '').replace(/_/g, ' ');
 
-            // Use marked.js if available, otherwise show as preformatted
             if (window.marked) {
                 $tableContent.innerHTML = `<div class="md-content">${window.marked.parse(mdText)}</div>`;
             } else {
@@ -390,6 +411,30 @@
             $tablePanel.classList.add('visible');
         } catch (err) {
             $tableContent.innerHTML = `<p style="color: var(--text-muted)">Doc not found: docs/${docFile}<br><small>${err.message}</small></p>`;
+            $tablePanel.classList.remove('hidden');
+            $tablePanel.classList.add('visible');
+        }
+    }
+
+    // ── Show .mmd source as doc (dblclick on drill nodes) ───────
+    async function showMmdAsDoc(mmdFile, title) {
+        try {
+            const mmdText = await fetch(mmdFile + '?v=' + Date.now()).then(r => {
+                if (!r.ok) throw new Error(`${r.status}`);
+                return r.text();
+            });
+
+            $tableName.textContent = `📋 ${title}`;
+            $tableContent.innerHTML = `
+                <div style="margin-bottom:10px; color:var(--text-muted); font-size:0.8rem;">
+                    Source: <code>${escapeHtml(mmdFile)}</code>
+                </div>
+                <pre class="md-content" style="white-space:pre; font-family:'Caveat',cursive; font-size:15px; line-height:1.6; color:var(--text-color);">${escapeHtml(mmdText)}</pre>`;
+
+            $tablePanel.classList.remove('hidden');
+            $tablePanel.classList.add('visible');
+        } catch (err) {
+            $tableContent.innerHTML = `<p style="color: var(--text-muted)">File not found: ${mmdFile}<br><small>${err.message}</small></p>`;
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
         }
