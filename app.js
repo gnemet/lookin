@@ -24,7 +24,8 @@
         $diagram.innerHTML = '<div class="loading">Loading LookIn...</div>';
 
         try {
-            const yamlText = await fetch('lookin.yaml').then(r => r.text());
+            const cacheBust = `?v=${Date.now()}`;
+            const yamlText = await fetch('lookin.yaml' + cacheBust).then(r => r.text());
             config = jsyaml.load(yamlText);
             setupEvents();
             await navigateTo('overview');
@@ -155,7 +156,7 @@
         try {
             let mmdText;
             if (layer.file) {
-                mmdText = await fetch(layer.file).then(r => {
+                mmdText = await fetch(layer.file + '?v=' + Date.now()).then(r => {
                     if (!r.ok) throw new Error(`Failed to load ${layer.file}: ${r.status}`);
                     return r.text();
                 });
