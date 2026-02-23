@@ -134,13 +134,14 @@
 
         try {
             const bbox = svgEl.getBBox();
-            const pad = 20;
+            const pad = 60; // extra room for jiggle animation
             svgEl.setAttribute('viewBox',
                 `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`);
             svgEl.removeAttribute('width');
             svgEl.removeAttribute('height');
             svgEl.style.width = '100%';
             svgEl.style.height = 'auto';
+            svgEl.style.overflow = 'visible';
             console.log(`[LookIn] Auto-fit viewBox: ${bbox.x},${bbox.y} ${bbox.width}x${bbox.height}`);
         } catch (e) {
             console.warn('[LookIn] autoFitSVG failed:', e);
