@@ -85,22 +85,16 @@ layers:
     source: jiramntr
     nodes:
       fact_daily_worklogs_h:
-        drilldown: table
         catalog: fact_daily_worklogs_h.json
       fact_sla_events:
-        drilldown: table
         catalog: fact_sla_events.json
       dim_issue_h:
-        drilldown: table
         catalog: dim_issue_h.json
       dim_user_h:
-        drilldown: table
         catalog: dim_user_h.json
       dim_calendar:
-        drilldown: table
         catalog: dim_calendar.json
       dim_project_h:
-        drilldown: table
         catalog: dim_project_h.json
 
   # Level 3: AI Pipeline
@@ -137,9 +131,3 @@ layers:
     title_hu: "Alkalmazás"
     file: layers/application.mmd
     source: jiramntr
-
-  # Level 4: Table column detail (auto-generated from catalog JSON)
-  - id: table
-    title: "Table Detail"
-    title_hu: "Tábla Részletek"
-    type: catalog_viewer

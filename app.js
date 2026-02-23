@@ -251,8 +251,10 @@
                     if (clickTimer) return; // ignore if waiting for dblclick
                     clickTimer = setTimeout(() => {
                         clickTimer = null;
-                        console.log(`[LookIn] Click: ${nodeId} → ${nodeConfig.drilldown || 'table'}`);
-                        if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
+                        console.log(`[LookIn] Click: ${nodeId} → ${nodeConfig.drilldown || nodeConfig.catalog || 'static'}`);
+                        if (nodeConfig.catalog && !nodeConfig.drilldown) {
+                            showTableDetail(nodeConfig.catalog);
+                        } else if (nodeConfig.drilldown === 'table' && nodeConfig.catalog) {
                             showTableDetail(nodeConfig.catalog);
                         } else if (nodeConfig.drilldown) {
                             navigateTo(nodeConfig.drilldown, nodeConfig.catalog);
