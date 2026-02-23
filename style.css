@@ -203,16 +203,13 @@ header h1 {
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
 }
 
-/* Clickable nodes — hand-drawn style markers (pure CSS) */
-#diagram .node {
-    cursor: default;
-}
-
+/* Golden 3D glow — applied to the whole group, not individual paths */
 #diagram .clickable {
     cursor: pointer !important;
     transform-box: fill-box;
     transform-origin: center;
     animation: sketch-jiggle 4s ease-in-out infinite;
+    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(243, 156, 18, 0.3));
 }
 
 /* Stagger so nodes don't all move together */
@@ -232,34 +229,14 @@ header h1 {
     animation-delay: 0.3s;
 }
 
-#diagram .clickable rect,
-#diagram .clickable polygon,
-#diagram .clickable circle,
-#diagram .clickable path.border {
-    stroke: #f39c12 !important;
-    stroke-width: 2.5px !important;
-    stroke-dasharray: none !important;
-    fill: rgba(243, 156, 18, 0.08) !important;
-    filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.5));
-}
-
 #diagram .clickable .nodeLabel {
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* Stop jiggle on hover for clean click */
+/* Stop jiggle on hover, bigger glow */
 #diagram .clickable:hover {
     animation-play-state: paused;
-}
-
-#diagram .clickable:hover rect,
-#diagram .clickable:hover polygon,
-#diagram .clickable:hover circle,
-#diagram .clickable:hover path.border {
-    stroke: #e67e22 !important;
-    stroke-width: 3px !important;
-    fill: rgba(243, 156, 18, 0.15) !important;
-    filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(243, 156, 18, 0.3));
+    filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(243, 156, 18, 0.5)) brightness(1.2);
 }
 
 @keyframes sketch-jiggle {
