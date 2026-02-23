@@ -1,26 +1,39 @@
-# Johanna — AI Chat Assistant
+# 🤖 Johanna — AI Chat Assistant
 
-## Overview
-A **standalone Go application** that provides natural language querying over the DWH.
-Users ask questions in Hungarian or English, and Johanna generates SQL, executes it, and returns human-readable answers.
+> *Ask questions in Hungarian or English — get SQL-powered answers*
 
-## Pipeline
-1. **User Question** → Natural language input
-2. **RAG Search** → Finds relevant MCP context via pgvector embeddings
-3. **Prompt Assembly** → Combines MCP context + user question
-4. **LLM** → Sends to Gemini/Ollama for SQL generation
-5. **SQL Execution** → Runs generated SQL against DWH (with RLS)
-6. **NL Synthesis** → Converts results to human-readable answer
+## 💡 What is it?
+Johanna lets users query the Data Warehouse using **natural language**. No SQL knowledge required — just ask:
 
-## Multi-Provider AI
-Supports: **Gemini** | **Ollama** | **OpenAI** | **Claude** | **DeepSeek**
+*"Hány órát logolt a csapatom januárban?"*
+*"Which projects had the most SLA breaches?"*
 
-## Security
-- **Metadata-Only Architecture** — zero business data sent to LLM
-- Only table/column descriptions go to the AI model
-- Results stay within the corporate network
+## 🔄 Pipeline
 
-## Technology
-- Go backend (separate repo from Jiramntr)
-- Browser UI (HTMX)
-- RAG via pgvector/HNSW search
+| Step | What happens |
+|---|---|
+| 1️⃣ | 🗣️ User asks a question (HU/EN) |
+| 2️⃣ | 🔍 RAG searches for relevant DWH context |
+| 3️⃣ | 📝 Prompt assembled with MCP + question |
+| 4️⃣ | 🧠 LLM generates SQL |
+| 5️⃣ | ⚡ SQL executed against DWH (with RLS!) |
+| 6️⃣ | 💬 Result synthesized into natural language |
+
+## 🌐 Multi-Provider AI
+| Provider | Status |
+|---|---|
+| ✨ Gemini | Primary |
+| 🦙 Ollama | Local/offline |
+| 🔵 OpenAI | Supported |
+| 🟣 Claude | Supported |
+| 🔶 DeepSeek | Supported |
+
+## 🔒 Security Principle
+> **Metadata-Only Architecture** — zero business data sent to LLM.
+> Only table names and column descriptions leave the network.
+> All query results stay within the corporate environment.
+
+## 🛠️ Technology
+- Go backend (separate repo)
+- Browser UI via HTMX
+- RAG via pgvector HNSW search

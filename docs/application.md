@@ -1,28 +1,37 @@
-# Application Stack
+# 🖥️ Application Stack
 
-## Overview
-**Go backend** (port 8080) serving a premium dark-themed web UI built with HTMX + Vanilla CSS.
+> *Go backend + HTMX frontend — premium dark theme*
 
-## REST API Endpoints
+## 🏗️ Architecture
+**Go backend** on port 8080, serving a single-page-feeling app built with HTMX (no React/Vue needed).
+
+## 📡 REST API
+
 | Endpoint | Purpose |
 |---|---|
-| `/api/chat` | AI conversational SQL (Johanna) |
-| `/api/bi` | BI Query Library execution |
-| `/api/kpi` | KPI Dashboard data |
-| `/api/employee` | Employee directory |
-| `/api/onsall` | On-call schedules |
+| `/api/chat` | 🤖 AI conversational SQL (Johanna) |
+| `/api/bi` | 📊 BI Query Library — run saved queries |
+| `/api/kpi` | 📈 KPI Dashboard — YAML-driven scoring |
+| `/api/employee` | 👤 Employee directory + hierarchy |
+| `/api/oncall` | 📞 On-call schedules |
 
-## Web UI
-- **HTMX** for interactive updates without JavaScript frameworks
-- **Vanilla CSS** — premium dark theme, responsive
-- **Datagrid Library v1.2** — sortable tables with LOV parameters
+## 🎨 Web UI
+- **HTMX** — interactive updates without SPA overhead
+- **Vanilla CSS** — premium dark theme, fully responsive
+- **Datagrid Library v1.2** — sortable, filterable tables with LOV params
 
-## Middleware
-- **RLS (Row-Level Security)** — per-user data visibility based on org hierarchy
-- **Session management** — LDAP/cookie authentication
+## 🔒 Middleware
+| Layer | Purpose |
+|---|---|
+| 🛡️ RLS | Row-Level Security per user hierarchy |
+| 🔑 Auth | LDAP/cookie-based session management |
+| 📝 Audit | Request logging to `meta.etl_log` |
 
-## KPI Dashboard
-YAML-driven KPI definitions with configurable rating scales, thresholds, and multilingual labels.
+## 📈 KPI Dashboard
+YAML-driven KPI definitions with:
+- Configurable rating scales (1-5 stars)
+- Threshold-based color coding
+- Multilingual labels (EN/HU)
 
-## BI Query Library
-Markdown-based saved queries with LOV (List of Values) parameter inputs.
+## 📊 BI Query Library
+Markdown-based saved queries with dropdown parameter inputs (LOV, LOV-multi, LOV-tree).

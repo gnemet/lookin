@@ -1,28 +1,40 @@
-# AI Self-Teaching Pipeline
+# 🧪 AI Self-Teaching Pipeline
 
-## Overview
-A **self-learning loop** where the AI improves its SQL generation accuracy over time based on user feedback.
+> *The AI gets smarter with every question*
 
-## Pipeline Steps
-1. **User asks question** → NL input in HU/EN
-2. **RAG retrieval** → Relevant MCP context from pgvector
-3. **LLM generates SQL** → Via Gemini/Ollama
-4. **SQL executes** → Against DWH with RLS
-5. **User rates result** → 👍/👎 feedback
-6. **Self-Study** → Failed queries are analyzed and stored
-7. **MCP Update** → Good patterns are fed back into chain MCPs
+## 💡 How it works
+A **self-learning loop** where Johanna improves SQL generation accuracy based on user feedback and pattern analysis.
 
-## Feedback Loop
+## 🔄 The Loop
+
+| Step | What happens |
+|---|---|
+| 1️⃣ | 🗣️ User asks a question |
+| 2️⃣ | 🔍 RAG retrieves relevant MCP context |
+| 3️⃣ | 🧠 LLM generates SQL |
+| 4️⃣ | ⚡ SQL executes against DWH |
+| 5️⃣ | 👍👎 User rates the result |
+| 6️⃣ | 📚 Self-Study analyzes failures |
+| 7️⃣ | 🔄 Good patterns fed back into chain MCPs |
+
+## 📊 Feedback Loop
 ```
-User Question → SQL → Execute → Result
-                                    ↓
-                              User Feedback
-                                    ↓
-                        Self-Study Analysis
-                                    ↓
-                          MCP Knowledge Update
+Question → SQL → Execute → Result
+                               ↓
+                         User Feedback
+                               ↓
+                     Self-Study Analysis
+                               ↓
+                       MCP Knowledge Update
+                               ↓
+                      Better SQL Next Time ✨
 ```
 
-## Multi-Provider
-Supports switching between AI providers:
-**Gemini** | **Ollama** | **OpenAI** | **Claude** | **DeepSeek**
+## 🌐 Multi-Provider AI
+| Provider | Use case |
+|---|---|
+| ✨ Gemini | Primary — best accuracy |
+| 🦙 Ollama | Offline/air-gapped environments |
+| 🔵 OpenAI | Alternative cloud option |
+| 🟣 Claude | Alternative cloud option |
+| 🔶 DeepSeek | Cost-effective alternative |

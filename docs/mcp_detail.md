@@ -1,24 +1,31 @@
-# MCP Catalog Pipeline
+# 🧠 MCP Catalog Pipeline
 
-## Overview
-The **Model Context Protocol** system that provides AI models with structured metadata about the DWH — without exposing business data.
+> *Metadata-Only Protocol — teach AI about your data without exposing it*
 
-## Components
+## 💡 What is MCP?
+The **Model Context Protocol** provides AI models with structured knowledge about the DWH schema, join patterns, and business rules — while keeping all actual data safely on-premise.
+
+## 📦 Components
+
 | Component | Count | Purpose |
 |---|---|---|
-| JSON Catalogs | 50 files | Table/column definitions for Datagrid UI |
-| Chain MCPs | 12 .md files | Domain-specific knowledge docs |
-| MCP Template | 1 master | `dwh_mcp_template.md` — architect context |
+| 📋 JSON Catalogs | 50 files | Column definitions for Datagrid UI |
+| 🔗 Chain MCPs | 12 .md | Domain-specific knowledge docs |
+| 📝 Master Template | 1 file | `dwh_mcp_template.md` — architect context |
 
-## Pipeline
-1. **MCP Generator** → Auto-generates 750+ column descriptions from DB schema
-2. **Chain MCPs** → 12 domain .md files (worklogs, issues, users, SLA, etc.)
-3. **Gemini Embedding** → `text-embedding-004` converts to vectors
-4. **pgvector Store** → `meta.mcp_embeddings` with HNSW index
-5. **RAG Search** → Similarity search at query time
+## 🔄 Pipeline
 
-## Key Principle
-> **Metadata-Only**: Only table names, column descriptions, and join recipes go to the LLM. Zero business data leaves the network.
+| Step | Component | Output |
+|---|---|---|
+| 1️⃣ | 🏭 MCP Generator | Auto-generates 750+ column descriptions from DB |
+| 2️⃣ | 🔗 Chain MCPs | 12 domain-specific markdown files |
+| 3️⃣ | 🧬 Gemini Embedding | `text-embedding-004` → 768-dim vectors |
+| 4️⃣ | 📦 pgvector Store | `meta.mcp_embeddings` with HNSW index |
+| 5️⃣ | 🔍 RAG Search | Cosine similarity at query time |
 
-## Auto-Generation
-The MCP Generator reads `information_schema` and produces catalog JSON + chain MCP markdown files automatically.
+## 🔒 Key Principle
+> **Metadata-Only**: Only table names, column descriptions, and join recipes go to the LLM.
+> Zero business data ever leaves the corporate network.
+
+## 🔗 Chain MCP Domains
+worklogs • issues • users • projects • SLA • calendar • custom fields • priorities • statuses • hierarchy • BI queries • KPI definitions

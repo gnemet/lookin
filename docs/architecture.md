@@ -1,32 +1,37 @@
-# Data Warehouse (DWH)
+# 📊 Data Warehouse (DWH)
 
-## Overview
-A **PostgreSQL 16** Star Schema storing consolidated data from Jira, LDAP, and the Leave System.
+> *Consolidated analytics layer — single source of truth*
 
-## Key Components
-- **Schema**: `dwh` (primary), `meta` (AI metadata), `ext` (external imports)
-- **Historization**: Level 2 SCD (Slowly Changing Dimensions) using `tstzrange` columns
-- **Security**: Row-Level Security (RLS) based on org hierarchy
+## 🏗️ Architecture
+**PostgreSQL 16** Star Schema with full SCD2 historization.
+All business data flows through here — Jira, LDAP, and Leave System consolidated into one analytics-ready model.
 
-## Fact Tables
-| Table | Description |
-|---|---|
-| `fact_daily_worklogs_h` | Time tracking: hours per person per issue per day |
-| `fact_sla_events` | SLA breach/success events with response times |
+## 🔐 Security
+- **Row-Level Security (RLS)** — users only see their own hierarchy
+- Session variable `jiramntr.login_user` drives visibility
+- Even SQL Lab queries are filtered by RLS
 
-## Dimension Tables
-| Table | Description |
-|---|---|
-| `dim_issue_h` | Jira issues with full SCD2 history |
-| `dim_user_h` | Users from LDAP (hierarchy, department) |
-| `dim_project_h` | Jira projects with project leads |
-| `dim_calendar` | Date dimension (one row per day) |
-| `dim_status_h` | Issue status names |
-| `dim_priority_h` | Issue priority levels |
+## 📦 Schemas
+| Schema | Purpose | Access |
+|---|---|---|
+| `dwh` | ⭐ Star Schema (facts + dims) | Primary |
+| `meta` | 🧠 AI metadata, embeddings | Auxiliary |
+| `ext` | 📥 External imports staging | Internal only |
+| `oltp` | 🔌 Oracle FDW bridge | ⛔ Forbidden |
 
-## Views (Current State)
-Use `dwh.dim_issue`, `dwh.dim_user` etc. for current-state queries.
-These automatically filter for active SCD2 records.
+## 📋 Key Tables
+| Table | Type | What it stores |
+|---|---|---|
+| `fact_daily_worklogs_h` | ⏱️ Fact | Hours logged per person/issue/day |
+| `fact_sla_events` | 🚨 Fact | SLA breaches and response times |
+| `dim_issue_h` | 📝 Dim | Jira issues (status, priority, assignee) |
+| `dim_user_h` | 👤 Dim | Users from LDAP (hierarchy, manager) |
+| `dim_project_h` | 📁 Dim | Projects with leads |
+| `dim_calendar` | 📅 Dim | Date dimension (YYYYMMDD) |
 
-## ETL
-Yearly partitioned orchestrator runs nightly, loading data from Oracle FDW and LDAP.
+## 🔄 Historization
+All `_h` tables use `tstzrange` for Level 2 SCD tracking.
+Use **views** (without `_h` suffix) for current-state queries — they auto-filter for active records.
+
+## ⚙️ ETL
+Yearly partitioned orchestrator runs nightly on butalam, with pre-flight checks and HWM incremental loading.

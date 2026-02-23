@@ -1,27 +1,33 @@
-# Data Ingestion Pipeline
+# 📥 Data Ingestion Pipeline
 
-## Overview
-Extracts data from **3 source systems** and loads it into the PostgreSQL DWH via Foreign Data Wrappers and ETL scripts.
+> *Three source systems → one Star Schema*
 
-## Data Sources
-| Source | Protocol | Data |
+## 🌐 Data Sources
+
+| Source | Protocol | What we get |
 |---|---|---|
-| 🟠 **Oracle DB (Jira)** | oracle_fdw | Issues, worklogs, custom fields |
-| 🔵 **Active Directory** | LDAP sync | Users, hierarchy, thumbnails |
-| 🟢 **Leave System (TER)** | REST API | Absences, work schedules |
+| 🟠 **Oracle DB** (Jira) | `oracle_fdw` | Issues, worklogs, custom fields, links |
+| 🔵 **Active Directory** | LDAP sync | Users, org hierarchy, photos, departments |
+| 🟢 **TER** (Leave System) | REST API | Absences, work schedules |
+| 🟡 **SharePoint** | `sp-download` (Go) | Excel exports *(planned)* |
+| ⚪ **Google Drive** | CSV loader | CSV exports, backups |
 
-## Architecture
+## 🔌 How Data Flows
+
 ```
-Oracle → oracle_fdw → ext schema → ETL → dwh schema
-LDAP   → ext.ldap_import → ETL → dwh schema
-TER    → REST Client (Go) → ETL → dwh schema
+Oracle DB ──→ oracle_fdw ──→ ext schema ──┐
+LDAP      ──→ ext.ldap_import ───────────→├──→ ETL ──→ dwh schema
+TER API   ──→ ext.ter_data ─────────────→┘
 ```
 
-## ETL Orchestrator
-- **Yearly partitioned** — processes one year at a time
-- **Pre-flight TCP checks** — validates source availability
-- **HWM (High Water Mark)** — incremental pattern for efficiency
-- **Observability** — logs timing, row counts, errors to `meta.etl_log`
+## ⚙️ ETL Orchestrator
+- 📆 **Yearly partitioned** — processes one year at a time
+- 🔍 **Pre-flight TCP checks** — validates source availability before running
+- 📈 **HWM pattern** — High Water Mark for incremental loading
+- 📊 **Observability** — logs timing, row counts, errors to `meta.etl_log`
+- 🕐 **Schedule** — nightly cron on butalam server
 
-## Schedule
-Runs nightly via cron on the butalam server.
+## 🛡️ Resilience
+- Sync vs Async mode selection
+- Smart triggering (data availability check)
+- Circular dependency fault detection

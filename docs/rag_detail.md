@@ -1,27 +1,38 @@
-# RAG Pipeline
+# 🔍 RAG Pipeline
 
-## Overview
-**Retrieval-Augmented Generation** using pgvector for semantic search over MCP documentation.
+> *Retrieval-Augmented Generation — the AI's knowledge engine*
 
-## How It Works
-1. **Embedding** — Chain MCP `.md` files are split into chunks and embedded via Gemini `text-embedding-004`
-2. **Storage** — Vectors stored in `meta.mcp_embeddings` with HNSW index
-3. **Search** — User question is embedded, then cosine similarity finds top-K relevant chunks
-4. **Context** — Retrieved chunks are injected into the LLM prompt
+## 💡 What is RAG?
+Instead of sending the entire DWH schema to the LLM, RAG **finds only the relevant chunks** based on the user's question. This keeps prompts focused and accurate.
 
-## Two Modes
-| Mode | Description |
+## 🔄 How It Works
+
+| Step | What happens |
 |---|---|
-| **pgvector HNSW** | Semantic similarity search (default) |
-| **Direct MCP** | Falls back to full MCP template if RAG fails |
+| 1️⃣ | 📝 MCP `.md` files split into chunks |
+| 2️⃣ | 🧬 Each chunk embedded via Gemini `text-embedding-004` |
+| 3️⃣ | 📦 Vectors stored in `meta.mcp_embeddings` (HNSW) |
+| 4️⃣ | 🗣️ User question embedded as vector |
+| 5️⃣ | 🔍 Cosine similarity finds top-K chunks |
+| 6️⃣ | 📋 Relevant chunks injected into LLM prompt |
 
-## Embedding Model
+## 🔀 Two Modes
+
+| Mode | When | How |
+|---|---|---|
+| 🎯 **pgvector HNSW** | Default | Semantic similarity search |
+| 📄 **Direct MCP** | Fallback | Full template if RAG fails |
+
+## 🧬 Embedding Model
 - **Provider**: Google Gemini
 - **Model**: `text-embedding-004`
-- **Dimension**: 768
+- **Dimensions**: 768
+- **Index**: HNSW (Hierarchical Navigable Small World)
 
-## Knowledge Sources
-- 12 chain MCP files (domain-specific)
-- DWH schema descriptions
-- User hierarchy (LDAP)
-- BI query catalog
+## 📚 Knowledge Sources
+| Source | Content |
+|---|---|
+| 🔗 12 Chain MCPs | Domain-specific DWH knowledge |
+| 📊 Schema descriptions | Table/column metadata |
+| 👥 LDAP hierarchy | User org structure |
+| 📋 BI catalog | Saved query definitions |
