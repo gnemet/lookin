@@ -114,6 +114,9 @@
             const { svg } = await window.mermaidLib.render(id, mmdText);
             $diagram.innerHTML = svg;
 
+            // Auto-fit SVG viewBox to show all nodes
+            autoFitSVG();
+
             // Attach click handlers to nodes
             attachNodeClicks(layer);
 
@@ -121,6 +124,26 @@
         } catch (err) {
             $diagram.innerHTML = `<div class="loading">Render error: ${err.message}</div>`;
             console.error('Render error:', err);
+        }
+    }
+
+    // ── Auto-fit SVG viewBox to show all nodes ────────────────────
+    function autoFitSVG() {
+        const svgEl = $diagram.querySelector('svg');
+        if (!svgEl) return;
+
+        try {
+            const bbox = svgEl.getBBox();
+            const pad = 20;
+            svgEl.setAttribute('viewBox',
+                `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`);
+            svgEl.removeAttribute('width');
+            svgEl.removeAttribute('height');
+            svgEl.style.width = '100%';
+            svgEl.style.height = 'auto';
+            console.log(`[LookIn] Auto-fit viewBox: ${bbox.x},${bbox.y} ${bbox.width}x${bbox.height}`);
+        } catch (e) {
+            console.warn('[LookIn] autoFitSVG failed:', e);
         }
     }
 
