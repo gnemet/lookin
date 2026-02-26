@@ -7,11 +7,11 @@
     <title>LookIn 🔭 — Interactive Architecture Viewer</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    <link rel="stylesheet" href="vendor/phosphor-icons.css">
+    <script src="vendor/js-yaml.min.js"></script>
+    <script src="vendor/marked.min.js"></script>
+    <script src="vendor/mermaid.min.js"></script>
+    <script>
         window.mermaidLib = mermaid;
         mermaid.initialize({
             startOnLoad: false,

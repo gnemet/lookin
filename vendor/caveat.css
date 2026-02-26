@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/Caveat-Regular.woff2) format('woff2'),
+    url(fonts/Caveat-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/Caveat-SemiBold.woff2) format('woff2'),
+    url(fonts/Caveat-SemiBold.ttf) format('truetype');
+}

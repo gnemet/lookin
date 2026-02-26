@@ -65,17 +65,46 @@ layers:
       AI:
         drilldown: ai_pipeline
 
-  # Level 2b: Johanna architecture
+  # Level 2b: Johanna architecture (PNG image mode)
   - id: johanna
     title: "Johanna AI Chat"
     title_hu: "Johanna AI Chat"
-    file: layers/johanna.mmd
+    render: image
+    image: layers/johanna_arch.png
     source: johanna
-    nodes:
-      RAG:
-        drilldown: rag_detail
-      LLM:
+    clickRegions:
+      - label: "Web Layer"
+        rect: [30, 13, 16, 16]
+        drilldown: application
+        tooltip: "HTMX + Templates, Chat UI, Sidebar"
+      - label: "AI Chat Pipeline"
+        rect: [49, 13, 19, 32]
         drilldown: ai_pipeline
+        tooltip: "RAG → SQL → NL Pipeline"
+      - label: "PostgreSQL Database"
+        rect: [6, 35, 19, 30]
+        doc: architecture.md
+        tooltip: "PostgreSQL 16 — meta, dwh, issue schemas"
+      - label: "Adapter Layer"
+        rect: [49, 48, 19, 15]
+        drilldown: rag_detail
+        tooltip: "johannaAIClient, RAGProvider, SQLExecutor"
+      - label: "Static Assets"
+        rect: [30, 32, 16, 10]
+        doc: application.md
+        tooltip: "CSS (Catppuccin), JS (main.js)"
+      - label: "AI Providers"
+        rect: [30, 72, 16, 13]
+        url: "https://ai.google.dev/"
+        tooltip: "Gemini / Ollama / Mock"
+      - label: "MCP Catalog"
+        rect: [2, 4, 16, 22]
+        drilldown: mcp_detail
+        tooltip: "12 chain MCPs (.md)"
+      - label: "aichat Package"
+        rect: [72, 30, 17, 25]
+        drilldown: ai_pipeline
+        tooltip: "RunPipeline(), AIClient, RAGProvider"
 
   # Level 3: Star Schema detail
   - id: star_schema

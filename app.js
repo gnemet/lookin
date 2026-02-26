@@ -153,6 +153,12 @@
     async function renderDiagram(layer) {
         $diagram.innerHTML = '<div class="loading">Rendering...</div>';
 
+        // Branch: image mode vs mermaid mode
+        if (layer.render === 'image' && layer.image) {
+            await renderImageLayer(layer);
+            return;
+        }
+
         try {
             let mmdText;
             if (layer.file) {
@@ -185,6 +191,83 @@
         } catch (err) {
             $diagram.innerHTML = `<div class="loading">Render error: ${err.message}</div>`;
             console.error('Render error:', err);
+        }
+    }
+
+    // ── Render Image Layer (PNG mode) ────────────────────────────
+    async function renderImageLayer(layer) {
+        try {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-layer';
+
+            const img = document.createElement('img');
+            img.src = layer.image + '?v=' + Date.now();
+            img.alt = (lang === 'hu' && layer.title_hu) ? layer.title_hu : layer.title;
+            img.draggable = false;
+
+            // Wait for image to load to get natural dimensions
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = () => reject(new Error(`Failed to load image: ${layer.image}`));
+            });
+
+            wrapper.appendChild(img);
+
+            // Create click-region overlays
+            if (layer.clickRegions && Array.isArray(layer.clickRegions)) {
+                for (const region of layer.clickRegions) {
+                    const [x, y, w, h] = region.rect || [0, 0, 10, 10];
+                    const div = document.createElement('div');
+                    div.className = 'click-region';
+                    div.style.left = x + '%';
+                    div.style.top = y + '%';
+                    div.style.width = w + '%';
+                    div.style.height = h + '%';
+
+                    // Tooltip
+                    if (region.tooltip || region.label) {
+                        div.title = region.tooltip || region.label;
+                        const labelEl = document.createElement('span');
+                        labelEl.className = 'region-label';
+                        labelEl.textContent = region.label || '';
+                        div.appendChild(labelEl);
+                    }
+
+                    // Visual indicator: drilldown = gold, doc = blue, url = green
+                    if (region.url) {
+                        div.classList.add('region-url');
+                    } else if (region.doc) {
+                        div.classList.add('region-doc');
+                    } else if (region.drilldown || region.catalog) {
+                        div.classList.add('region-drill');
+                    }
+
+                    // Click handler
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        console.log(`[LookIn] Image click-region: ${region.label} → ${region.drilldown || region.doc || region.url || 'static'}`);
+                        if (region.url) {
+                            window.open(region.url, '_blank');
+                        } else if (region.doc) {
+                            showDocPanel(region.doc);
+                        } else if (region.catalog) {
+                            showTableDetail(region.catalog);
+                        } else if (region.drilldown) {
+                            navigateTo(region.drilldown);
+                        }
+                    });
+
+                    wrapper.appendChild(div);
+                }
+            }
+
+            $diagram.innerHTML = '';
+            $diagram.appendChild(wrapper);
+
+            console.log(`[LookIn] Rendered image layer: ${layer.id} (${layer.clickRegions?.length || 0} click regions)`);
+        } catch (err) {
+            $diagram.innerHTML = `<div class="loading">Image error: ${err.message}</div>`;
+            console.error('Image render error:', err);
         }
     }
 
