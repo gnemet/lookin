@@ -1,54 +1,75 @@
 #!/bin/bash
-# Deploy LookIn to butalam (offline environment)
-# Uses local vendor/ for all JS/CSS/font dependencies
+# deploy_butalam.sh — Deploy LookIn to butalam (jiramntr rsync pattern)
+# LookIn is 100% static → deploy to /opt/lookin/, symlink into any project
 set -e
 
-SSH="ssh -i ~/.ssh/butala nemetg@sys-butalam01"
-SCP="scp -i ~/.ssh/butala"
+SSH_KEY="$HOME/.ssh/butala"
+TARGET="nemetg@sys-butalam01"
 DEST="/opt/lookin"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
+# ── Projects that want LookIn as a documentation page ──────────
+# Format: "static_dir  url_path"
+# Add a line for any new project that wants to serve LookIn
+SYMLINK_TARGETS=(
+    "/opt/jiramntr/ui        /ui/lookin/"         # http://butalam:8080/ui/lookin/
+    "/opt/johanna/ui/static  /static/lookin/"      # http://butalam:8082/static/lookin/
+    # "/opt/newproject/public  /public/lookin/"     # ← just add a line
+)
+
 echo "🔭 Deploying LookIn to butalam..."
 
-# 1. Copy core files
-$SCP "$SRC/app.js" "$SRC/style.css" "$SRC/lookin.yaml" "$SRC/favicon.svg" nemetg@sys-butalam01:$DEST/
+# 1. Ensure target directory exists
+ssh -i "$SSH_KEY" "$TARGET" "mkdir -p $DEST"
 
-# 2. Copy vendor (offline dependencies)
-$SSH "mkdir -p $DEST/vendor/fonts"
-$SCP $SRC/vendor/*.js $SRC/vendor/*.css nemetg@sys-butalam01:$DEST/vendor/
-$SCP $SRC/vendor/Phosphor.* nemetg@sys-butalam01:$DEST/vendor/
-$SCP $SRC/vendor/fonts/* nemetg@sys-butalam01:$DEST/vendor/fonts/
+# 2. Sync all static files
+echo "Syncing core files..."
+rsync -az -e "ssh -i $SSH_KEY" \
+    "$SRC/index.html" "$SRC/app.js" "$SRC/style.css" \
+    "$SRC/favicon.svg" \
+    "$TARGET:$DEST/"
 
-# 3. Copy layers + catalogs
-$SSH "mkdir -p $DEST/layers $DEST/catalogs"
-$SCP $SRC/layers/*.mmd nemetg@sys-butalam01:$DEST/layers/
-$SCP $SRC/catalogs/*.json nemetg@sys-butalam01:$DEST/catalogs/
+echo "Syncing configs..."
+rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/configs/" "$TARGET:$DEST/configs/"
 
-# 4. Copy docs if they exist
-if [ -d "$SRC/docs" ]; then
-    $SSH "mkdir -p $DEST/docs"
-    $SCP -r $SRC/docs/* nemetg@sys-butalam01:$DEST/docs/
-fi
+echo "Syncing vendor..."
+rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/vendor/" "$TARGET:$DEST/vendor/"
 
-# 5. Generate offline index.html (swap CDN → vendor/)
-sed \
-    -e 's|https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css|vendor/phosphor-icons.css|' \
-    -e 's|https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js|vendor/js-yaml.min.js|' \
-    -e 's|https://cdn.jsdelivr.net/npm/marked/marked.min.js|vendor/marked.min.js|' \
-    -e 's|<script type="module">|<script>|' \
-    -e "s|import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';|// mermaid loaded via vendor/mermaid.min.js|" \
-    -e 's|window.mermaidLib = mermaid;|window.mermaidLib = window.mermaid;|' \
-    "$SRC/index.html" > /tmp/lookin_index.html
-$SCP /tmp/lookin_index.html nemetg@sys-butalam01:$DEST/index.html
+echo "Syncing layers..."
+rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/layers/" "$TARGET:$DEST/layers/"
 
-# 6. Copy mermaid UMD bundle (must load BEFORE the inline script)
-# Insert mermaid script tag before js-yaml
-$SSH "cd $DEST && sed -i 's|vendor/js-yaml.min.js|vendor/mermaid.min.js\"></script>\n    <script src=\"vendor/js-yaml.min.js|' index.html"
+echo "Syncing catalogs..."
+rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/catalogs/" "$TARGET:$DEST/catalogs/"
 
-# 7. Generate offline style.css (swap Google Fonts → local @font-face)
-$SSH "cd $DEST && sed -i \"s|@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600\&family=Inter:wght@300;400;500;600;700\&display=swap');|/* Local fonts */\n@font-face { font-family: 'Caveat'; font-weight: 400; src: url('vendor/fonts/Caveat-Regular.ttf') format('truetype'); }\n@font-face { font-family: 'Caveat'; font-weight: 600; src: url('vendor/fonts/Caveat-SemiBold.ttf') format('truetype'); }\n@font-face { font-family: 'Inter'; font-weight: 400; src: url('vendor/fonts/Inter-Regular.woff2'); }\n@font-face { font-family: 'Inter'; font-weight: 600; src: url('vendor/fonts/Inter-SemiBold.woff2'); }\n@font-face { font-family: 'Inter'; font-weight: 700; src: url('vendor/fonts/Inter-Bold.woff2'); }|\" style.css"
+echo "Syncing docs..."
+rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/docs/" "$TARGET:$DEST/docs/"
 
-# 8. Restart server
-$SSH "pkill -f 'python3.*8081' 2>/dev/null; sleep 1; cd $DEST && nohup python3 -m http.server 8081 > /tmp/lookin.log 2>&1 & echo \"LookIn deployed on port 8081, PID: \$!\""
+# 3. Create symlinks for each registered project (sudo for dirs owned by other users)
+echo "Creating symlinks..."
+REMOTE_PWD=$(grep "^REMOTE_PWD=" "$SRC/../jiramntr/.env" 2>/dev/null | cut -d'=' -f2- | tr -d '"' || true)
+for entry in "${SYMLINK_TARGETS[@]}"; do
+    static_dir=$(echo "$entry" | awk '{print $1}')
+    url_path=$(echo "$entry" | awk '{print $2}')
+    project=$(basename "$(dirname "$static_dir")")
 
-echo "✅ LookIn deployed to http://sys-butalam01:8081"
+    ssh -i "$SSH_KEY" "$TARGET" "
+        if [ -d $static_dir ]; then
+            ln -sfn $DEST $static_dir/lookin 2>/dev/null || \
+            echo '$REMOTE_PWD' | sudo -S ln -sfn $DEST $static_dir/lookin 2>/dev/null || true
+            echo '  ✓ $project: $url_path → $DEST'
+        else
+            echo '  ⚠ $project: $static_dir not found, skipping'
+        fi
+    "
+done
+
+# 4. Kill any leftover Python server (no longer needed)
+ssh -i "$SSH_KEY" "$TARGET" "pkill -f 'python3.*8081' 2>/dev/null || true"
+
+echo ""
+echo "✅ LookIn deployed to $TARGET:$DEST/"
+echo "   Registered projects:"
+for entry in "${SYMLINK_TARGETS[@]}"; do
+    url_path=$(echo "$entry" | awk '{print $2}')
+    echo "     → $url_path"
+done

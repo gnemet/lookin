@@ -1,0 +1,32 @@
+{
+  "title": "Projects (Historical)",
+  "description": "Jira projects with project lead and key.",
+  "schema": "dwh",
+  "table_type": "Dimension Table (SCD2)",
+  "columns": {
+    "project_sid": {
+      "type": "bigint",
+      "desc": "Surrogate key"
+    },
+    "project_id": {
+      "type": "bigint",
+      "desc": "Jira project ID"
+    },
+    "project_key": {
+      "type": "text",
+      "desc": "Project key (e.g., ADMIN)"
+    },
+    "project_name": {
+      "type": "text",
+      "desc": "Project name"
+    },
+    "project_lead": {
+      "type": "text",
+      "desc": "Project lead user_key"
+    },
+    "valid": {
+      "type": "tstzrange",
+      "desc": "SCD2 validity range"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+graph LR
+    subgraph CONFIG["📄 Config"]
+        YAML["jiramntr.yaml<br/>Project Config"]
+    end
+
+    subgraph SOURCES["📥 Source Adapters"]
+        PG["🐘 postgres_dwh<br/>JSON Catalogs"]
+        CONF["📚 confluence"]
+        DOCS["📝 documents"]
+        GIT["🔀 git_source"]
+        JIRA["🟠 jira_comments"]
+        PPTX["📊 pptx_source"]
+        BASH["🖥️ bash_scripts"]
+    end
+
+    subgraph CORE["⚙️ Core Pipeline"]
+        CHUNK["✂️ Chunker<br/>MANUAL markers"]
+        TMPL["📋 Templates<br/>Jinja2"]
+        BACKUP["💾 Backup<br/>tar.gz archive"]
+    end
+
+    subgraph OUTPUTS["📤 Output Generators"]
+        FULL["📄 --full<br/>Monolithic MCP"]
+        CHAIN_G["🔗 --chain-gemini<br/>Topic Split"]
+        CHAIN_O["🔗 --chain-ollama<br/>Chunked ≤5KB"]
+        JSON["📊 --json<br/>JSON Export"]
+    end
+
+    subgraph TARGET["🎯 Targets"]
+        RAGDB["🧠 ragdb<br/>rag.knowledge"]
+        FILES["📁 chain_gemini/<br/>chain_ollama/"]
+    end
+
+    YAML --> PG
+    PG --> CORE
+    CORE --> OUTPUTS
+    FULL --> FILES
+    CHAIN_G --> FILES
+    CHAIN_O --> FILES
+    JSON --> RAGDB
+    BACKUP --> FILES

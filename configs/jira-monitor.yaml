@@ -1,0 +1,288 @@
+# LookIn Configuration
+# YAML-controlled interactive architecture drill-down viewer
+
+title: "JIRA-MONITOR"
+subtitle: "Click any node to drill deeper"
+theme: handDrawn
+languages: [en, hu]
+
+# ── Sources: connected project repos ────────────────────────────
+sources:
+  jiramntr:
+    label: "Jiramntr"
+    label_hu: "Jiramntr"
+    path: "../jiramntr"
+    catalogs: "internal/catalog/*.json"
+    diagrams: "docs/architecture/*.mmd"
+    color: "#3498db"
+
+  johanna:
+    label: "Johanna"
+    label_hu: "Johanna"
+    path: "../johanna"
+    diagrams: "docs/*.mmd"
+    color: "#27ae60"
+
+  aichat:
+    label: "AI-Chat"
+    label_hu: "AI-Chat"
+    path: "../aichat"
+    color: "#9b59b6"
+
+  mcp-forge:
+    label: "MCP-Forge"
+    label_hu: "MCP-Forge"
+    path: "../mcp-forge"
+    color: "#e74c3c"
+
+  datagrid:
+    label: "Datagrid"
+    label_hu: "Datagrid"
+    path: "../datagrid"
+    diagrams: "docs/*.mmd"
+    color: "#e67e22"
+
+  lookin:
+    label: "LookIn"
+    label_hu: "LookIn"
+    path: "."
+    color: "#1abc9c"
+
+# ── Layers: drill-down hierarchy ────────────────────────────────
+# Files are organized by project: layers/<project>/, docs/<project>/, catalogs/<project>/
+layers:
+  # Level 0: Enterprise ecosystem (platform-wide → lookin)
+  - id: enterprise
+    title: "JIRA-MONITOR"
+    title_hu: "JIRA-MONITOR"
+    file: layers/jira-monitor/enterprise.mmd
+    doc: jira-monitor/enterprise.md
+    nodes:
+      JM:
+        drilldown: overview
+        tooltip: "Jiramntr — DWH, BI, KPI, ETL"
+      JO:
+        drilldown: johanna
+        tooltip: "Johanna — AI Chat"
+      AIC:
+        drilldown: aichat_module
+        tooltip: "Shared NL→SQL Pipeline"
+      MF:
+        drilldown: mcp_forge
+        tooltip: "MCP-Forge — RAG Builder"
+      DB1:
+        drilldown: architecture
+        tooltip: "jiramntr_db — Star Schema DWH"
+      DB2:
+        drilldown: ragdb_schema
+        tooltip: "ragdb — Embeddings + Knowledge"
+      GPU:
+        doc: jira-monitor/deployment.md
+        tooltip: "Ollama LLM — sys-gpu01"
+
+  # Level 1: Business overview (for managers)
+  - id: overview
+    title: "Business Flow"
+    title_hu: "Üzleti Folyamat"
+    file: layers/jiramntr/overview.mmd
+    source: jiramntr
+    nodes:
+      JIRA:
+        tooltip: "Jira project management"
+      DWH:
+        drilldown: architecture
+        tooltip: "Data Warehouse"
+      JOHANNA:
+        drilldown: johanna
+        tooltip: "AI Assistant"
+      RAGDB:
+        drilldown: ragdb_schema
+        tooltip: "RAG Database"
+      MCPFORGE:
+        drilldown: mcp_forge
+        tooltip: "MCP Knowledge Builder"
+
+  # Level 2: Technical architecture  
+  - id: architecture
+    title: "System Architecture"
+    title_hu: "Rendszerarchitektúra"
+    file: layers/jiramntr/architecture.mmd
+    source: jiramntr
+    nodes:
+      OLTP:
+        drilldown: ingestion
+      DWH:
+        drilldown: star_schema
+      RAGDB:
+        drilldown: ragdb_schema
+      MCP:
+        drilldown: mcp_detail
+      APP:
+        drilldown: application
+      AI:
+        drilldown: ai_pipeline
+      AICHAT:
+        drilldown: aichat_module
+
+  # Level 2b: Johanna architecture (PNG image mode)
+  - id: johanna
+    title: "Johanna AI Chat"
+    title_hu: "Johanna AI Chat"
+    render: image
+    image: layers/johanna/johanna_arch.png
+    source: johanna
+    clickRegions:
+      - label: "Web Layer"
+        rect: [30, 13, 16, 16]
+        drilldown: application
+        tooltip: "HTMX + Templates, Chat UI, Sidebar"
+      - label: "AI Chat Pipeline"
+        rect: [49, 13, 19, 32]
+        drilldown: ai_pipeline
+        tooltip: "RAG → SQL → NL Pipeline"
+      - label: "PostgreSQL Database"
+        rect: [6, 35, 19, 30]
+        doc: jiramntr/architecture.md
+        tooltip: "PostgreSQL 17 — meta, dwh, issue schemas"
+      - label: "Adapter Layer"
+        rect: [49, 48, 19, 15]
+        drilldown: aichat_module
+        tooltip: "johannaAIClient, RAGProvider, SQLExecutor"
+      - label: "Static Assets"
+        rect: [30, 32, 16, 10]
+        doc: jiramntr/application.md
+        tooltip: "CSS (Catppuccin), JS (main.js)"
+      - label: "AI Providers"
+        rect: [30, 72, 16, 13]
+        url: "https://ai.google.dev/"
+        tooltip: "Gemini / Ollama / Mock"
+      - label: "MCP Catalog"
+        rect: [2, 4, 16, 22]
+        drilldown: mcp_forge
+        tooltip: "MCP-Forge generated chains"
+      - label: "aichat Package"
+        rect: [72, 30, 17, 25]
+        drilldown: aichat_module
+        tooltip: "RunPipeline(), AIClient, RAGProvider"
+
+  # Level 2c: AI-Chat module
+  - id: aichat_module
+    title: "AI-Chat Module"
+    title_hu: "AI-Chat Modul"
+    file: layers/aichat/aichat_module.mmd
+    source: aichat
+    doc: aichat/aichat_module.md
+    nodes:
+      S1:
+        tooltip: "NL → SQL generation"
+      S2:
+        tooltip: "SQL → Execute with RLS"
+      S3:
+        tooltip: "Results → NL synthesis"
+      PERSONA:
+        doc: aichat/aichat_module.md
+      AUDIT:
+        drilldown: ragdb_schema
+
+  # Level 2d: MCP-Forge pipeline
+  - id: mcp_forge
+    title: "MCP-Forge Pipeline"
+    title_hu: "MCP-Forge Pipeline"
+    file: layers/mcp-forge/mcp_forge.mmd
+    source: mcp-forge
+    doc: mcp-forge/mcp_forge.md
+    nodes:
+      PG:
+        drilldown: star_schema
+        tooltip: "Reads JSON catalogs from jiramntr"
+      RAGDB:
+        drilldown: ragdb_schema
+        tooltip: "Writes to ragdb"
+
+  # Level 2e: Deployment infrastructure (platform-wide → lookin)
+  - id: deployment
+    title: "Deployment Infrastructure"
+    title_hu: "Telepítési Infrastruktúra"
+    file: layers/jira-monitor/deployment.mmd
+    doc: jira-monitor/deployment.md
+    nodes:
+      JM_BIN:
+        drilldown: architecture
+      JO_BIN:
+        drilldown: johanna
+      PG1:
+        drilldown: star_schema
+      PG2:
+        drilldown: ragdb_schema
+
+  # Level 3: Star Schema detail
+  - id: star_schema
+    title: "Star Schema (DWH)"
+    title_hu: "Csillagséma (DWH)"
+    file: layers/jiramntr/star_schema.mmd
+    source: jiramntr
+    nodes:
+      fact_daily_worklogs_h:
+        catalog: jiramntr/fact_daily_worklogs_h.json
+      fact_sla_events:
+        catalog: jiramntr/fact_sla_events.json
+      dim_issue_h:
+        catalog: jiramntr/dim_issue_h.json
+      dim_user_h:
+        catalog: jiramntr/dim_user_h.json
+      dim_calendar:
+        catalog: jiramntr/dim_calendar.json
+      dim_project_h:
+        catalog: jiramntr/dim_project_h.json
+
+  # Level 3: ragdb schema detail
+  - id: ragdb_schema
+    title: "RAG Database (ragdb)"
+    title_hu: "RAG Adatbázis (ragdb)"
+    file: layers/jiramntr/ragdb_schema.mmd
+    doc: jiramntr/ragdb.md
+    nodes:
+      K:
+        doc: jiramntr/ragdb.md
+        tooltip: "Knowledge store — topic + content"
+      E:
+        doc: jiramntr/ragdb.md
+        tooltip: "Unified embeddings (gemini + ollama)"
+      AL:
+        doc: jiramntr/ragdb.md
+        tooltip: "AI query audit trail"
+
+  # Level 3: AI Pipeline
+  - id: ai_pipeline
+    title: "AI Self-Teaching Pipeline"
+    title_hu: "AI Öntanulási Pipeline"
+    file: layers/jiramntr/ai_pipeline.mmd
+    source: jiramntr
+
+  # Level 3: RAG detail
+  - id: rag_detail
+    title: "RAG Pipeline"
+    title_hu: "RAG Pipeline"
+    file: layers/jiramntr/rag_detail.mmd
+    source: jiramntr
+
+  # Level 3: Ingestion pipeline
+  - id: ingestion
+    title: "Data Ingestion"
+    title_hu: "Adat Betöltés"
+    file: layers/jiramntr/ingestion.mmd
+    source: jiramntr
+
+  # Level 3: MCP detail
+  - id: mcp_detail
+    title: "MCP Catalog Pipeline"
+    title_hu: "MCP Katalógus Pipeline"
+    file: layers/jiramntr/mcp_detail.mmd
+    source: jiramntr
+
+  # Level 3: Application
+  - id: application
+    title: "Application Stack"
+    title_hu: "Alkalmazás"
+    file: layers/jiramntr/application.mmd
+    source: jiramntr

@@ -1,0 +1,41 @@
+graph TB
+    subgraph RAGDB["🧠 ragdb — RAG Database"]
+        direction TB
+
+        subgraph KNOWLEDGE["📚 Knowledge Store"]
+            K["rag.knowledge<br/>topic · content · source<br/>collection · metadata"]
+        end
+
+        subgraph EMBEDDINGS["🔢 Embeddings"]
+            E["rag.embeddings<br/>topic · embedding (vector)<br/>provider · model · collection"]
+            E_PART["Partitions:<br/>embeddings_dwh<br/>embeddings_hr<br/>embeddings_meta<br/>embeddings_confluence<br/>embeddings_docs"]
+        end
+
+        subgraph ISSUES["🎫 Issue Vectors"]
+            IE["rag.issue_embeddings<br/>issue_key · summary<br/>embedding (vector)"]
+        end
+
+        subgraph AUDIT["📋 Audit Trail"]
+            AL["rag.audit_log<br/>hl_question · generated_sql<br/>status · username · cost"]
+        end
+
+        subgraph FUNCTIONS["⚙️ Functions"]
+            F1["fn_search_knowledge()"]
+            F2["fn_search_embeddings()"]
+            F3["fn_upsert_knowledge()"]
+            F4["fn_search_issues()"]
+            F5["fn_get_stats()"]
+            F6["fn_cleanup_stale()"]
+        end
+    end
+
+    subgraph PROVIDERS["🔌 Embedding Providers"]
+        GEMINI["✨ Gemini<br/>text-embedding-004"]
+        OLLAMA["🦙 Ollama<br/>nomic-embed-text"]
+    end
+
+    GEMINI --> E
+    OLLAMA --> E
+    E --> E_PART
+    K --> F1
+    E --> F2

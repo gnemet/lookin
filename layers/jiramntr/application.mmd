@@ -1,0 +1,15 @@
+graph TD
+    GO["🖥️ Go Backend<br/>port 8080"]
+    API["📡 REST API<br/>/api/chat, /api/bi<br/>/api/kpi, /api/employee"]
+    UI["🎨 Web UI<br/>HTMX + Vanilla CSS<br/>Premium dark theme"]
+    GRID["📊 Datagrid Library<br/>v1.2 — LOV params"]
+    RLS["🔒 RLS Middleware<br/>Row-Level Security"]
+    KPI["📈 KPI Dashboard<br/>YAML-driven"]
+    BI["📊 BI Query Library<br/>Markdown-based"]
+
+    GO --> API
+    GO --> RLS
+    API --> UI
+    UI --> GRID
+    API --> KPI
+    API --> BI

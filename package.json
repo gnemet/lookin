@@ -1,0 +1,27 @@
+{
+  "name": "lookin",
+  "version": "1.0.0",
+  "description": "A YAML-controlled, interactive architecture viewer with hand-drawn Mermaid diagrams. Drill down from business flows to table columns — across multiple projects.",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnemet/lookin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gnemet/lookin/issues"
+  },
+  "homepage": "https://github.com/gnemet/lookin#readme",
+  "dependencies": {
+    "@mermaid-js/mermaid-cli": "^11.12.0",
+    "puppeteer-core": "^24.37.5"
+  }
+}

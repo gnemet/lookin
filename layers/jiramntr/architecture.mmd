@@ -1,0 +1,51 @@
+graph LR
+    subgraph SOURCES["🗄️ Sources"]
+        ORACLE["🟠 Oracle Jira"]
+        LDAP["🔵 LDAP"]
+        TER["🟢 TER API"]
+    end
+
+    subgraph INGEST["⚙️ Ingestion"]
+        FDW["oracle_fdw"]
+        SNAPSHOT["snapshot_oltp.sh"]
+        LDAP_IMP["ldap-worker"]
+    end
+
+    subgraph PG["🐘 PostgreSQL 17"]
+        OLTP["oltp — 20 tables"]
+        DWH["⭐ dwh — Star Schema"]
+        RAGDB["🧠 ragdb<br/>pgvector"]
+    end
+
+    subgraph MCP["📋 MCP Pipeline"]
+        CATALOGS["30 JSON catalogs"]
+        CHAINS["12 chain MCPs"]
+        MCPFORGE["🔨 MCP-Forge"]
+    end
+
+    subgraph APP["🖥️ Jiramntr"]
+        API["REST API"]
+        AISQL["AI SQL Lab"]
+        BIMOD["BI Queries"]
+        KPIMOD["KPI Dashboard"]
+        ETL["ETL Orchestrator"]
+    end
+
+    subgraph AI["🤖 AI Layer"]
+        AICHAT["⚡ aichat module"]
+        GEMINI["Gemini"]
+        OLLAMA["Ollama"]
+    end
+
+    ORACLE --> FDW --> SNAPSHOT --> OLTP
+    LDAP --> LDAP_IMP
+    OLTP --> DWH
+    DWH --> CATALOGS
+    CATALOGS --> MCPFORGE
+    MCPFORGE --> CHAINS
+    CHAINS --> RAGDB
+    DWH <--> APP
+    AISQL --> AICHAT
+    AICHAT --> GEMINI
+    AICHAT --> OLLAMA
+    AICHAT --> RAGDB

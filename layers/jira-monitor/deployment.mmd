@@ -1,0 +1,46 @@
+graph LR
+    subgraph DEV["💻 Developer Workstation"]
+        SRC["~/projects/<br/>6 Git repos"]
+        BUILD["go build<br/>CGO_ENABLED=0<br/>GOOS=linux"]
+        PACK["tar.gz<br/>Package"]
+    end
+
+    subgraph TRANSFER["📡 Transfer"]
+        SCP["scp / sshpass<br/>SSH key"]
+    end
+
+    subgraph BUTALAM["🖥️ sys-butalam01"]
+        subgraph JIRAMNTR_SVC["📊 /opt/jiramntr"]
+            JM_BIN["jiramntr-server<br/>:8080"]
+            JM_AI["ai/ scripts/"]
+            JM_DB["database/ DDL"]
+            JM_UI["ui/ templates"]
+        end
+
+        subgraph JOHANNA_SVC["🤖 /opt/johanna"]
+            JO_BIN["johanna<br/>:8082"]
+            JO_SYS["systemd<br/>johanna.service"]
+        end
+
+        subgraph DATABASES["🗄️ PostgreSQL 17"]
+            PG1["jiramntr_db"]
+            PG2["ragdb"]
+        end
+    end
+
+    subgraph EXTERNAL["☁️ External"]
+        GPU["sys-gpu01<br/>Ollama :11434"]
+        LDAP["ldap.alig.hu<br/>:389"]
+    end
+
+    SRC --> BUILD --> PACK --> SCP
+    SCP --> JM_BIN
+    SCP --> JO_BIN
+    JO_SYS --> JO_BIN
+    JM_BIN --> PG1
+    JM_BIN --> PG2
+    JO_BIN --> PG1
+    JO_BIN --> PG2
+    JM_BIN --> GPU
+    JO_BIN --> GPU
+    JM_BIN --> LDAP

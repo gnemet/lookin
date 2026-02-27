@@ -1,0 +1,32 @@
+graph TB
+    subgraph FACTS["📊 Fact Tables"]
+        fact_daily_worklogs_h["fact_daily_worklogs_h<br/>Time tracking"]
+        fact_sla_events["fact_sla_events<br/>SLA breaches"]
+        fact_status_events_h["fact_status_events_h<br/>Status changes"]
+        fact_issue_daily_snapshot["fact_issue_daily_snapshot<br/>Daily state"]
+        fact_project_daily_effort["fact_project_daily_effort<br/>Project hours"]
+        fact_user_daily_kpi["fact_user_daily_kpi<br/>User KPI"]
+    end
+
+    subgraph DIMS["📐 Dimension Tables"]
+        dim_issue_h["dim_issue_h<br/>Issues (ltree)"]
+        dim_user_h["dim_user_h<br/>Users (hierarchy)"]
+        dim_calendar["dim_calendar<br/>Calendar"]
+        dim_project_h["dim_project_h<br/>Projects"]
+        dim_status_h["dim_status_h<br/>Statuses"]
+        dim_priority_h["dim_priority_h<br/>Priorities"]
+    end
+
+    subgraph HELPERS["🔧 Functions"]
+        USER_FN["user_get_* (24 fn)"]
+        ISSUE_FN["issue_get_* (10 fn)"]
+        ANALYTICS["4 analytics fn"]
+    end
+
+    dim_user_h --> fact_daily_worklogs_h
+    dim_issue_h --> fact_daily_worklogs_h
+    dim_calendar --> fact_daily_worklogs_h
+    dim_issue_h --> fact_sla_events
+    dim_issue_h --> fact_status_events_h
+    dim_user_h --> USER_FN
+    dim_issue_h --> ISSUE_FN

@@ -1,0 +1,44 @@
+{
+  "title": "Daily Worklogs (Historical)",
+  "description": "Time tracking: logged hours per person per issue per day. Primary fact table for effort analysis.",
+  "schema": "dwh",
+  "table_type": "Fact Table (SCD2)",
+  "columns": {
+    "worklog_sid": {
+      "type": "bigint",
+      "desc": "Surrogate key (unique row ID)"
+    },
+    "worklog_key": {
+      "type": "text",
+      "desc": "Jira worklog ID (business key)"
+    },
+    "calendar_id": {
+      "type": "integer",
+      "desc": "FK \u2192 dim_calendar.day_id (YYYYMMDD format)"
+    },
+    "user_sid": {
+      "type": "bigint",
+      "desc": "FK \u2192 dim_user_h.user_sid (who logged)"
+    },
+    "project_sid": {
+      "type": "bigint",
+      "desc": "FK \u2192 dim_project_h.project_sid"
+    },
+    "issue_sid": {
+      "type": "bigint",
+      "desc": "FK \u2192 dim_issue_h.issue_sid"
+    },
+    "seconds_worked": {
+      "type": "integer",
+      "desc": "Time logged in seconds"
+    },
+    "hours_worked": {
+      "type": "numeric(10,2)",
+      "desc": "Time logged in decimal hours"
+    },
+    "valid_period": {
+      "type": "tstzrange",
+      "desc": "SCD2 validity range (historization)"
+    }
+  }
+}

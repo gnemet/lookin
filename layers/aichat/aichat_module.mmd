@@ -1,0 +1,40 @@
+graph LR
+    subgraph INTERFACES["📐 Interfaces"]
+        AIC["AIClient"]
+        RAG["RAGProvider"]
+        SQL["SQLExecutor"]
+    end
+
+    subgraph PIPELINE["⚡ RunPipeline"]
+        S1["Stage 1<br/>NL → SQL"]
+        S2["Stage 2<br/>SQL → Execute"]
+        S3["Stage 3<br/>Results → NL"]
+        REPAIR["🔧 Auto-Repair<br/>SQL Fix Loop"]
+    end
+
+    subgraph SUPPORT["🧩 Support"]
+        PERSONA["📝 Persona Loader<br/>embed.FS"]
+        FEEDBACK["📊 Feedback<br/>YAML + JSONL"]
+        AUDIT["📋 Audit Log<br/>rag.audit_log"]
+        UTILS["🔨 Utils<br/>ExtractSQL · RLS"]
+    end
+
+    subgraph ADAPTERS["🔌 Adapters"]
+        JM_A["jiramntrAIClient<br/>jiramntrRAGProvider<br/>jiramntrSQLExecutor"]
+        JO_A["johannaAIClient<br/>johannaRAGProvider<br/>johannaSQLExecutor"]
+    end
+
+    AIC --> S1
+    RAG --> S1
+    S1 --> S2
+    S1 --> REPAIR
+    REPAIR --> S1
+    SQL --> S2
+    S2 --> S3
+    AIC --> S3
+    S3 --> FEEDBACK
+    S3 --> AUDIT
+    PERSONA --> S1
+    PERSONA --> S3
+    JM_A -.-> INTERFACES
+    JO_A -.-> INTERFACES

@@ -24,11 +24,20 @@
         $diagram.innerHTML = '<div class="loading">Loading LookIn...</div>';
 
         try {
+            // Multi-enterprise: ?config=jira-monitor (default)
+            const configName = new URLSearchParams(location.search).get('config') || 'jira-monitor';
             const cacheBust = `?v=${Date.now()}`;
-            const yamlText = await fetch('lookin.yaml' + cacheBust).then(r => r.text());
+            const yamlText = await fetch(`configs/${configName}.yaml` + cacheBust).then(r => {
+                if (!r.ok) throw new Error(`Config "${configName}" not found (${r.status})`);
+                return r.text();
+            });
             config = jsyaml.load(yamlText);
+            document.title = `LookIn 🔍 — ${config.title || configName}`;
+            // Update footer layer count
+            const lc = document.getElementById('layer-count');
+            if (lc) lc.textContent = `${config.layers.length} layers`;
             setupEvents();
-            await navigateTo('overview');
+            await navigateTo('enterprise');
         } catch (err) {
             $diagram.innerHTML = `<div class="loading">Error: ${err.message}</div>`;
             console.error('LookIn init error:', err);
@@ -37,7 +46,7 @@
 
     // ── Events ──────────────────────────────────────────────────
     function setupEvents() {
-        document.getElementById('btn-home').addEventListener('click', () => navigateTo('overview'));
+        document.getElementById('btn-home').addEventListener('click', () => navigateTo('enterprise'));
         document.getElementById('btn-back').addEventListener('click', goBack);
         document.getElementById('btn-lang').addEventListener('click', toggleLang);
         document.getElementById('btn-close-panel').addEventListener('click', closePanel);
@@ -153,10 +162,22 @@
     async function renderDiagram(layer) {
         $diagram.innerHTML = '<div class="loading">Rendering...</div>';
 
-        // Branch: image mode vs mermaid mode
+        // Branch: explicit image mode
         if (layer.render === 'image' && layer.image) {
             await renderImageLayer(layer);
             return;
+        }
+
+        // Auto-PNG: prefer pre-rendered PNG over live Mermaid
+        if (layer.file && layer.file.endsWith('.mmd')) {
+            const pngPath = layer.file.replace('.mmd', '.png');
+            try {
+                const probe = await fetch(pngPath, { method: 'HEAD' });
+                if (probe.ok) {
+                    await renderImageLayer({ ...layer, image: pngPath, render: 'image' });
+                    return;
+                }
+            } catch (e) { /* PNG not found, fall back to Mermaid */ }
         }
 
         try {
@@ -482,7 +503,9 @@
                 return r.text();
             });
 
-            $tableName.textContent = docFile.replace('.md', '').replace(/_/g, ' ');
+            // Strip project prefix and extension: "jiramntr/architecture.md" → "architecture"
+            const docName = docFile.split('/').pop().replace('.md', '').replace(/_/g, ' ');
+            $tableName.textContent = docName;
 
             if (window.marked) {
                 $tableContent.innerHTML = `<div class="md-content">${window.marked.parse(mdText)}</div>`;

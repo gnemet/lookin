@@ -1,0 +1,46 @@
+graph TB
+    subgraph PLATFORM["🏢 JIRA-MONITOR"]
+        direction TB
+
+        subgraph SERVICES["🌐 Web Services"]
+            JM["📊 Jiramntr<br/>DWH · BI · KPI · ETL<br/>:8080"]
+            JO["🤖 Johanna<br/>AI Chat · NL→SQL<br/>:8082"]
+        end
+
+        subgraph LIBRARIES["📦 Shared Libraries"]
+            AIC["⚡ aichat<br/>NL→SQL Pipeline<br/>Go module"]
+            DG["📋 datagrid<br/>Table Renderer<br/>Go module"]
+        end
+
+        subgraph TOOLS["🔧 Dev Tools"]
+            MF["🔨 MCP-Forge<br/>RAG Builder<br/>Python CLI"]
+            LK["🔭 LookIn<br/>Architecture Viewer<br/>HTML/JS"]
+        end
+    end
+
+    subgraph DATA["🗄️ Databases"]
+        DB1["🐘 jiramntr_db<br/>DWH + Meta + OLTP"]
+        DB2["🧠 ragdb<br/>Embeddings + Knowledge"]
+    end
+
+    subgraph INFRA["☁️ Infrastructure"]
+        GPU["🖥️ sys-gpu01<br/>Ollama LLM"]
+        GEMINI["✨ Gemini API"]
+        LDAP["🔐 LDAP"]
+        ORACLE["🟠 Oracle FDW"]
+    end
+
+    JM --> AIC
+    JM --> DG
+    JO --> AIC
+    JM --> DB1
+    JM --> DB2
+    JO --> DB1
+    JO --> DB2
+    MF --> DB2
+    JM --> GPU
+    JO --> GPU
+    JM --> GEMINI
+    JO --> GEMINI
+    JM --> LDAP
+    JM --> ORACLE

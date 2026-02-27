@@ -1,0 +1,52 @@
+{
+  "title": "Issues (Historical)",
+  "description": "Jira issues with full SCD2 history. Use dim_issue view for current state.",
+  "schema": "dwh",
+  "table_type": "Dimension Table (SCD2)",
+  "columns": {
+    "issue_sid": {
+      "type": "bigint",
+      "desc": "Surrogate key"
+    },
+    "issue_id": {
+      "type": "bigint",
+      "desc": "Jira internal issue ID"
+    },
+    "issue_key": {
+      "type": "text",
+      "desc": "Jira key (e.g., ADMIN-12345)"
+    },
+    "summary": {
+      "type": "text",
+      "desc": "Issue title/summary"
+    },
+    "issuestatus": {
+      "type": "text",
+      "desc": "Status name (Open, In Progress, Done...)"
+    },
+    "priority": {
+      "type": "text",
+      "desc": "Priority name (Highest, High, Medium, Low)"
+    },
+    "issuetype": {
+      "type": "text",
+      "desc": "Type (Bug, Task, Story, Epic...)"
+    },
+    "assignee": {
+      "type": "text",
+      "desc": "Assigned user_key"
+    },
+    "reporter": {
+      "type": "text",
+      "desc": "Reporter user_key"
+    },
+    "resolution": {
+      "type": "text",
+      "desc": "Resolution (null = unresolved)"
+    },
+    "valid": {
+      "type": "tstzrange",
+      "desc": "SCD2 validity range"
+    }
+  }
+}
