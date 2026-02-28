@@ -44,7 +44,7 @@
             <span class="header-separator">|</span>
         </div>
         <div class="header-center">
-            <nav id="breadcrumb"></nav>
+            <span id="layer-title"></span>
         </div>
         <div class="header-right">
             <button id="btn-lang" class="btn-loop" title="Toggle EN/HU">
@@ -61,12 +61,6 @@
             </button>
         </div>
     </header>
-
-    <!-- Layer title -->
-    <div id="layer-info">
-        <h2 id="layer-title"></h2>
-        <p id="layer-subtitle">Click any node to drill deeper</p>
-    </div>
 
     <!-- Mermaid diagram area -->
     <main id="diagram-container">
@@ -91,6 +85,8 @@
         <span class="footer-item"><i class="ph ph-file-md"></i> Marked</span>
         <span class="footer-sep">|</span>
         <span class="footer-item" id="layer-count"></span>
+        <span class="footer-sep">|</span>
+        <span class="footer-item" id="last-updated"></span>
         <span class="footer-sep">|</span>
         <span class="hint">Click to drill down · Esc to go back · Scroll to zoom</span>
     </footer>

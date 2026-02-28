@@ -12,7 +12,6 @@
     // ── DOM refs ────────────────────────────────────────────────
     const $diagram = document.getElementById('diagram');
     const $title = document.getElementById('layer-title');
-    const $subtitle = document.getElementById('layer-subtitle');
     const $breadcrumb = document.getElementById('breadcrumb');
     const $sourceBadge = document.getElementById('source-badge');
     const $tablePanel = document.getElementById('table-panel');
@@ -36,6 +35,8 @@
             // Update footer layer count
             const lc = document.getElementById('layer-count');
             if (lc) lc.textContent = `${config.layers.length} layers`;
+            const lu = document.getElementById('last-updated');
+            if (lu) lu.textContent = new Date().toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
             setupEvents();
             await navigateTo('enterprise');
         } catch (err) {
@@ -570,9 +571,6 @@
             ? currentLayer.title_hu
             : currentLayer.title;
         $title.textContent = title;
-        $subtitle.textContent = currentLayer.nodes
-            ? '👆 Click any node to drill deeper'
-            : '← Press Escape to go back';
     }
 
     function updateBreadcrumb() {
@@ -590,7 +588,7 @@
                 html += `<span class="current">${label}</span>`;
             }
         });
-        $breadcrumb.innerHTML = html;
+        if ($breadcrumb) $breadcrumb.innerHTML = html;
     }
 
     function updateSourceBadge() {
