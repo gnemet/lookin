@@ -1,0 +1,49 @@
+graph TB
+    subgraph "Security Layers"
+        direction TB
+        REQ["HTTP Request"] --> AUTH["AuthMiddleware<br/>Cookie: auth_user"]
+        AUTH --> ACL["ACLMiddleware<br/>Route-level permissions"]
+        ACL --> FOLDER["Folder ACL<br/>whitelist / blacklist / hierarchy"]
+        FOLDER --> HANDLER["Handler"]
+    end
+
+    subgraph "Folder ACL (.folder.yaml)"
+        direction TB
+        WL["whitelist: [user1, user2]<br/>Explicit allow list"]
+        BL["blacklist: [user3]<br/>Explicit deny list"]
+        HIER["hierarchy: [up, down]<br/>Org tree resolution via ltree"]
+    end
+
+    subgraph "RLS Token System (meta.rls_token)"
+        direction TB
+        SCOPE["rls_scope: area:IIER<br/>Declared in query frontmatter"]
+        HASH["SHA256(SQL block)<br/>Hash-only, not full file"]
+        TOKEN["Token: query + user + scope<br/>Granted by admin, 1yr expiry"]
+        REHASH["Auto-Rehash on Startup<br/>RehashRLSTokens()"]
+        SCOPE --> HASH --> TOKEN
+        HASH --> REHASH
+    end
+
+    subgraph "Token Validation"
+        direction TB
+        V1["valid → ✅ Execute"] 
+        V2["no_token → ❌ 403"]
+        V3["hash_mismatch → ❌ 403<br/>auto-fixed on restart"]
+        V4["expired → ❌ 403"]
+    end
+
+    HANDLER --> SCOPE
+    TOKEN --> V1
+    TOKEN --> V2
+    TOKEN --> V3
+    TOKEN --> V4
+
+    classDef green fill:#27ae60,color:#fff
+    classDef red fill:#e74c3c,color:#fff
+    classDef blue fill:#3498db,color:#fff
+    classDef yellow fill:#f1c40f,color:#000
+
+    class AUTH,ACL,FOLDER blue
+    class V1 green
+    class V2,V3,V4 red
+    class REHASH yellow

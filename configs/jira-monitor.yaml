@@ -286,3 +286,25 @@ layers:
     title_hu: "Alkalmazás"
     file: layers/jiramntr/application.mmd
     source: jiramntr
+    nodes:
+      ACL:
+        drilldown: security
+        tooltip: "Unified ACL + RLS Token System"
+
+  # Level 3: Security Architecture
+  - id: security
+    title: "Security Architecture"
+    title_hu: "Biztonsági Architektúra"
+    file: layers/jiramntr/security.mmd
+    source: jiramntr
+    doc: jiramntr/security.md
+    nodes:
+      FOLDER:
+        doc: jiramntr/security.md
+        tooltip: "whitelist / blacklist / hierarchy ACL"
+      TOKEN:
+        doc: jiramntr/security.md
+        tooltip: "RLS Token: query + user + scope + SHA256"
+      REHASH:
+        doc: jiramntr/security.md
+        tooltip: "Auto-rehash on server startup"
