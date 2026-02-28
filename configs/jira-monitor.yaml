@@ -1,7 +1,8 @@
 # LookIn Configuration
 # YAML-controlled interactive architecture drill-down viewer
+# PNG-first mode: all diagrams are pre-rendered PNGs with clickRegion overlays
 
-title: "JIRA-MONITOR"
+title: "JiraDa"
 subtitle: "Click any node to drill deeper"
 theme: handDrawn
 languages: [en, hu]
@@ -49,82 +50,187 @@ sources:
     color: "#1abc9c"
 
 # ── Layers: drill-down hierarchy ────────────────────────────────
-# Files are organized by project: layers/<project>/, docs/<project>/, catalogs/<project>/
+# All layers use PNG images with clickRegions for drill-down.
+# clickRegions rect format: [x%, y%, width%, height%] relative to image
 layers:
-  # Level 0: Enterprise ecosystem (platform-wide → lookin)
+
+  # ═══════════════════════════════════════════════════════════════
+  # Level 0: Enterprise ecosystem
+  # ═══════════════════════════════════════════════════════════════
   - id: enterprise
     title: "JIRA-MONITOR"
     title_hu: "JIRA-MONITOR"
     file: layers/jira-monitor/enterprise.mmd
     doc: jira-monitor/enterprise.md
-    nodes:
-      JM:
+    clickRegions:
+      - label: "Jiramntr"
+        rect: [5, 14, 20, 14]
         drilldown: overview
-        tooltip: "Jiramntr — DWH, BI, KPI, ETL"
-      JO:
+        tooltip: "Jiramntr — DWH, BI, KPI, ETL (:8080)"
+      - label: "Johanna"
+        rect: [28, 14, 20, 14]
         drilldown: johanna
-        tooltip: "Johanna — AI Chat"
-      AIC:
+        tooltip: "Johanna — AI Chat (:8082)"
+      - label: "aichat"
+        rect: [5, 40, 20, 12]
         drilldown: aichat_module
-        tooltip: "Shared NL→SQL Pipeline"
-      MF:
+        tooltip: "Shared NL→SQL Pipeline (Go module)"
+      - label: "datagrid"
+        rect: [5, 55, 20, 12]
+        drilldown: application
+        tooltip: "Datagrid — Table Renderer (Go module)"
+      - label: "MCP-Forge"
+        rect: [62, 10, 25, 14]
         drilldown: mcp_forge
-        tooltip: "MCP-Forge — RAG Builder"
-      DB1:
-        drilldown: architecture
-        tooltip: "jiramntr_db — Star Schema DWH"
-      DB2:
-        drilldown: ragdb_schema
-        tooltip: "ragdb — Embeddings + Knowledge"
-      GPU:
+        tooltip: "MCP-Forge — RAG Builder (Python CLI)"
+      - label: "LookIn"
+        rect: [62, 26, 25, 14]
+        tooltip: "LookIn — Architecture Viewer (HTML/JS)"
+      - label: "sys-gpu01"
+        rect: [33, 38, 22, 10]
         doc: jira-monitor/deployment.md
         tooltip: "Ollama LLM — sys-gpu01"
+      - label: "Gemini API"
+        rect: [33, 50, 22, 8]
+        tooltip: "Google Gemini API"
+      - label: "LDAP"
+        rect: [33, 60, 22, 8]
+        tooltip: "Active Directory LDAP"
+      - label: "Oracle FDW"
+        rect: [33, 70, 22, 8]
+        drilldown: ingestion
+        tooltip: "Oracle Foreign Data Wrapper"
+      - label: "jiramntr_db"
+        rect: [65, 42, 25, 14]
+        drilldown: architecture
+        tooltip: "jiramntr_db — DWH + Meta + OLTP"
+      - label: "ragdb"
+        rect: [65, 58, 25, 14]
+        drilldown: ragdb_schema
+        tooltip: "ragdb — Embeddings + Knowledge"
 
-  # Level 1: Business overview (for managers)
+  # ═══════════════════════════════════════════════════════════════
+  # Level 1: Business overview
+  # ═══════════════════════════════════════════════════════════════
   - id: overview
     title: "Business Flow"
     title_hu: "Üzleti Folyamat"
     file: layers/jiramntr/overview.mmd
     source: jiramntr
-    nodes:
-      JIRA:
-        tooltip: "Jira project management"
-      DWH:
+    clickRegions:
+      - label: "Jira"
+        rect: [3, 16, 15, 12]
+        tooltip: "Jira — Issues, Worklogs"
+      - label: "Active Directory"
+        rect: [3, 38, 15, 14]
+        tooltip: "Active Directory — Users, Teams"
+      - label: "Leave System"
+        rect: [3, 58, 15, 12]
+        tooltip: "TER — Leave System"
+      - label: "Data Warehouse"
+        rect: [24, 33, 20, 22]
         drilldown: architecture
-        tooltip: "Data Warehouse"
-      JOHANNA:
-        drilldown: johanna
-        tooltip: "AI Assistant"
-      RAGDB:
-        drilldown: ragdb_schema
-        tooltip: "RAG Database"
-      MCPFORGE:
+        tooltip: "Data Warehouse — Consolidated Data"
+      - label: "MCP-Forge"
+        rect: [30, 14, 16, 10]
         drilldown: mcp_forge
-        tooltip: "MCP Knowledge Builder"
+        tooltip: "MCP-Forge — Knowledge Builder"
+      - label: "ragdb"
+        rect: [50, 14, 14, 10]
+        drilldown: ragdb_schema
+        tooltip: "ragdb — AI Knowledge"
+      - label: "Johanna"
+        rect: [68, 14, 16, 10]
+        drilldown: johanna
+        tooltip: "Johanna — AI Assistant"
+      - label: "KPI Dashboard"
+        rect: [53, 38, 17, 14]
+        tooltip: "KPI Dashboard"
+      - label: "BI Reports"
+        rect: [53, 60, 17, 14]
+        tooltip: "BI Reports"
+      - label: "Users"
+        rect: [78, 35, 14, 20]
+        tooltip: "End Users"
 
-  # Level 2: Technical architecture  
+  # ═══════════════════════════════════════════════════════════════
+  # Level 2: Technical architecture
+  # ═══════════════════════════════════════════════════════════════
   - id: architecture
     title: "System Architecture"
     title_hu: "Rendszerarchitektúra"
     file: layers/jiramntr/architecture.mmd
     source: jiramntr
-    nodes:
-      OLTP:
+    clickRegions:
+      - label: "Oracle Jira"
+        rect: [1, 14, 10, 12]
+        tooltip: "Oracle Jira (source)"
+      - label: "LDAP"
+        rect: [1, 38, 10, 10]
+        tooltip: "LDAP (source)"
+      - label: "TER API"
+        rect: [1, 60, 10, 10]
+        tooltip: "TER REST API (source)"
+      - label: "oracle_fdw"
+        rect: [13, 14, 12, 10]
         drilldown: ingestion
-      DWH:
+        tooltip: "Foreign Data Wrapper"
+      - label: "oltp — 20 tables"
+        rect: [28, 14, 16, 14]
+        drilldown: ingestion
+        tooltip: "OLTP — 20 raw tables"
+      - label: "dwh — Star Schema"
+        rect: [28, 32, 16, 16]
         drilldown: star_schema
-      RAGDB:
+        tooltip: "⭐ DWH Star Schema"
+      - label: "ragdb pgvector"
+        rect: [28, 54, 16, 12]
         drilldown: ragdb_schema
-      MCP:
+        tooltip: "ragdb — pgvector embeddings"
+      - label: "30 JSON catalogs"
+        rect: [48, 10, 14, 10]
         drilldown: mcp_detail
-      APP:
+        tooltip: "MCP Pipeline — JSON Catalogs"
+      - label: "12 chain MCPs"
+        rect: [48, 22, 14, 10]
+        drilldown: mcp_detail
+        tooltip: "MCP Pipeline — Chain MCPs"
+      - label: "MCP-Forge"
+        rect: [48, 34, 14, 10]
+        drilldown: mcp_forge
+        tooltip: "MCP-Forge tool"
+      - label: "REST API"
+        rect: [70, 10, 16, 8]
         drilldown: application
-      AI:
+        tooltip: "Jiramntr REST API"
+      - label: "AI SQL Lab"
+        rect: [70, 20, 16, 8]
         drilldown: ai_pipeline
-      AICHAT:
+        tooltip: "AI SQL Lab"
+      - label: "BI Queries"
+        rect: [70, 30, 16, 8]
+        tooltip: "BI Query Library"
+      - label: "KPI Dashboard"
+        rect: [70, 40, 16, 8]
+        tooltip: "KPI Dashboard"
+      - label: "ETL Orchestrator"
+        rect: [70, 50, 16, 8]
+        drilldown: ingestion
+        tooltip: "ETL Orchestrator"
+      - label: "aichat module"
+        rect: [65, 70, 18, 8]
         drilldown: aichat_module
+        tooltip: "⚡ aichat shared module"
+      - label: "Gemini"
+        rect: [65, 80, 18, 6]
+        tooltip: "Gemini LLM"
+      - label: "Ollama"
+        rect: [65, 88, 18, 6]
+        tooltip: "Ollama LLM"
 
-  # Level 2b: Johanna architecture (PNG image mode)
+  # ═══════════════════════════════════════════════════════════════
+  # Level 2b: Johanna (uses existing johanna_arch.png)
+  # ═══════════════════════════════════════════════════════════════
   - id: johanna
     title: "Johanna AI Chat"
     title_hu: "Johanna AI Chat"
@@ -165,146 +271,469 @@ layers:
         drilldown: aichat_module
         tooltip: "RunPipeline(), AIClient, RAGProvider"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 2c: AI-Chat module
+  # ═══════════════════════════════════════════════════════════════
   - id: aichat_module
     title: "AI-Chat Module"
     title_hu: "AI-Chat Modul"
     file: layers/aichat/aichat_module.mmd
     source: aichat
     doc: aichat/aichat_module.md
-    nodes:
-      S1:
-        tooltip: "NL → SQL generation"
-      S2:
-        tooltip: "SQL → Execute with RLS"
-      S3:
-        tooltip: "Results → NL synthesis"
-      PERSONA:
+    clickRegions:
+      - label: "AIClient"
+        rect: [3, 18, 18, 10]
+        tooltip: "AIClient interface"
+      - label: "RAGProvider"
+        rect: [3, 33, 18, 10]
+        tooltip: "RAGProvider interface"
+      - label: "SQLExecutor"
+        rect: [3, 48, 18, 10]
+        tooltip: "SQLExecutor interface"
+      - label: "Stage 1: NL → SQL"
+        rect: [28, 18, 22, 10]
+        tooltip: "Natural Language → SQL generation"
+      - label: "Stage 2: SQL → Execute"
+        rect: [28, 32, 22, 10]
+        tooltip: "SQL Execution with error handling"
+      - label: "Stage 3: Results → NL"
+        rect: [28, 46, 22, 10]
+        tooltip: "Results → Natural Language synthesis"
+      - label: "Auto-Repair"
+        rect: [28, 58, 22, 10]
+        tooltip: "🔧 Auto-Repair SQL Fix Loop"
+      - label: "Persona Loader"
+        rect: [28, 74, 22, 6]
         doc: aichat/aichat_module.md
-      AUDIT:
+        tooltip: "📝 Persona Loader (embed.FS)"
+      - label: "Feedback"
+        rect: [28, 81, 22, 6]
+        tooltip: "📊 Feedback (YAML + JSONL)"
+      - label: "Audit Log"
+        rect: [28, 88, 22, 6]
         drilldown: ragdb_schema
+        tooltip: "📋 Audit Log (rag.audit_log)"
+      - label: "Jiramntr Adapters"
+        rect: [62, 18, 25, 18]
+        drilldown: architecture
+        tooltip: "jiramntrAIClient, RAGProvider, SQLExecutor"
+      - label: "Johanna Adapters"
+        rect: [62, 40, 25, 18]
+        drilldown: johanna
+        tooltip: "johannaAIClient, RAGProvider, SQLExecutor"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 2d: MCP-Forge pipeline
+  # ═══════════════════════════════════════════════════════════════
   - id: mcp_forge
     title: "MCP-Forge Pipeline"
     title_hu: "MCP-Forge Pipeline"
     file: layers/mcp-forge/mcp_forge.mmd
     source: mcp-forge
     doc: mcp-forge/mcp_forge.md
-    nodes:
-      PG:
+    clickRegions:
+      - label: "Config (jiramntr.yaml)"
+        rect: [1, 12, 12, 80]
+        tooltip: "📄 jiramntr.yaml — Project Config"
+      - label: "postgres_dwh"
+        rect: [16, 8, 17, 10]
         drilldown: star_schema
-        tooltip: "Reads JSON catalogs from jiramntr"
-      RAGDB:
+        tooltip: "🐘 postgres_dwh — JSON Catalogs"
+      - label: "confluence"
+        rect: [16, 20, 17, 8]
+        tooltip: "📚 Confluence source"
+      - label: "documents"
+        rect: [16, 30, 17, 8]
+        tooltip: "📝 Document source"
+      - label: "git_source"
+        rect: [16, 40, 17, 8]
+        tooltip: "🔀 Git source"
+      - label: "jira_comments"
+        rect: [16, 50, 17, 8]
+        tooltip: "🟠 Jira comments"
+      - label: "pptx_source"
+        rect: [16, 60, 17, 8]
+        tooltip: "📊 PowerPoint source"
+      - label: "bash_scripts"
+        rect: [16, 70, 17, 8]
+        tooltip: "🖥️ Bash scripts"
+      - label: "Chunker"
+        rect: [37, 12, 14, 20]
+        tooltip: "✂️ Chunker — MANUAL markers"
+      - label: "Templates"
+        rect: [37, 38, 14, 20]
+        tooltip: "📋 Templates — Jinja2"
+      - label: "Backup"
+        rect: [37, 64, 14, 20]
+        tooltip: "💾 Backup — tar.gz archive"
+      - label: "--full (Monolithic)"
+        rect: [55, 8, 18, 15]
+        tooltip: "📄 Monolithic MCP output"
+      - label: "--chain-gemini"
+        rect: [55, 28, 18, 15]
+        tooltip: "🔗 Topic Split for Gemini"
+      - label: "--chain-ollama"
+        rect: [55, 48, 18, 15]
+        tooltip: "🔗 Chunked ≤5KB for Ollama"
+      - label: "--json"
+        rect: [55, 68, 18, 15]
+        tooltip: "📊 JSON Export"
+      - label: "ragdb"
+        rect: [78, 10, 18, 30]
         drilldown: ragdb_schema
-        tooltip: "Writes to ragdb"
+        tooltip: "🧠 ragdb — rag.knowledge target"
+      - label: "chain files"
+        rect: [78, 50, 18, 30]
+        tooltip: "📁 chain_gemini/ chain_ollama/ files"
 
-  # Level 2e: Deployment infrastructure (platform-wide → lookin)
+  # ═══════════════════════════════════════════════════════════════
+  # Level 2e: Deployment
+  # ═══════════════════════════════════════════════════════════════
   - id: deployment
     title: "Deployment Infrastructure"
     title_hu: "Telepítési Infrastruktúra"
     file: layers/jira-monitor/deployment.mmd
     doc: jira-monitor/deployment.md
-    nodes:
-      JM_BIN:
+    clickRegions:
+      - label: "Developer Workstation"
+        rect: [1, 8, 17, 60]
+        tooltip: "💻 ~/projects/ — 6 Git repos, go build, tar.gz"
+      - label: "scp / sshpass"
+        rect: [22, 30, 14, 14]
+        tooltip: "📡 SSH key transfer"
+      - label: "jiramntr-server"
+        rect: [40, 8, 22, 12]
         drilldown: architecture
-      JO_BIN:
+        tooltip: "📊 jiramntr-server :8080"
+      - label: "johanna"
+        rect: [40, 42, 22, 12]
         drilldown: johanna
-      PG1:
+        tooltip: "🤖 johanna :8082"
+      - label: "PostgreSQL 17"
+        rect: [40, 62, 22, 18]
         drilldown: star_schema
-      PG2:
-        drilldown: ragdb_schema
+        tooltip: "🗄️ PostgreSQL 17"
+      - label: "sys-gpu01"
+        rect: [72, 10, 18, 16]
+        tooltip: "🖥️ sys-gpu01 — Ollama :11434"
+      - label: "ldap.alig.hu"
+        rect: [72, 34, 18, 12]
+        tooltip: "🔐 ldap.alig.hu :389"
 
-  # Level 3: Star Schema detail
+  # ═══════════════════════════════════════════════════════════════
+  # Level 3: Star Schema
+  # ═══════════════════════════════════════════════════════════════
   - id: star_schema
     title: "Star Schema (DWH)"
     title_hu: "Csillagséma (DWH)"
     file: layers/jiramntr/star_schema.mmd
     source: jiramntr
-    nodes:
-      fact_daily_worklogs_h:
+    clickRegions:
+      - label: "fact_daily_worklogs_h"
+        rect: [28, 20, 24, 7]
         catalog: jiramntr/fact_daily_worklogs_h.json
-      fact_sla_events:
+        tooltip: "Time tracking fact table"
+      - label: "fact_sla_events"
+        rect: [28, 29, 24, 7]
         catalog: jiramntr/fact_sla_events.json
-      dim_issue_h:
+        tooltip: "SLA breaches fact table"
+      - label: "fact_status_events_h"
+        rect: [28, 38, 24, 7]
+        tooltip: "Status changes fact table"
+      - label: "fact_issue_daily_snapshot"
+        rect: [28, 47, 24, 7]
+        tooltip: "Daily issue state snapshot"
+      - label: "fact_project_daily_effort"
+        rect: [28, 56, 24, 7]
+        tooltip: "Project hours fact table"
+      - label: "fact_user_daily_kpi"
+        rect: [28, 65, 24, 7]
+        tooltip: "User KPI fact table"
+      - label: "dim_issue_h"
+        rect: [5, 8, 16, 10]
         catalog: jiramntr/dim_issue_h.json
-      dim_user_h:
+        tooltip: "Issues dimension (ltree hierarchy)"
+      - label: "dim_user_h"
+        rect: [55, 8, 16, 10]
         catalog: jiramntr/dim_user_h.json
-      dim_calendar:
+        tooltip: "Users dimension (hierarchy)"
+      - label: "dim_calendar"
+        rect: [75, 30, 16, 10]
         catalog: jiramntr/dim_calendar.json
-      dim_project_h:
+        tooltip: "Calendar dimension"
+      - label: "dim_project_h"
+        rect: [75, 60, 16, 10]
         catalog: jiramntr/dim_project_h.json
+        tooltip: "Projects dimension"
+      - label: "dim_status_h"
+        rect: [5, 60, 16, 10]
+        tooltip: "Statuses dimension"
+      - label: "dim_priority_h"
+        rect: [5, 78, 16, 10]
+        tooltip: "Priorities dimension"
+      - label: "user_get_* (24 fn)"
+        rect: [22, 82, 18, 8]
+        tooltip: "24 user access functions"
+      - label: "issue_get_* (10 fn)"
+        rect: [44, 82, 18, 8]
+        tooltip: "10 issue access functions"
+      - label: "4 analytics fn"
+        rect: [66, 82, 18, 8]
+        tooltip: "4 analytics functions"
 
-  # Level 3: ragdb schema detail
+  # ═══════════════════════════════════════════════════════════════
+  # Level 3: ragdb schema
+  # ═══════════════════════════════════════════════════════════════
   - id: ragdb_schema
     title: "RAG Database (ragdb)"
     title_hu: "RAG Adatbázis (ragdb)"
     file: layers/jiramntr/ragdb_schema.mmd
     doc: jiramntr/ragdb.md
-    nodes:
-      K:
+    clickRegions:
+      - label: "rag.knowledge"
+        rect: [3, 12, 30, 18]
         doc: jiramntr/ragdb.md
-        tooltip: "Knowledge store — topic + content"
-      E:
+        tooltip: "Knowledge store — topic + content + source"
+      - label: "rag.embeddings"
+        rect: [35, 12, 32, 18]
         doc: jiramntr/ragdb.md
         tooltip: "Unified embeddings (gemini + ollama)"
-      AL:
+      - label: "Partitions"
+        rect: [35, 32, 32, 12]
+        tooltip: "embeddings_dwh, _hr, _meta, _confluence, _docs"
+      - label: "rag.issue_embeddings"
+        rect: [3, 50, 28, 14]
+        tooltip: "Issue vectors — issue_key + embedding"
+      - label: "rag.audit_log"
+        rect: [3, 68, 28, 14]
         doc: jiramntr/ragdb.md
         tooltip: "AI query audit trail"
+      - label: "Functions"
+        rect: [38, 50, 32, 38]
+        tooltip: "6 RAG functions (search, upsert, cleanup)"
+      - label: "Gemini Provider"
+        rect: [75, 10, 20, 15]
+        tooltip: "✨ Gemini text-embedding-004"
+      - label: "Ollama Provider"
+        rect: [75, 28, 20, 15]
+        tooltip: "🦙 Ollama nomic-embed-text"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 3: AI Pipeline
+  # ═══════════════════════════════════════════════════════════════
   - id: ai_pipeline
     title: "AI Self-Teaching Pipeline"
     title_hu: "AI Öntanulási Pipeline"
     file: layers/jiramntr/ai_pipeline.mmd
     source: jiramntr
+    clickRegions:
+      - label: "Teacher (Gemini)"
+        rect: [5, 10, 35, 25]
+        tooltip: "🧙 Phase 1 — Teacher generates Gold Standard SQL"
+      - label: "Student (Ollama)"
+        rect: [50, 10, 35, 25]
+        tooltip: "🤖 Phase 2 — Student is tested on 131 questions"
+      - label: "Compare & Score"
+        rect: [20, 40, 30, 10]
+        tooltip: "📝 Phase 3 — Grading & comparison"
+      - label: "Correction Blueprints"
+        rect: [20, 55, 30, 8]
+        tooltip: "Failed → Correction Blueprints"
+      - label: "training.jsonl"
+        rect: [20, 65, 30, 8]
+        tooltip: "training.jsonl for fine-tuning"
+      - label: "Feedback Loop"
+        rect: [5, 80, 55, 12]
+        tooltip: "sqlerr.yaml, warning.yaml, Manual 👍/👎"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 3: RAG detail
+  # ═══════════════════════════════════════════════════════════════
   - id: rag_detail
     title: "RAG Pipeline"
     title_hu: "RAG Pipeline"
     file: layers/jiramntr/rag_detail.mmd
     source: jiramntr
+    clickRegions:
+      - label: "generate_catalog.py"
+        rect: [2, 60, 13, 12]
+        tooltip: "Catalog generator script"
+      - label: "30 JSON catalogs"
+        rect: [16, 60, 14, 12]
+        drilldown: star_schema
+        tooltip: "30 JSON table catalogs"
+      - label: "12 chain MCPs"
+        rect: [8, 18, 18, 14]
+        drilldown: mcp_detail
+        tooltip: "12 domain-specific chain MCPs"
+      - label: "dwh_mcp.md"
+        rect: [2, 78, 16, 10]
+        tooltip: "Monolithic MCP (full file)"
+      - label: "Gemini Embedding API"
+        rect: [34, 12, 22, 18]
+        tooltip: "🧲 Gemini Embedding API"
+      - label: "meta.mcp_embeddings"
+        rect: [34, 38, 22, 18]
+        drilldown: ragdb_schema
+        tooltip: "pgvector (HNSW) embeddings"
+      - label: "User Question"
+        rect: [65, 12, 18, 12]
+        tooltip: "User's natural language question"
+      - label: "Vector Search"
+        rect: [65, 38, 18, 16]
+        tooltip: "Vector Search — Top-K chunks"
+      - label: "Direct MCP"
+        rect: [65, 58, 18, 12]
+        tooltip: "Direct MCP (full file fallback)"
+      - label: "MCP Context"
+        rect: [65, 78, 18, 12]
+        tooltip: "Assembled MCP context for LLM"
 
-  # Level 3: Ingestion pipeline
+  # ═══════════════════════════════════════════════════════════════
+  # Level 3: Ingestion
+  # ═══════════════════════════════════════════════════════════════
   - id: ingestion
     title: "Data Ingestion"
     title_hu: "Adat Betöltés"
     file: layers/jiramntr/ingestion.mmd
     source: jiramntr
+    clickRegions:
+      - label: "Oracle DB"
+        rect: [2, 8, 18, 16]
+        tooltip: "🟠 Oracle DB — jiraissue, worklog, issuelink, customfield"
+      - label: "Active Directory"
+        rect: [2, 28, 18, 12]
+        tooltip: "🔵 Active Directory — LDAP Sync"
+      - label: "TER REST"
+        rect: [2, 44, 18, 10]
+        tooltip: "🟢 TER REST — Leave System"
+      - label: "Git"
+        rect: [2, 56, 18, 10]
+        tooltip: "🔀 Git — Source Repositories"
+      - label: "JobControl (JC)"
+        rect: [2, 68, 18, 10]
+        tooltip: "🎛️ JobControl — Job Scheduling"
+      - label: "SharePoint"
+        rect: [2, 80, 18, 10]
+        tooltip: "📎 SharePoint — Documents & Lists"
+      - label: "oracle_fdw"
+        rect: [28, 8, 16, 16]
+        tooltip: "🔌 oracle_fdw — Foreign Data Wrapper"
+      - label: "ext.ldap_import"
+        rect: [28, 30, 18, 20]
+        tooltip: "📥 ext.ldap_import / ext.ter_data"
+      - label: "ETL Orchestrator"
+        rect: [52, 30, 16, 20]
+        tooltip: "⚙️ ETL Orchestrator — Yearly partitioned"
+      - label: "Star Schema"
+        rect: [74, 20, 20, 30]
+        drilldown: star_schema
+        tooltip: "📊 Star Schema — Facts + Dimensions"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 3: MCP detail
+  # ═══════════════════════════════════════════════════════════════
   - id: mcp_detail
     title: "MCP Catalog Pipeline"
     title_hu: "MCP Katalógus Pipeline"
     file: layers/jiramntr/mcp_detail.mmd
     source: jiramntr
+    clickRegions:
+      - label: "JSON Catalogs"
+        rect: [15, 6, 50, 10]
+        tooltip: "📋 50 tables × 250+ columns"
+      - label: "MCP Template"
+        rect: [15, 18, 50, 10]
+        tooltip: "📝 dwh_mcp_template.md"
+      - label: "MCP Generator"
+        rect: [15, 30, 50, 10]
+        drilldown: mcp_forge
+        tooltip: "⚙️ Auto-generates from DB schema"
+      - label: "Chain MCPs"
+        rect: [15, 42, 50, 10]
+        tooltip: "🔗 12 domain-specific .md files"
+      - label: "Gemini Embedding"
+        rect: [15, 54, 50, 10]
+        tooltip: "🧠 text-embedding-004"
+      - label: "meta.mcp_embeddings"
+        rect: [15, 66, 50, 10]
+        drilldown: ragdb_schema
+        tooltip: "📦 Vector store (pgvector)"
+      - label: "RAG Search"
+        rect: [15, 78, 50, 10]
+        tooltip: "🔍 Similarity search"
+      - label: "AI SQL Lab"
+        rect: [15, 88, 50, 10]
+        drilldown: aichat_module
+        tooltip: "🤖 NL → MCP → SQL"
 
+  # ═══════════════════════════════════════════════════════════════
   # Level 3: Application
+  # ═══════════════════════════════════════════════════════════════
   - id: application
     title: "Application Stack"
     title_hu: "Alkalmazás"
     file: layers/jiramntr/application.mmd
     source: jiramntr
-    nodes:
-      ACL:
+    clickRegions:
+      - label: "Go Backend"
+        rect: [25, 6, 30, 14]
+        tooltip: "🖥️ Go Backend — port 8080"
+      - label: "REST API"
+        rect: [15, 28, 28, 14]
+        tooltip: "📡 /api/chat, /api/bi, /api/kpi, /api/employee"
+      - label: "RLS Middleware"
+        rect: [55, 28, 22, 14]
         drilldown: security
-        tooltip: "Unified ACL + RLS Token System"
+        tooltip: "🔒 Row-Level Security"
+      - label: "Web UI"
+        rect: [3, 55, 25, 18]
+        tooltip: "🎨 HTMX + Vanilla CSS, Premium dark theme"
+      - label: "KPI Dashboard"
+        rect: [33, 55, 22, 12]
+        tooltip: "📈 YAML-driven KPI Dashboard"
+      - label: "BI Query Library"
+        rect: [60, 55, 24, 12]
+        tooltip: "📊 Markdown-based BI Queries"
+      - label: "Datagrid Library"
+        rect: [3, 78, 25, 15]
+        tooltip: "📊 Datagrid v1.2 — LOV params"
 
-  # Level 3: Security Architecture
+  # ═══════════════════════════════════════════════════════════════
+  # Level 3: Security
+  # ═══════════════════════════════════════════════════════════════
   - id: security
     title: "Security Architecture"
     title_hu: "Biztonsági Architektúra"
     file: layers/jiramntr/security.mmd
     source: jiramntr
     doc: jiramntr/security.md
-    nodes:
-      FOLDER:
+    clickRegions:
+      - label: "AuthMiddleware"
+        rect: [12, 8, 18, 10]
         doc: jiramntr/security.md
-        tooltip: "whitelist / blacklist / hierarchy ACL"
-      TOKEN:
+        tooltip: "Cookie: auth_user"
+      - label: "ACLMiddleware"
+        rect: [32, 8, 18, 10]
         doc: jiramntr/security.md
-        tooltip: "RLS Token: query + user + scope + SHA256"
-      REHASH:
+        tooltip: "Route-level permissions"
+      - label: "Folder ACL"
+        rect: [52, 8, 15, 10]
         doc: jiramntr/security.md
-        tooltip: "Auto-rehash on server startup"
+        tooltip: "whitelist / blacklist / hierarchy"
+      - label: "Folder ACL YAML"
+        rect: [5, 22, 55, 16]
+        doc: jiramntr/security.md
+        tooltip: "whitelist + blacklist + hierarchy via ltree"
+      - label: "RLS Token System"
+        rect: [5, 44, 55, 18]
+        doc: jiramntr/security.md
+        tooltip: "rls_scope → SHA256 → Token (1yr expiry)"
+      - label: "Auto-Rehash"
+        rect: [65, 44, 25, 16]
+        doc: jiramntr/security.md
+        tooltip: "Auto-Rehash on Startup — RehashRLSTokens()"
+      - label: "Token Validation"
+        rect: [5, 68, 85, 25]
+        doc: jiramntr/security.md
+        tooltip: "valid ✅, no_token ❌, hash_mismatch ❌, expired ❌"
