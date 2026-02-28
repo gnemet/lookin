@@ -169,8 +169,9 @@
             return;
         }
 
-        // Auto-PNG: prefer pre-rendered PNG over live Mermaid
-        if (layer.file && layer.file.endsWith('.mmd')) {
+        // Auto-PNG: use pre-rendered PNG only when Mermaid is NOT available
+        // When mermaid is loaded, prefer live rendering for clickable nodes
+        if (layer.file && layer.file.endsWith('.mmd') && typeof window.mermaidLib === 'undefined') {
             const pngPath = layer.file.replace('.mmd', '.png');
             try {
                 const probe = await fetch(pngPath, { method: 'HEAD' });
