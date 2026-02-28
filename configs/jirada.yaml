@@ -58,8 +58,8 @@ layers:
   # Level 0: Enterprise ecosystem
   # ═══════════════════════════════════════════════════════════════
   - id: enterprise
-    title: "JIRA-MONITOR"
-    title_hu: "JIRA-MONITOR"
+    title: "JiraDa"
+    title_hu: "JiraDa"
     file: layers/jira-monitor/enterprise.mmd
     doc: jira-monitor/enterprise.md
     clickRegions:

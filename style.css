@@ -197,6 +197,7 @@ header h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     overflow: visible;
 }
 
@@ -355,19 +356,15 @@ header h1 {
 /* ── Image Layer Mode (PNG presentation) ─────────────────────── */
 .image-layer {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+    display: inline-block;
+    max-width: 95%;
+    max-height: 85vh;
 }
 
 .image-layer img {
-    max-width: 95%;
-    max-height: 85vh;
-    width: auto;
+    display: block;
+    width: 100%;
     height: auto;
-    object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
     user-select: none;
