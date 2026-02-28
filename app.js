@@ -24,7 +24,7 @@
 
         try {
             // Multi-enterprise: ?config=jira-monitor (default)
-            const configName = new URLSearchParams(location.search).get('config') || 'jira-monitor';
+            const configName = new URLSearchParams(location.search).get('config') || 'jirada';
             const cacheBust = `?v=${Date.now()}`;
             const yamlText = await fetch(`configs/${configName}.yaml` + cacheBust).then(r => {
                 if (!r.ok) throw new Error(`Config "${configName}" not found (${r.status})`);
