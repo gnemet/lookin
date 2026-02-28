@@ -7,31 +7,42 @@
     <title>LookIn 🔭 — Interactive Architecture Viewer</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="vendor/phosphor-icons.css">
-    <script src="vendor/js-yaml.min.js"></script>
-    <script src="vendor/marked.min.js"></script>
-    <script src="vendor/mermaid.min.js"></script>
+    <link rel="stylesheet" href="vendor/phosphor-icons.css"
+        onerror="this.onerror=null;this.href='https://unpkg.com/@phosphor-icons/web@2/src/regular/style.css'">
+    <script src="vendor/js-yaml.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js';document.head.appendChild(s)"></script>
+    <script src="vendor/marked.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js';document.head.appendChild(s)"></script>
+    <script src="vendor/mermaid.min.js"
+        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';document.head.appendChild(s)"></script>
     <script>
-        window.mermaidLib = mermaid;
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'dark',
-            look: 'handDrawn',
-            fontFamily: 'Caveat, cursive',
-            fontSize: 18,
-            themeVariables: {
-                darkMode: true,
-                background: '#2a2a2a',
-                primaryColor: '#3a3a3a',
-                primaryTextColor: '#f0e6d3',
-                primaryBorderColor: '#888',
-                secondaryColor: '#333',
-                lineColor: '#ccc',
-                textColor: '#f0e6d3',
-                fontFamily: 'Caveat, cursive'
-            },
-            flowchart: { curve: 'natural', nodeSpacing: 40, rankSpacing: 60, padding: 15 }
-        });
+        function initMermaid() {
+            if (typeof mermaid === 'undefined') {
+                setTimeout(initMermaid, 100);
+                return;
+            }
+            window.mermaidLib = mermaid;
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'dark',
+                look: 'handDrawn',
+                fontFamily: 'Caveat, cursive',
+                fontSize: 18,
+                themeVariables: {
+                    darkMode: true,
+                    background: '#2a2a2a',
+                    primaryColor: '#3a3a3a',
+                    primaryTextColor: '#f0e6d3',
+                    primaryBorderColor: '#888',
+                    secondaryColor: '#333',
+                    lineColor: '#ccc',
+                    textColor: '#f0e6d3',
+                    fontFamily: 'Caveat, cursive'
+                },
+                flowchart: { curve: 'natural', nodeSpacing: 40, rankSpacing: 60, padding: 15 }
+            });
+        }
+        initMermaid();
     </script>
 </head>
 
