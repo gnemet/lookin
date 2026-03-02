@@ -492,11 +492,11 @@ layers:
     clickRegions:
       - label: "rag.knowledge"
         rect: [3, 12, 30, 18]
-        doc: jiramntr/ragdb.md
+        doc: jiramntr/ragdb.md#tables
         tooltip: "Knowledge store — topic + content + source"
       - label: "rag.embeddings"
         rect: [35, 12, 32, 18]
-        doc: jiramntr/ragdb.md
+        doc: jiramntr/ragdb.md#embeddings
         tooltip: "Unified embeddings (gemini + ollama)"
       - label: "Partitions"
         rect: [35, 32, 32, 12]
@@ -506,7 +506,7 @@ layers:
         tooltip: "Issue vectors — issue_key + embedding"
       - label: "rag.audit_log"
         rect: [3, 68, 28, 14]
-        doc: jiramntr/ragdb.md
+        doc: jiramntr/ragdb.md#tables
         tooltip: "AI query audit trail"
       - label: "Functions"
         rect: [38, 50, 32, 38]
@@ -711,29 +711,29 @@ layers:
     clickRegions:
       - label: "AuthMiddleware"
         rect: [12, 8, 18, 10]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#authentication
         tooltip: "Cookie: auth_user"
       - label: "ACLMiddleware"
         rect: [32, 8, 18, 10]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#folder-acl
         tooltip: "Route-level permissions"
       - label: "Folder ACL"
         rect: [52, 8, 15, 10]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#folder-acl
         tooltip: "whitelist / blacklist / hierarchy"
       - label: "Folder ACL YAML"
         rect: [5, 22, 55, 16]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#folder-acl
         tooltip: "whitelist + blacklist + hierarchy via ltree"
       - label: "RLS Token System"
         rect: [5, 44, 55, 18]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#rls-tokens
         tooltip: "rls_scope → SHA256 → Token (1yr expiry)"
       - label: "Auto-Rehash"
         rect: [65, 44, 25, 16]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#rls-tokens
         tooltip: "Auto-Rehash on Startup — RehashRLSTokens()"
       - label: "Token Validation"
         rect: [5, 68, 85, 25]
-        doc: jiramntr/security.md
+        doc: jiramntr/security.md#rls-tokens
         tooltip: "valid ✅, no_token ❌, hash_mismatch ❌, expired ❌"

@@ -17,6 +17,7 @@
     const $tablePanel = document.getElementById('table-panel');
     const $tableName = document.getElementById('table-name');
     const $tableContent = document.getElementById('table-content');
+    const $tocSidebar = document.getElementById('toc-sidebar');
 
     // ── Init ────────────────────────────────────────────────────
     async function init() {
@@ -38,6 +39,7 @@
             const lu = document.getElementById('last-updated');
             if (lu) lu.textContent = new Date().toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
             setupEvents();
+            buildTOC();
             await navigateTo('enterprise');
         } catch (err) {
             $diagram.innerHTML = `<div class="loading">Error: ${err.message}</div>`;
@@ -51,10 +53,14 @@
         document.getElementById('btn-back').addEventListener('click', goBack);
         document.getElementById('btn-lang').addEventListener('click', toggleLang);
         document.getElementById('btn-close-panel').addEventListener('click', closePanel);
+        document.getElementById('btn-toc').addEventListener('click', toggleTOC);
+        document.getElementById('btn-toc-close').addEventListener('click', toggleTOC);
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (!$tablePanel.classList.contains('hidden')) {
+                if ($tocSidebar.classList.contains('open')) {
+                    toggleTOC();
+                } else if (!$tablePanel.classList.contains('hidden')) {
                     closePanel();
                 } else if (history.length > 1) {
                     goBack();
@@ -63,6 +69,9 @@
             if (e.key === 'Backspace' && !e.target.matches('input, textarea')) {
                 e.preventDefault();
                 goBack();
+            }
+            if ((e.key === 't' || e.key === 'T') && !e.target.matches('input, textarea')) {
+                toggleTOC();
             }
         });
 
@@ -147,6 +156,7 @@
         updateSourceBadge();
         closePanel();
         resetZoom();
+        updateTOC(layerId);
 
         await renderDiagram(layer);
     }
@@ -499,6 +509,14 @@
 
     // ── Markdown Doc Panel ──────────────────────────────────────
     async function showDocPanel(docFile) {
+        // Support anchor fragments: "jiramntr/security.md#rls-tokens"
+        let anchor = null;
+        const hashIdx = docFile.indexOf('#');
+        if (hashIdx > 0) {
+            anchor = docFile.substring(hashIdx + 1);
+            docFile = docFile.substring(0, hashIdx);
+        }
+
         try {
             const mdText = await fetch(`docs/${docFile}?v=${Date.now()}`).then(r => {
                 if (!r.ok) throw new Error(`${r.status}`);
@@ -517,10 +535,46 @@
 
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
+
+            // Scroll to anchor heading if specified
+            if (anchor) {
+                scrollToAnchor(anchor);
+            }
         } catch (err) {
             $tableContent.innerHTML = `<p style="color: var(--text-muted)">Doc not found: docs/${docFile}<br><small>${err.message}</small></p>`;
             $tablePanel.classList.remove('hidden');
             $tablePanel.classList.add('visible');
+        }
+    }
+
+    // ── Scroll sidebar to anchor heading ─────────────────────────
+    function scrollToAnchor(anchor) {
+        // marked.js generates heading IDs from text (lowercase, dashes for spaces)
+        // Try exact id match first, then case-insensitive search
+        const container = $tableContent;
+        let target = container.querySelector(`#${CSS.escape(anchor)}`);
+
+        if (!target) {
+            // Fallback: find heading whose id contains the anchor
+            const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            for (const h of headings) {
+                if (h.id && h.id.includes(anchor)) {
+                    target = h;
+                    break;
+                }
+            }
+        }
+
+        if (target) {
+            // Small delay to ensure panel is visible and laid out
+            requestAnimationFrame(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Flash-highlight the target heading
+                target.classList.add('anchor-highlight');
+                target.addEventListener('animationend', () => {
+                    target.classList.remove('anchor-highlight');
+                }, { once: true });
+            });
         }
     }
 
@@ -551,6 +605,149 @@
     function closePanel() {
         $tablePanel.classList.remove('visible');
         $tablePanel.classList.add('hidden');
+    }
+
+    // ── TOC Sidebar ─────────────────────────────────────────────
+    function toggleTOC() {
+        $tocSidebar.classList.toggle('open');
+    }
+
+    function buildTOC() {
+        const $tree = document.getElementById('toc-tree');
+        if (!$tree || !config || !config.layers) return;
+
+        // Build parent→children map from clickRegions drilldown references
+        const childMap = {};   // parentId → [childId, ...]
+        const hasParent = {};  // childId → true (if referenced as drilldown)
+        for (const layer of config.layers) {
+            if (!layer.clickRegions) continue;
+            for (const region of layer.clickRegions) {
+                if (region.drilldown) {
+                    if (!childMap[layer.id]) childMap[layer.id] = [];
+                    if (!childMap[layer.id].includes(region.drilldown)) {
+                        childMap[layer.id].push(region.drilldown);
+                    }
+                    hasParent[region.drilldown] = true;
+                }
+            }
+        }
+
+        // Root layers = those not referenced as drilldown targets
+        const roots = config.layers.filter(l => !hasParent[l.id]);
+
+        $tree.innerHTML = '';
+
+        // Render a layer as a tree item
+        function createItem(layer) {
+            const div = document.createElement('div');
+            div.className = 'toc-item';
+            div.setAttribute('data-layer-id', layer.id);
+
+            // Icon based on source
+            let icon = 'ph-folder';
+            if (layer.source === 'jiramntr') icon = 'ph-database';
+            else if (layer.source === 'johanna') icon = 'ph-robot';
+            else if (layer.source === 'aichat') icon = 'ph-lightning';
+            else if (layer.source === 'mcp-forge') icon = 'ph-wrench';
+            else if (layer.id === 'enterprise') icon = 'ph-buildings';
+
+            // Color from source
+            const sourceColor = layer.source && config.sources[layer.source]
+                ? config.sources[layer.source].color : 'var(--text-muted)';
+
+            const title = lang === 'hu' && layer.title_hu ? layer.title_hu : layer.title;
+            div.innerHTML = `<i class="ph ${icon}" style="color:${sourceColor}"></i><span class="toc-item-label">${title}</span>`;
+
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateTo(layer.id);
+            });
+
+            return div;
+        }
+
+        // Render root layers and their children as collapsible groups
+        for (const root of roots) {
+            const children = (childMap[root.id] || [])
+                .map(cid => config.layers.find(l => l.id === cid))
+                .filter(Boolean);
+
+            if (children.length === 0) {
+                // Standalone item (no children)
+                $tree.appendChild(createItem(root));
+            } else {
+                // Group header
+                const header = document.createElement('div');
+                header.className = 'toc-group-header';
+                const rootTitle = lang === 'hu' && root.title_hu ? root.title_hu : root.title;
+                header.innerHTML = `
+                    <i class="ph ph-caret-down toc-group-chevron"></i>
+                    <span>${rootTitle}</span>
+                    <span class="toc-group-count">${children.length + 1}</span>`;
+
+                const container = document.createElement('div');
+                container.className = 'toc-group-items';
+                container.setAttribute('data-group-root', root.id);
+
+                // Root item itself
+                container.appendChild(createItem(root));
+
+                // Child items — also render sub-children inline
+                for (const child of children) {
+                    container.appendChild(createItem(child));
+
+                    // Sub-children (Level 3)
+                    const subChildren = (childMap[child.id] || [])
+                        .map(cid => config.layers.find(l => l.id === cid))
+                        .filter(Boolean)
+                        .filter(sc => !children.includes(sc)); // avoid dupes
+                    for (const sub of subChildren) {
+                        const subItem = createItem(sub);
+                        subItem.style.paddingLeft = '24px';
+                        subItem.style.fontSize = '0.8rem';
+                        container.appendChild(subItem);
+                    }
+                }
+
+                header.addEventListener('click', () => {
+                    container.classList.toggle('collapsed');
+                    const chevron = header.querySelector('.toc-group-chevron');
+                    chevron.className = container.classList.contains('collapsed')
+                        ? 'ph ph-caret-right toc-group-chevron'
+                        : 'ph ph-caret-down toc-group-chevron';
+                });
+
+                $tree.appendChild(header);
+                $tree.appendChild(container);
+            }
+        }
+
+        console.log(`[LookIn] TOC built: ${config.layers.length} layers`);
+    }
+
+    function updateTOC(layerId) {
+        // Remove active from all
+        document.querySelectorAll('.toc-item.toc-active').forEach(el => el.classList.remove('toc-active'));
+
+        // Activate current
+        const active = document.querySelector(`.toc-item[data-layer-id="${layerId}"]`);
+        if (active) {
+            active.classList.add('toc-active');
+
+            // Auto-expand parent group if collapsed
+            const group = active.closest('.toc-group-items');
+            if (group && group.classList.contains('collapsed')) {
+                group.classList.remove('collapsed');
+                const header = group.previousElementSibling;
+                if (header) {
+                    const chevron = header.querySelector('.toc-group-chevron');
+                    if (chevron) chevron.className = 'ph ph-caret-down toc-group-chevron';
+                }
+            }
+
+            // Scroll into view within TOC
+            active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }
 
     // ── Auto-generate Mermaid ───────────────────────────────────

@@ -19,3 +19,5 @@ vendor/
 
 # Vault password
 .vault_pass
+.doc_hashes
+.stale_docs

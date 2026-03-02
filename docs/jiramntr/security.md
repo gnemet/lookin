@@ -4,11 +4,11 @@
 
 The Jira Monitor implements a layered security model that controls access at multiple levels.
 
-### Layer 1: Authentication
+### Authentication
 - HTTP cookie-based (`auth_user` cookie) via LDAP authentication
 - All routes (except `/login`) require authentication
 
-### Layer 2: Folder ACL
+### Folder ACL
 Controlled by `.folder.yaml` in each BI query/KPI folder:
 
 | Field | Description |
@@ -19,7 +19,7 @@ Controlled by `.folder.yaml` in each BI query/KPI folder:
 
 Uses `IsUserAllowed()` — unified across sidebar, BI queries, KPI dashboards, and routes.
 
-### Layer 3: RLS Tokens
+### RLS Tokens
 For cross-department data access (e.g. fekegy accessing IIER area data):
 
 - Reports declare `rls_scope: area:IIER` in YAML frontmatter

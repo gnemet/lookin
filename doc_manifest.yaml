@@ -1,0 +1,96 @@
+# LookIn — Doc Freshness Manifest
+# Maps each doc to the source files it describes.
+# Used by scripts/check_docs.sh to detect stale documentation.
+#
+# Paths are relative to PROJECTS_ROOT (default: parent of lookin dir)
+# Globs: **/*.go matches all .go files recursively
+
+docs:
+  jiramntr/security.md:
+    watches:
+      - jiramntr/internal/handlers/auth*.go
+      - jiramntr/internal/handlers/rls*.go
+      - jiramntr/internal/config/*.go
+    description: "Auth middleware, folder ACL, RLS tokens"
+
+  jiramntr/architecture.md:
+    watches:
+      - jiramntr/cmd/**/*.go
+      - jiramntr/internal/handlers/*.go
+    description: "Main server architecture, routing, handlers"
+
+  jiramntr/star_schema.md:
+    watches:
+      - jiramntr/database/ddl/**/*.sql
+      - jiramntr/database/dwh/**/*.sql
+      - jiramntr/database/meta/**/*.sql
+    description: "DWH fact/dim tables, meta schema"
+
+  jiramntr/ingestion.md:
+    watches:
+      - jiramntr/internal/jobs/*.go
+      - jiramntr/database/ext/**/*.sql
+    description: "ETL pipeline, ext schema, job handlers"
+
+  jiramntr/ragdb.md:
+    watches:
+      - mcp-forge/database/**/*.sql
+      - jiramntr/internal/ai/rag*.go
+    description: "RAG database schema, embeddings"
+
+  jiramntr/application.md:
+    watches:
+      - jiramntr/internal/handlers/*.go
+      - jiramntr/internal/sql/**/*.go
+    description: "Application stack, SQL templates, handlers"
+
+  jiramntr/ai_pipeline.md:
+    watches:
+      - aichat/*.go
+      - jiramntr/internal/ai/**/*.go
+      - jiramntr/internal/mcp/**/*.go
+    description: "AI pipeline, self-teaching, MCP integration"
+
+  jiramntr/mcp_detail.md:
+    watches:
+      - mcp-forge/scripts/**/*.py
+      - mcp-forge/core/**/*.py
+    description: "MCP chain generation, catalog, embedding"
+
+  jiramntr/rag_detail.md:
+    watches:
+      - aichat/*.go
+      - jiramntr/internal/ai/*.go
+      - johanna/internal/rag/**/*.go
+    description: "RAG query pipeline across projects"
+
+  johanna/johanna.md:
+    watches:
+      - johanna/ui/**/*.js
+      - johanna/ui/**/*.css
+      - johanna/ui/**/*.html
+      - johanna/internal/**/*.go
+      - johanna/cmd/**/*.go
+    description: "Johanna AI Chat architecture"
+
+  aichat/aichat_module.md:
+    watches:
+      - aichat/*.go
+    description: "aichat Go module (pipeline, types, utils)"
+
+  mcp-forge/mcp_forge.md:
+    watches:
+      - mcp-forge/scripts/**/*.py
+      - mcp-forge/core/**/*.py
+      - mcp-forge/database/**/*.sql
+    description: "MCP-Forge tooling, scripts, DB migrations"
+
+  jira-monitor/deployment.md:
+    watches:
+      - jiramntr/scripts/deploy*.sh
+      - jiramntr/Dockerfile
+    description: "Deployment scripts, Docker"
+
+  jira-monitor/enterprise.md:
+    watches: []
+    description: "Enterprise overview (manually maintained)"

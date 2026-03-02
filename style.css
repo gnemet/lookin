@@ -425,25 +425,159 @@ header h1 {
     opacity: 1;
 }
 
-/* Subtle idle pulse for discoverable regions */
-@keyframes regionPulse {
+/* Click regions: invisible at rest, visible on hover only */
 
-    0%,
-    100% {
-        border-color: rgba(255, 255, 255, 0.06);
-    }
-
-    50% {
-        border-color: rgba(255, 255, 255, 0.12);
-    }
+/* ── TOC Sidebar (Johanna-inspired left panel) ───────────────── */
+.toc-sidebar {
+    position: fixed;
+    left: -320px;
+    top: 12px;
+    bottom: 48px;
+    width: 290px;
+    background: rgba(43, 43, 43, 0.92);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.click-region {
-    animation: regionPulse 3s ease-in-out infinite;
+.toc-sidebar.open {
+    left: 12px;
 }
 
-.click-region:hover {
-    animation: none;
+.toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.toc-title {
+    font-family: var(--font-hand);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.toc-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+}
+
+/* Tree group header (Level 0/1 groupings) */
+.toc-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    margin-top: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.toc-group-header:hover {
+    color: var(--accent-color);
+    background: rgba(var(--accent-rgb), 0.06);
+}
+
+.toc-group-count {
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent-color);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.toc-group-chevron {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.toc-group-items {
+    padding-left: 8px;
+    border-left: 2px solid rgba(var(--accent-rgb), 0.15);
+    margin-left: 14px;
+}
+
+.toc-group-items.collapsed {
+    display: none;
+}
+
+/* Individual layer items */
+.toc-item {
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    color: var(--text-color);
+    margin: 2px 0;
+    font-size: 0.85rem;
+}
+
+.toc-item:hover {
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: rgba(var(--accent-rgb), 0.2);
+    transform: translateX(4px);
+}
+
+.toc-item i {
+    font-size: 1rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.toc-item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Active (current) layer */
+.toc-item.toc-active {
+    background: rgba(var(--accent-rgb), 0.12);
+    border-left: 3px solid var(--accent-color);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.toc-item.toc-active i {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+/* Scrollbar styling */
+.toc-tree::-webkit-scrollbar {
+    width: 4px;
+}
+
+.toc-tree::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.toc-tree::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 /* ── Table Panel (from jiramntr card pattern) ────────────────── */
@@ -601,6 +735,23 @@ footer {
     50% {
         opacity: 1;
     }
+}
+
+/* ── Anchor Highlight (flash on scroll-to) ───────────────────── */
+@keyframes anchor-flash {
+    0% {
+        background: rgba(255, 193, 7, 0.35);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+.anchor-highlight {
+    animation: anchor-flash 1.5s ease-out;
+    border-radius: 4px;
+    padding: 2px 6px;
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */

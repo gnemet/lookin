@@ -20,6 +20,9 @@
     <!-- Top Header (jiramntr .top-header pattern) -->
     <header>
         <div class="header-left">
+            <button id="btn-toc" class="btn-loop" title="Layer Tree (T)">
+                <i class="ph ph-list-bullets"></i>
+            </button>
             <i class="ph ph-magnifying-glass logo"></i>
             <h1>LookIn</h1>
             <span class="header-separator">|</span>
@@ -42,6 +45,15 @@
             </button>
         </div>
     </header>
+
+    <!-- TOC sidebar (Johanna-inspired left panel) -->
+    <nav id="toc-sidebar" class="toc-sidebar">
+        <div class="toc-header">
+            <span class="toc-title">🗺️ Layers</span>
+            <button id="btn-toc-close" class="btn-loop"><i class="ph ph-caret-left"></i></button>
+        </div>
+        <div id="toc-tree" class="toc-tree"></div>
+    </nav>
 
     <!-- Diagram area (PNG images with clickRegion overlays) -->
     <main id="diagram-container">
