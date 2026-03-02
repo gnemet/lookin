@@ -110,6 +110,79 @@ layers:
         tooltip: "ragdb — Embeddings + Knowledge"
 
   # ═══════════════════════════════════════════════════════════════
+  # Level 0b: JiraDa full architecture (chalkboard canvas)
+  # ═══════════════════════════════════════════════════════════════
+  - id: jira_da_arch
+    title: "JiraDa Platform Architecture"
+    title_hu: "JiraDa Platform Architektúra"
+    render: image
+    image: layers/jira-da/jira_da_arch.png
+    doc: jira-da/jira_da.md
+    clickRegions:
+      - label: "JIRA Cloud API"
+        rect: [1, 8, 11, 12]
+        tooltip: "Issues, Worklogs, SLA Events, Comments, Users, Projects"
+      - label: "Oracle LDAP"
+        rect: [1, 22, 11, 8]
+        tooltip: "User directory, Org structure"
+      - label: "GitLab API"
+        rect: [1, 32, 11, 8]
+        tooltip: "Commits, MRs, Pipelines"
+      - label: "JobCtrl API"
+        rect: [1, 42, 11, 8]
+        tooltip: "Daily density, SLA data"
+      - label: "Confluence"
+        rect: [1, 52, 11, 8]
+        tooltip: "Documentation, Spaces"
+      - label: "jiramntr"
+        rect: [16, 6, 28, 14]
+        drilldown: overview
+        tooltip: "ETL Pipeline, DWH Star Schema, KPI, BI, Datagrid, RLS, HTMX"
+      - label: "johanna"
+        rect: [16, 22, 28, 12]
+        drilldown: johanna
+        tooltip: "AI Chat Persona, NL→SQL→NL, RAG, WebSocket, Feedback"
+      - label: "mcp-forge"
+        rect: [16, 36, 28, 12]
+        drilldown: mcp_forge
+        tooltip: "MCP Builder, 7 Adapters, 4 Generators, Claude Teacher"
+      - label: "aichat"
+        rect: [16, 50, 28, 10]
+        drilldown: aichat_module
+        tooltip: "Shared AI Module — pipeline, types, feedback, persona, utils"
+      - label: "datagrid"
+        rect: [16, 62, 28, 8]
+        drilldown: application
+        tooltip: "Dynamic Data Grid, Pivot Tables, JSON Catalog Driven"
+      - label: "lookin"
+        rect: [16, 72, 28, 8]
+        tooltip: "Architecture Viewer, Mermaid + PNG Diagrams, Drill-down"
+      - label: "jiramntr_db"
+        rect: [50, 12, 20, 18]
+        drilldown: architecture
+        tooltip: "dwh (Star Schema, SCD2), ext, meta, oltp (FDW)"
+      - label: "ragdb"
+        rect: [50, 36, 20, 25]
+        drilldown: ragdb_schema
+        tooltip: "rag.embeddings, knowledge, mcp.*, teaching*"
+      - label: "Partitions"
+        rect: [50, 65, 20, 10]
+        tooltip: "embeddings_dwh, _hr, _meta, _confluence"
+      - label: "Servers"
+        rect: [75, 6, 22, 16]
+        drilldown: deployment
+        tooltip: "sys-butalam01 (Prod) + sys-gpu01 (GPU)"
+      - label: "AI Providers"
+        rect: [75, 25, 22, 12]
+        tooltip: "Gemini 2.5-flash/pro, Ollama nomic-embed-text + qwen2.5"
+      - label: "DevOps"
+        rect: [75, 40, 22, 14]
+        tooltip: "GPG Vault, switch_env.sh, deploy scripts, systemd"
+      - label: "GitHub"
+        rect: [75, 58, 22, 14]
+        tooltip: "6 repos, Project Board, /commit-all, /new-issue, /deploy"
+
+  # ═══════════════════════════════════════════════════════════════
   # Level 1: Business overview
   # ═══════════════════════════════════════════════════════════════
   - id: overview

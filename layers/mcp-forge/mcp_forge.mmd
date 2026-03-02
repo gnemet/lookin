@@ -1,41 +1,182 @@
-graph LR
-    subgraph CONFIG["📄 Config"]
-        YAML["jiramntr.yaml<br/>Project Config"]
+graph TB
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% MCP-FORGE — Full Architecture Canvas (high-density, zoom-ready)
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    subgraph CONFIG["📄 Configuration"]
+        direction TB
+        YAML["📋 config/*.yaml<br/>project · sources · outputs<br/>adapters · templates"]
+        PROJ_DEF["🏗️ Project Definitions<br/>jiramntr · johanna<br/>aichat · mcp-forge"]
+        ENV["🔑 .env Files<br/>DB credentials<br/>API keys · endpoints"]
+        YAML --- PROJ_DEF
+        YAML --- ENV
     end
 
-    subgraph SOURCES["📥 Source Adapters"]
-        PG["🐘 postgres_dwh<br/>JSON Catalogs"]
-        CONF["📚 confluence"]
-        DOCS["📝 documents"]
-        GIT["🔀 git_source"]
-        JIRA["🟠 jira_comments"]
-        PPTX["📊 pptx_source"]
-        BASH["🖥️ bash_scripts"]
+    subgraph SOURCES["📥 Source Adapters (7)"]
+        direction TB
+        PG["🐘 postgres_dwh ✅<br/>Reads JSON catalogs<br/>from internal/catalog/<br/>50 tables × 250+ cols"]
+        CONF["📚 confluence 🔲<br/>Confluence REST API<br/>Page content + spaces"]
+        DOCS["📝 documents 🔲<br/>Local markdown/text<br/>README · docs/"]
+        GIT["🔀 git_source 🔲<br/>Git log + diff<br/>Commit history"]
+        JIRA["🟠 jira_comments 🔲<br/>Jira issue comments<br/>Worklog notes"]
+        PPTX["📊 pptx_source 🔲<br/>PowerPoint slides<br/>Slide text extraction"]
+        BASH["🖥️ bash_scripts 🔲<br/>Shell scripts<br/>Script documentation"]
     end
 
     subgraph CORE["⚙️ Core Pipeline"]
-        CHUNK["✂️ Chunker<br/>MANUAL markers"]
-        TMPL["📋 Templates<br/>Jinja2"]
-        BACKUP["💾 Backup<br/>tar.gz archive"]
+        direction TB
+        CHUNK["✂️ Chunker<br/>Split at MANUAL markers<br/>Topic-aware segmentation"]
+        TMPL["📋 Jinja2 Templates<br/>dwh_mcp_template.md<br/>Renders schema context"]
+        BACKUP["💾 Backup Manager<br/>tar.gz archive<br/>Timestamped snapshots"]
+        GEN_CAT["🔧 generate_catalog.py<br/>JSON → schema blueprints<br/>Relationship inference"]
+        GEN_DOC["📝 generate_mcp_doc.py<br/>JSON → dwh_mcp.md<br/>Aggregated markdown"]
+        CHUNK --> TMPL
+        GEN_CAT --> GEN_DOC
     end
 
-    subgraph OUTPUTS["📤 Output Generators"]
-        FULL["📄 --full<br/>Monolithic MCP"]
-        CHAIN_G["🔗 --chain-gemini<br/>Topic Split"]
-        CHAIN_O["🔗 --chain-ollama<br/>Chunked ≤5KB"]
-        JSON["📊 --json<br/>JSON Export"]
+    subgraph OUTPUTS["📤 Output Generators (4)"]
+        direction TB
+        FULL["📄 --full<br/>Monolithic .md<br/>Single file MCP<br/>Target: Gemini<br/>large context window"]
+        CHAIN_G["🔗 --chain-gemini<br/>Topic-split .md files<br/>12 domain chain files<br/>Target: Gemini chain"]
+        CHAIN_O["🔗 --chain-ollama<br/>Chunked ≤5KB per file<br/>Small context window<br/>Target: Ollama SLM"]
+        JSON_OUT["📊 --json<br/>Structured JSON catalog<br/>Collection-tagged<br/>Target: ragdb import"]
     end
 
-    subgraph TARGET["🎯 Targets"]
-        RAGDB["🧠 ragdb<br/>rag.knowledge"]
-        FILES["📁 chain_gemini/<br/>chain_ollama/"]
+    subgraph CLAUDE["🤖 Claude Agent — Self-Teaching System"]
+        direction TB
+        MODE1["📖 Mode 1: Teaching<br/>Reads DWH schema files<br/>→ creates mcp.knowledge rules<br/>architectural_rule + usage_example"]
+        MODE2["🔄 Mode 2: Feedback<br/>Reads Ollama errors<br/>from mcp.feedback<br/>→ fixes → knowledge"]
+        MODE3["❓ Mode 3: Q/A Gen<br/>Generates test pairs<br/>from rules<br/>→ mcp.teaching"]
+        MODE4["✅ Mode 4: Validate<br/>Replays Q/A through Ollama<br/>Scores results<br/>→ mcp.teaching_run"]
+        TIMER["⏱️ systemd timer<br/>Runs on butalam<br/>Zero changes to aichat"]
+        MODE1 --> MODE3
+        MODE2 --> MODE1
+        MODE3 --> MODE4
+        TIMER -.-> MODE1
+        TIMER -.-> MODE2
+        TIMER -.-> MODE3
+        TIMER -.-> MODE4
     end
 
-    YAML --> PG
-    PG --> CORE
+    subgraph EMBED["🧲 Embedding Pipeline"]
+        direction TB
+        EMBEDDER["🐍 embed/embedder.py<br/>--knowledge-only trigger<br/>Batch processing"]
+        OLLAMA_EMB["🦙 Ollama Embeddings<br/>nomic-embed-text<br/>768-dim vectors"]
+        GEMINI_EMB["✨ Gemini Embeddings<br/>text-embedding-004<br/>3072-dim vectors"]
+        EMBEDDER --> OLLAMA_EMB
+        EMBEDDER --> GEMINI_EMB
+    end
+
+    subgraph RAGDB["🧠 ragdb — RAG Database (PostgreSQL + pgvector)"]
+        direction TB
+
+        subgraph MCP_TABLES["📋 mcp Schema Tables"]
+            direction TB
+            KNOW["mcp.knowledge<br/>topic · content · source<br/>collection · metadata<br/>category: rule/example<br/>state: manual/promoted"]
+            FEED["mcp.feedback<br/>User corrections<br/>new → learned/wont_fix<br/>Error patterns"]
+            AUDIT["mcp.audit_aisql<br/>hl_question · generated_sql<br/>executed_sql · is_modified<br/>status · username · cost"]
+            TEACH["mcp.teaching<br/>Q/A test pairs<br/>Multi-turn chains<br/>Difficulty levels"]
+            TRUN["mcp.teaching_run<br/>Pass/fail per pair<br/>Score · model · timestamp<br/>Regression tracking"]
+            HIST["mcp.history<br/>Conversation history<br/>Session tracking"]
+        end
+
+        subgraph RAG_TABLES["🔢 rag Schema"]
+            direction TB
+            EMB_TBL["rag.embeddings<br/>topic · embedding (vector)<br/>provider · model<br/>collection · dimensions"]
+            PARTS["Partitions:<br/>embeddings_dwh<br/>embeddings_hr<br/>embeddings_meta<br/>embeddings_confluence<br/>embeddings_docs"]
+            ISSUE_EMB["rag.issue_embeddings<br/>issue_key · summary<br/>embedding (vector)"]
+            AUDIT_LOG["rag.audit_log<br/>hl_question · generated_sql<br/>status · username · cost"]
+            EMB_TBL --> PARTS
+        end
+
+        subgraph DB_FUNCS["⚙️ Database Functions"]
+            direction TB
+            FN1["fn_search_knowledge()<br/>Topic + collection filter"]
+            FN2["fn_search_embeddings()<br/>Vector similarity (cosine)<br/>Per-collection threshold"]
+            FN3["fn_upsert_knowledge()<br/>Idempotent insert/update"]
+            FN4["fn_search_issues()<br/>Issue vector search"]
+            FN5["fn_get_stats()<br/>Collection statistics"]
+            FN6["fn_cleanup_stale()<br/>Remove orphaned entries"]
+            FN7["search_all_collections()<br/>Cross-collection UNION ALL<br/>Parallel search"]
+        end
+    end
+
+    subgraph CLI["🖥️ MCP-Forge CLI (Go)"]
+        direction TB
+        MAIN["main.go<br/>REPL interactive mode<br/>Single-query: -q flag<br/>Runtime commands:<br/>:provider :model :threshold :debug"]
+        CFG["config.go<br/>YAML + env var loader<br/>DB · AI · RAG settings"]
+        ADAPT["adapters.go<br/>AIClient (Gemini/Ollama)<br/>RAGProvider (pgvector)<br/>SQLExecutor (PostgreSQL)"]
+        DISP["display.go<br/>ANSI color output<br/>ASCII table renderer<br/>Debug info formatting"]
+        GOMOD["go.mod<br/>Module with local aichat replace<br/>9.3MB binary"]
+        MAIN --> CFG
+        MAIN --> ADAPT
+        MAIN --> DISP
+        CFG --> GOMOD
+    end
+
+    subgraph AICHAT["🔗 aichat Module (Go)"]
+        direction TB
+        PIPE["pipeline.go (313 lines)<br/>NL → MCP Context → SQL<br/>→ Execute → NL Response<br/>Multi-turn conversation"]
+        TYPES["types.go (120 lines)<br/>AIClient interface<br/>RAGProvider interface<br/>SQLExecutor interface"]
+        FBACK["feedback.go (182 lines)<br/>Error feedback + audit<br/>rag.audit_log writes<br/>ProcessManualPromotion"]
+        PERSONA["persona.go (78 lines)<br/>Embedded persona loader<br/>System prompt builder"]
+        UTILS["utils.go (64 lines)<br/>ExtractSQL()<br/>SubstituteLoginUser()"]
+        PIPE --> TYPES
+        PIPE --> FBACK
+        PIPE --> PERSONA
+        PIPE --> UTILS
+    end
+
+    subgraph SELF_STUDY["📚 Self-Study Learning Loop"]
+        direction TB
+        SS_AUDIT["1. Auditing<br/>Every AI-SQL generation<br/>logged to audit_aisql"]
+        SS_DETECT["2. Detection<br/>SelfStudyService worker<br/>Finds modified queries<br/>Interval: 30s · Batch: 5"]
+        SS_DISTILL["3. Distillation<br/>Gemini Flash compares<br/>wrong vs right SQL<br/>Timeout: 120s"]
+        SS_PROMOTE["4. Promotion<br/>Upsert to mcp.knowledge<br/>state: study-promoted"]
+        SS_AUDIT --> SS_DETECT
+        SS_DETECT --> SS_DISTILL
+        SS_DISTILL --> SS_PROMOTE
+    end
+
+    subgraph TARGETS["🎯 Output Targets"]
+        direction TB
+        FILES["📁 File System<br/>chain_gemini/<br/>chain_ollama/<br/>full/dwh_mcp.md"]
+        RAGDB_IMP["🧠 ragdb Import<br/>rag.knowledge<br/>rag.embeddings"]
+    end
+
+    %% ━━━ Main Flow ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    CONFIG --> SOURCES
+    SOURCES --> CORE
     CORE --> OUTPUTS
     FULL --> FILES
     CHAIN_G --> FILES
     CHAIN_O --> FILES
-    JSON --> RAGDB
-    BACKUP --> FILES
+    JSON_OUT --> RAGDB_IMP
+
+    %% ━━━ Embedding Flow ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    FILES --> EMBEDDER
+    RAGDB_IMP --> KNOW
+    OLLAMA_EMB --> EMB_TBL
+    GEMINI_EMB --> EMB_TBL
+
+    %% ━━━ Claude Agent ↔ ragdb ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    MODE1 --> KNOW
+    MODE2 --> FEED
+    MODE3 --> TEACH
+    MODE4 --> TRUN
+
+    %% ━━━ CLI → aichat → ragdb ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    ADAPT --> PIPE
+    PIPE --> FN2
+    FBACK --> AUDIT_LOG
+
+    %% ━━━ Self-Study → ragdb ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    SS_AUDIT --> AUDIT
+    SS_PROMOTE --> KNOW
+
+    %% ━━━ Functions → Tables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    FN1 --> KNOW
+    FN2 --> EMB_TBL
+    FN3 --> KNOW
+    FN4 --> ISSUE_EMB
+    FN7 --> EMB_TBL
