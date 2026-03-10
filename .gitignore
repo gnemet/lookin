@@ -21,3 +21,4 @@ vendor/
 .vault_pass
 .doc_hashes
 .stale_docs
+config.yaml
