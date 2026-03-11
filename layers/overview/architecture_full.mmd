@@ -1,0 +1,326 @@
+graph TB
+    %% ============================================================
+    %% BUSINESS LAYER
+    %% ============================================================
+    subgraph BUSINESS["🏢 BUSINESS PROCESSES"]
+        direction TB
+        BP_JIRA["🔵 Jira Cloud<br/>Issues, Worklogs,<br/>Statuses, Projects"]
+        BP_GIT["🟠 GitLab<br/>Commits, MRs,<br/>Code Reviews"]
+        BP_LDAP["🟣 Active Directory<br/>Users, Org Tree,<br/>Departments"]
+        BP_JC["🟤 JobControl API<br/>Work Time,<br/>Schedules, Leave"]
+        BP_TER["🔴 TER System<br/>Working Hours,<br/>Leave Types"]
+        BP_CAL["📅 Calendar<br/>Holidays,<br/>Working Days"]
+    end
+
+    %% ============================================================
+    %% ETL LAYER (jiramntr Go ETL)
+    %% ============================================================
+    subgraph ETL["⚙️ ETL PIPELINE (jiramntr)"]
+        direction TB
+        subgraph ETL_SYNC["🔄 Data Sync Jobs"]
+            JOB_JIRA["Jira REST API<br/>Sync"]
+            JOB_GIT["GitLab API<br/>Sync"]
+            JOB_LDAP["LDAP Import"]
+            JOB_JC["JobControl<br/>API Sync"]
+            JOB_TER["TER Data<br/>Load"]
+        end
+        subgraph ETL_TRANSFORM["📐 Transform & Load"]
+            ETL_DIM["Dimension<br/>Builder<br/>(SCD Type 2)"]
+            ETL_FACT["Fact Table<br/>Builder"]
+            ETL_KPI["KPI<br/>Calculator"]
+            ETL_SLA["SLA Event<br/>Processor"]
+            ETL_SNAP["Daily Snapshot<br/>Generator"]
+            ETL_CYCLE["Cycle Time<br/>Calculator"]
+        end
+        SCHEDULER["⏲️ Scheduler<br/>(Cron-based)"]
+    end
+
+    %% ============================================================
+    %% DATABASE LAYER
+    %% ============================================================
+    subgraph DB["🗄️ PostgreSQL 16 (db01)"]
+        direction TB
+        subgraph EXT["📥 ext.* (Staging)"]
+            EXT_API["ext.api_data_h<br/>(Jira raw JSON)"]
+            EXT_GIT["ext.gitlab_commit<br/>ext.gitlab_merge_request<br/>ext.gitlab_mr_note"]
+            EXT_LDAP["ext.ldap_users_h<br/>ext.ldap_import"]
+            EXT_JC["ext.jc_daily_worktime<br/>ext.jc_user<br/>ext.jc_user_schedule<br/>ext.jc_workflow_event"]
+            EXT_TER["ext.responsibility_load<br/>ext.ter_leave_type"]
+        end
+
+        subgraph META["🔧 meta.* (Config & Audit)"]
+            META_MAP["Mapping Tables<br/>map_kpi_rating<br/>map_oncall_schedule<br/>map_ter_leave_type<br/>map_user_workhours<br/>map_working_day_config"]
+            META_CONF["Config<br/>app_config<br/>scheduler_config<br/>rls_token"]
+            META_AUDIT["Audit<br/>audit_aisql<br/>etl_log"]
+            META_GIT["Git Staging<br/>gitlab_commit (partitioned)<br/>gitlab_merge_request<br/>gitlab_mr_note"]
+            META_USERS["meta.users<br/>meta.vocabulary<br/>meta.field_list<br/>meta.field_option"]
+        end
+
+        subgraph DWH["⭐ dwh.* (Star Schema)"]
+            subgraph DIMS["📊 Dimensions (SCD2)"]
+                DIM_USER["dim_user_h<br/>Org tree, roles"]
+                DIM_PROJECT["dim_project_h<br/>Keys, types"]
+                DIM_ISSUE["dim_issue_h<br/>All fields"]
+                DIM_STATUS["dim_status_h<br/>+ status_category"]
+                DIM_PRIORITY["dim_priority_h"]
+                DIM_ISSUETYPE["dim_issue_type<br/>+ dim_issue_link_type"]
+                DIM_CUSTOM["dim_custom_field_h<br/>+ dim_custom_field_option_h"]
+                DIM_KPISCORE["dim_kpi_score_h"]
+                DIM_CAL["dim_calendar<br/>Working days"]
+            end
+            subgraph FACTS["📈 Facts (Partitioned)"]
+                FACT_WLOG["fact_daily_worklogs_h<br/>(2020-2026)"]
+                FACT_STATUS["fact_status_events_h<br/>(2015-2026)"]
+                FACT_SNAP["fact_issue_daily_snapshot"]
+                FACT_SLA["fact_sla_h"]
+                FACT_LINK["fact_issue_link"]
+                FACT_CYCLE["fact_issue_cycle_time"]
+                FACT_GIT["fact_user_daily_git<br/>(2024-2026)"]
+                FACT_EFFORT["fact_project_daily_effort"]
+                FACT_KPI_U["fact_user_daily_kpi"]
+                FACT_KPI_T["fact_team_monthly_kpi"]
+                FACT_KPI_P["fact_project_monthly_kpi"]
+                FACT_ORG["fact_org_weekly_snapshot"]
+            end
+            subgraph DWH_HELPER["🔧 Helper Tables"]
+                DWH_USERS["dwh.users<br/>dwh.ldap"]
+                DWH_ISSUES["dwh.issues<br/>dwh.worklogs"]
+                DWH_HISTORY["dwh.history"]
+                DWH_MAPS["dwh.map_status<br/>dwh.map_issue_type<br/>dwh.map_project"]
+                DWH_RLS["dwh.rls_audit_issues"]
+                DWH_REF["dwh.ref_holidays<br/>dwh.responsibility"]
+            end
+        end
+    end
+
+    %% ============================================================
+    %% AI KNOWLEDGE LAYER
+    %% ============================================================
+    subgraph RAG_DB["🧠 PostgreSQL (ragdb)"]
+        direction TB
+        subgraph MCP_SCHEMA["📚 mcp.* (AI Knowledge)"]
+            MCP_KNOW["mcp.knowledge<br/>Rules, functions,<br/>join recipes"]
+            MCP_FEED["mcp.feedback<br/>Error work queue<br/>new→fixed→DELETE"]
+            MCP_PERSONA["mcp.persona<br/>Chat/SQL personas<br/>Rude, Brief, Pirate..."]
+            MCP_HIST["mcp.history<br/>Chat logs<br/>(partitioned monthly)"]
+            MCP_AUDIT["mcp.audit_aisql<br/>AI request log"]
+            MCP_BUILD["mcp.build_log<br/>Pipeline tracking"]
+        end
+        subgraph RAG_SCHEMA["🔍 rag.* (Vector Search)"]
+            RAG_EMB["rag.embeddings<br/>(partitioned by collection)"]
+            RAG_COLL["rag.collections<br/>dwh, hr, meta, git,<br/>jira, docs, confluence"]
+            RAG_KNOW["rag.knowledge<br/>Distilled facts"]
+            RAG_ISSUE["rag.issue_embeddings"]
+            RAG_AUDIT_LOG["rag.audit_log"]
+        end
+    end
+
+    %% ============================================================
+    %% MCP-FORGE PIPELINE
+    %% ============================================================
+    subgraph FORGE["🔨 MCP-Forge (Python)"]
+        direction TB
+        FORGE_SRC["Source Extractors<br/>postgres_dwh.py"]
+        FORGE_EMB["Embedder<br/>embedder.py<br/>Gemini text-embedding"]
+        FORGE_CFG["Config<br/>jiramntr.yaml"]
+    end
+
+    %% ============================================================
+    %% APPLICATION LAYER (jiramntr Go Server)
+    %% ============================================================
+    subgraph APP["🖥️ jiramntr (Go Server)"]
+        direction TB
+        subgraph HANDLERS["🌐 HTTP Handlers"]
+            H_DASH["Dashboard<br/>BI Queries"]
+            H_KPI["KPI Handler"]
+            H_EMP["Employee<br/>Handler"]
+            H_IMPORT["Import<br/>Handlers"]
+            H_ONCALL["OnCall<br/>Handler"]
+            H_DOC["Documentation"]
+            H_SCHED["Scheduler"]
+            H_MCP_CRUD["MCP CRUD"]
+            H_RAG["RAG Handler"]
+        end
+        subgraph AI_PIPE["🤖 AI Pipeline"]
+            AI_SQL["AI SQL<br/>Handler"]
+            AI_CHAT_H["AI Chat<br/>Handler"]
+            AI_COMMON["AI Common<br/>Utils"]
+        end
+        subgraph SECURITY["🔒 Security"]
+            AUTH["LDAP Auth"]
+            RLS["Row-Level<br/>Security"]
+            ACL["ACL<br/>Middleware"]
+        end
+        CATALOG["📋 Catalog Provider<br/>35 JSON catalogs<br/>(v2.0 format)"]
+        DATAGRID_LIB["📊 Datagrid Lib<br/>Parser, Pivot,<br/>Schema Validator"]
+    end
+
+    %% ============================================================
+    %% JOHANNA (AI Chat Assistant)
+    %% ============================================================
+    subgraph JOHANNA["💬 Johanna (Go Server)"]
+        direction TB
+        subgraph J_SERVER["🌐 Web Server"]
+            J_CHAT["Chat Handler<br/>HTMX SSR"]
+            J_FB["Feedback<br/>Handler"]
+            J_CTX["Context/MCP<br/>Manager"]
+            J_AUTH_J["LDAP Auth"]
+        end
+        subgraph J_AI["🧠 AI Engine"]
+            J_PIPELINE["NL→SQL→Execute→NL<br/>Pipeline"]
+            J_RAG_Q["RAG Query<br/>Vector Search"]
+            J_REPAIR["SQL Error<br/>Repair Loop"]
+            J_BILLING["Usage Billing<br/>& Cost Tracking"]
+        end
+        subgraph J_PROVIDERS["☁️ AI Providers"]
+            GEMINI["Google Gemini<br/>2.0 Flash"]
+            OLLAMA["Ollama<br/>Local LLM"]
+        end
+        J_TEACH["📖 Self-Teach<br/>Student→Teacher<br/>Error Correction"]
+    end
+
+    %% ============================================================
+    %% UI / VIEWER LAYER
+    %% ============================================================
+    subgraph UI["🖼️ User Interface"]
+        direction TB
+        LOOKIN["🔭 Lookin<br/>Architecture Viewer<br/>Interactive Diagrams"]
+        JIRA_DA["📐 JiraDa<br/>Project Umbrella<br/>GitHub Pages"]
+    end
+
+    %% ============================================================
+    %% SERVERS
+    %% ============================================================
+    subgraph SERVERS["🏗️ Infrastructure"]
+        SRV_BUT["🖥️ sys-butalam<br/>Production<br/>jiramntr, johanna,<br/>mcp-forge, datagrid, lookin"]
+        SRV_GPU["🖥️ sys-gpu01<br/>GPU Server<br/>jiramntr, Ollama"]
+        SRV_ZEN["💻 Zenbook<br/>Development<br/>All repos"]
+    end
+
+    %% ============================================================
+    %% CONNECTIONS: Business → ETL
+    %% ============================================================
+    BP_JIRA -->|REST API| JOB_JIRA
+    BP_GIT -->|REST API| JOB_GIT
+    BP_LDAP -->|LDAP Protocol| JOB_LDAP
+    BP_JC -->|REST API| JOB_JC
+    BP_TER -->|CSV/DB| JOB_TER
+    SCHEDULER --> ETL_SYNC
+
+    %% ============================================================
+    %% CONNECTIONS: ETL → Staging
+    %% ============================================================
+    JOB_JIRA --> EXT_API
+    JOB_GIT --> EXT_GIT
+    JOB_LDAP --> EXT_LDAP
+    JOB_JC --> EXT_JC
+    JOB_TER --> EXT_TER
+
+    %% ============================================================
+    %% CONNECTIONS: Staging → Meta → DWH
+    %% ============================================================
+    EXT_API --> ETL_DIM
+    EXT_GIT --> META_GIT
+    EXT_LDAP --> ETL_DIM
+    EXT_JC --> ETL_DIM
+    META_GIT --> ETL_FACT
+    META_MAP --> ETL_KPI
+    BP_CAL --> DIM_CAL
+    ETL_DIM --> DIMS
+    ETL_FACT --> FACTS
+    ETL_KPI --> FACT_KPI_U
+    ETL_KPI --> FACT_KPI_T
+    ETL_KPI --> FACT_KPI_P
+    ETL_SLA --> FACT_SLA
+    ETL_SNAP --> FACT_SNAP
+    ETL_CYCLE --> FACT_CYCLE
+
+    %% ============================================================
+    %% CONNECTIONS: DWH → Application
+    %% ============================================================
+    DWH --> H_DASH
+    DWH --> H_KPI
+    DWH --> H_EMP
+    DWH --> AI_SQL
+    CATALOG --> DATAGRID_LIB
+    DATAGRID_LIB --> H_DASH
+
+    %% ============================================================
+    %% CONNECTIONS: DWH → MCP-Forge → RAG
+    %% ============================================================
+    CATALOG --> FORGE_SRC
+    FORGE_SRC --> FORGE_EMB
+    FORGE_EMB --> RAG_EMB
+    FORGE_CFG --> FORGE_SRC
+    MCP_KNOW --> FORGE_SRC
+
+    %% ============================================================
+    %% CONNECTIONS: Johanna AI Pipeline
+    %% ============================================================
+    J_CHAT --> J_PIPELINE
+    J_PIPELINE --> J_RAG_Q
+    J_RAG_Q --> RAG_EMB
+    J_PIPELINE --> AI_SQL
+    J_PIPELINE -->|Execute SQL| DWH
+    J_REPAIR --> J_PIPELINE
+    J_PIPELINE --> MCP_HIST
+    J_FB --> MCP_FEED
+    MCP_FEED --> J_TEACH
+    J_TEACH --> MCP_KNOW
+    J_PIPELINE --> MCP_AUDIT
+    J_PIPELINE --> J_BILLING
+    MCP_PERSONA --> J_CHAT
+    GEMINI --> J_PIPELINE
+    OLLAMA --> J_PIPELINE
+
+    %% ============================================================
+    %% CONNECTIONS: Security
+    %% ============================================================
+    BP_LDAP -.->|Auth| AUTH
+    BP_LDAP -.->|Auth| J_AUTH_J
+    AUTH --> RLS
+    RLS --> DWH_RLS
+
+    %% ============================================================
+    %% CONNECTIONS: UI
+    %% ============================================================
+    LOOKIN --> JIRA_DA
+    APP --> LOOKIN
+    JOHANNA --> LOOKIN
+
+    %% ============================================================
+    %% CONNECTIONS: Servers
+    %% ============================================================
+    APP -.-> SRV_BUT
+    JOHANNA -.-> SRV_BUT
+    FORGE -.-> SRV_BUT
+    APP -.-> SRV_GPU
+    OLLAMA -.-> SRV_GPU
+
+    %% ============================================================
+    %% STYLES
+    %% ============================================================
+    classDef business fill:#1a1a2e,stroke:#e94560,color:#fff,stroke-width:2px
+    classDef etl fill:#16213e,stroke:#0f3460,color:#fff,stroke-width:2px
+    classDef staging fill:#0a0a23,stroke:#533483,color:#e0e0e0,stroke-width:1px
+    classDef meta fill:#0a0a23,stroke:#e94560,color:#e0e0e0,stroke-width:1px
+    classDef dwh fill:#0f0f2e,stroke:#00d2ff,color:#fff,stroke-width:2px
+    classDef ai fill:#1a0a2e,stroke:#a855f7,color:#fff,stroke-width:2px
+    classDef rag fill:#0a1a2e,stroke:#22d3ee,color:#fff,stroke-width:2px
+    classDef app fill:#1e1e3e,stroke:#10b981,color:#fff,stroke-width:2px
+    classDef johanna fill:#2e1a3e,stroke:#ec4899,color:#fff,stroke-width:2px
+    classDef ui fill:#1a2e1a,stroke:#84cc16,color:#fff,stroke-width:2px
+    classDef server fill:#2e2e1a,stroke:#f59e0b,color:#fff,stroke-width:1px
+
+    class BP_JIRA,BP_GIT,BP_LDAP,BP_JC,BP_TER,BP_CAL business
+    class JOB_JIRA,JOB_GIT,JOB_LDAP,JOB_JC,JOB_TER,SCHEDULER,ETL_DIM,ETL_FACT,ETL_KPI,ETL_SLA,ETL_SNAP,ETL_CYCLE etl
+    class EXT_API,EXT_GIT,EXT_LDAP,EXT_JC,EXT_TER staging
+    class META_MAP,META_CONF,META_AUDIT,META_GIT,META_USERS meta
+    class DIM_USER,DIM_PROJECT,DIM_ISSUE,DIM_STATUS,DIM_PRIORITY,DIM_ISSUETYPE,DIM_CUSTOM,DIM_KPISCORE,DIM_CAL,FACT_WLOG,FACT_STATUS,FACT_SNAP,FACT_SLA,FACT_LINK,FACT_CYCLE,FACT_GIT,FACT_EFFORT,FACT_KPI_U,FACT_KPI_T,FACT_KPI_P,FACT_ORG,DWH_USERS,DWH_ISSUES,DWH_HISTORY,DWH_MAPS,DWH_RLS,DWH_REF dwh
+    class MCP_KNOW,MCP_FEED,MCP_PERSONA,MCP_HIST,MCP_AUDIT,MCP_BUILD ai
+    class RAG_EMB,RAG_COLL,RAG_KNOW,RAG_ISSUE,RAG_AUDIT_LOG rag
+    class H_DASH,H_KPI,H_EMP,H_IMPORT,H_ONCALL,H_DOC,H_SCHED,H_MCP_CRUD,H_RAG,AI_SQL,AI_CHAT_H,AI_COMMON,AUTH,RLS,ACL,CATALOG,DATAGRID_LIB app
+    class J_CHAT,J_FB,J_CTX,J_AUTH_J,J_PIPELINE,J_RAG_Q,J_REPAIR,J_BILLING,GEMINI,OLLAMA,J_TEACH johanna
+    class LOOKIN,JIRA_DA ui
+    class SRV_BUT,SRV_GPU,SRV_ZEN server
+    class FORGE_SRC,FORGE_EMB,FORGE_CFG rag
