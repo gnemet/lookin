@@ -1,0 +1,93 @@
+graph TB
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% JIRA-DA — Enterprise Platform Architecture
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    subgraph SOURCES["📡 External Data Sources"]
+        direction TB
+        ORACLE[("🟠 Oracle JIRA DB<br/>Issues · Worklogs<br/>SLA · Comments")]
+        LDAP[/"🔑 Active Directory<br/>Users · Org Tree<br/>LDAP + REST OSINT"/]
+        TER[/"📋 TER REST API<br/>Ulyssys Time Mgmt<br/>Leave · Schedules"/]
+        GITLAB[/"🔀 GitLab API<br/>Commits · MRs<br/>Pipelines"/]
+        JC[/"🖥️ JobCtrl API<br/>PC Density<br/>Custom Reports"/]
+    end
+
+    subgraph JIRAMNTR["🔵 jiramntr — DWH & BI Engine"]
+        direction TB
+        ETL["⚙️ ETL Pipeline<br/>Oracle FDW → ext → dwh<br/>Incremental + Full"]
+        DWH[("🗄️ PostgreSQL DWH<br/>Star Schema · SCD2<br/>dim_ · fact_ · meta_")]
+        BI["📊 BI Query Engine<br/>Markdown-driven SQL<br/>Parameters · Drill-down"]
+        KPI["🎯 KPI Scorecards<br/>People · Trend<br/>Hierarchy View"]
+        DASH["📈 Dashboard<br/>Activity · ETL Status<br/>Shortcuts · Metrics"]
+        ETL --> DWH
+        DWH --> BI & KPI & DASH
+    end
+
+    subgraph JOHANNA["🟢 johanna — AI Chat"]
+        direction TB
+        CHAT["💬 Chat Interface<br/>WebSocket · History<br/>SSO · Persona"]
+        NL2SQL["🧠 NL → SQL → NL<br/>Gemini + Ollama<br/>RAG Context"]
+        FEEDBACK["📝 Feedback Loop<br/>👍/👎 · sqlerr.yaml<br/>Self-correction"]
+        CHAT --> NL2SQL --> FEEDBACK
+    end
+
+    subgraph MCPFORGE["🟡 mcp-forge — AI Tooling"]
+        direction TB
+        CATALOG["📋 Catalog Generator<br/>JSON → Schema → MCP<br/>50 tables · 250+ cols"]
+        TEACHER["🧙 Claude Teacher<br/>Gold SQL · Grading<br/>Correction Blueprints"]
+        RAG["🔗 RAG Pipeline<br/>Embeddings · ChromaDB<br/>Topic-aware chunks"]
+        CATALOG --> RAG
+        TEACHER --> RAG
+    end
+
+    subgraph SHARED["📦 Shared Libraries"]
+        direction LR
+        AICHAT["🔷 aichat<br/>Go module<br/>Pipeline · Types"]
+        DATAGRID["🟠 datagrid<br/>Go module<br/>Pivot · Heatmap<br/>JSON Catalog"]
+    end
+
+    subgraph LOOKIN["🔭 lookin — Architecture Viewer"]
+        VIEWER["🖼️ Interactive Diagrams<br/>Mermaid · Drill-down<br/>Multi-project · Bilingual"]
+    end
+
+    subgraph DEPLOY["🏗️ Deployment"]
+        direction LR
+        BUTALAM["🖥️ sys-butalam01<br/>Production<br/>All services"]
+        GPU["⚡ sys-gpu01<br/>GPU Server<br/>Ollama inference"]
+    end
+
+    %% ── Data Flow ──
+    ORACLE --> ETL
+    LDAP --> ETL
+    TER --> ETL
+    GITLAB --> ETL
+    JC --> ETL
+
+    %% ── Cross-project Dependencies ──
+    DWH --> NL2SQL
+    DWH --> CATALOG
+    AICHAT --> JOHANNA
+    AICHAT --> JIRAMNTR
+    DATAGRID --> BI
+    RAG --> NL2SQL
+    MCPFORGE --> JOHANNA
+
+    %% ── Deployment ──
+    JIRAMNTR --> BUTALAM
+    JOHANNA --> BUTALAM & GPU
+    MCPFORGE --> BUTALAM
+
+    %% ── Styles ──
+    classDef source fill:#2d4a3e,stroke:#4ade80,color:#e2e8f0
+    classDef jiramntr fill:#1e3a5f,stroke:#60a5fa,color:#e2e8f0
+    classDef johanna fill:#1a3d2e,stroke:#34d399,color:#e2e8f0
+    classDef mcpforge fill:#4a3728,stroke:#fbbf24,color:#e2e8f0
+    classDef shared fill:#3b2d50,stroke:#a78bfa,color:#e2e8f0
+    classDef deploy fill:#4a2832,stroke:#fb7185,color:#e2e8f0
+
+    class ORACLE,LDAP,TER,GITLAB,JC source
+    class ETL,DWH,BI,KPI,DASH jiramntr
+    class CHAT,NL2SQL,FEEDBACK johanna
+    class CATALOG,TEACHER,RAG mcpforge
+    class AICHAT,DATAGRID shared
+    class BUTALAM,GPU deploy

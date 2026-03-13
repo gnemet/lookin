@@ -94,3 +94,12 @@ docs:
   jira-monitor/enterprise.md:
     watches: []
     description: "Enterprise overview (manually maintained)"
+
+  jira-da/jira_da.md:
+    watches:
+      - jiramntr/README.md
+      - johanna/README.md
+      - mcp-forge/README.md
+      - datagrid/README.md
+      - aichat/*.go
+    description: "JiraDa platform overview — repos, infra, data sources"

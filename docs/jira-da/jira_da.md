@@ -22,24 +22,26 @@
 
 ## Data Sources
 
-- **JIRA Cloud API** — Issues, Worklogs, SLA Events, Comments, Users, Projects
-- **Oracle LDAP** — User directory, Org structure
+- **Oracle JIRA DB** — Issues, Worklogs, SLA Events, Comments, Users, Projects
+- **Active Directory (LDAP)** — User directory, Org structure, OSINT
+- **TER REST API** — Ulyssys time management, Leave, Schedules
 - **GitLab API** — Commits, MRs, Pipelines
-- **JobCtrl API** — Daily density, SLA data
-- **Confluence** — Documentation, Spaces
+- **JobCtrl API** — PC Density, Custom Reports
 
-## Databases
+## Architecture
 
-| Database | Schemas |
-|----------|---------|
-| **jiramntr_db** | `dwh` (Star Schema, SCD2), `ext` (staging), `meta` (audit, MCP), `oltp` (FDW → Oracle) |
-| **ragdb** | `rag` (embeddings, knowledge, audit_log), `mcp` (knowledge, feedback, teaching) |
+The platform follows a **hub-and-spoke model**:
 
-## DevOps
+- **jiramntr** is the central DWH hub — ingests all external sources via FDW/REST/LDAP
+- **johanna** provides AI chat on top of the DWH data
+- **mcp-forge** builds the knowledge layer (RAG, catalog, teaching pipeline)
+- **aichat** and **datagrid** are shared Go libraries used by multiple services
+- **lookin** provides interactive architecture documentation
 
-- **GPG Vault** (AES256) — `vault.sh lock|unlock|verify|diff`
-- **Environment switching** — `switch_env.sh` (auto-detect hostname)
-- **Deploy scripts** — per-server deployment with `sshpass`
-- **systemd timers** — Claude Teacher, embedding pipeline
-- **GitHub Actions** — CI across all repos
-- **Project Board** — Unified tracking via `/commit-all`, `/new-issue`, `/deploy`
+## Key Design Principles
+
+- **Markdown-driven** — BI queries, KPI scorecards, and parameters all defined in `.md` files
+- **Zero-hardcode** — all configuration via YAML, no magic constants
+- **SCD2 historization** — all dimension tables use `tstzrange` validity periods
+- **LDAP-based ACL** — folder-level whitelist/blacklist from Active Directory
+- **Hierarchy-aware** — ltree-based org tree for RLS and KPI depth filtering
