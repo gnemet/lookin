@@ -496,13 +496,15 @@ header h1 {
 }
 
 .toc-group-count {
-    background: rgba(var(--accent-rgb), 0.15);
+    background: rgba(var(--accent-rgb), 0.1);
     color: var(--accent-color);
-    padding: 1px 7px;
-    border-radius: 10px;
-    font-size: 0.68rem;
+    padding: 0px 6px;
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 6px;
+    font-size: 0.65rem;
     font-weight: 600;
     margin-left: auto;
+    font-family: var(--font-ui);
 }
 
 .toc-group-chevron {
@@ -555,10 +557,11 @@ header h1 {
 
 /* Active (current) layer */
 .toc-item.toc-active {
-    background: rgba(var(--accent-rgb), 0.12);
+    background: rgba(var(--accent-rgb), 0.1);
     border-left: 3px solid var(--accent-color);
     color: var(--accent-color);
     font-weight: 600;
+    box-shadow: inset 0 0 10px rgba(var(--accent-rgb), 0.05);
 }
 
 .toc-item.toc-active i {

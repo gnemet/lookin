@@ -49,6 +49,43 @@ sources:
     path: "."
     color: "#1abc9c"
 
+# ── Table of Contents (Curated Navigation) ──────────────────────
+toc:
+  - group: "Core Platform"
+    group_hu: "Alapplatform"
+    icon: "ph-buildings"
+    layers:
+      - enterprise
+      - jira_da_arch
+      - deployment
+
+  - group: "Applications"
+    group_hu: "Alkalmazások"
+    icon: "ph-app-window"
+    layers:
+      - overview
+      - johanna
+      - application
+      - security
+
+  - group: "Intelligence"
+    group_hu: "Intelligencia"
+    icon: "ph-brain"
+    layers:
+      - ai_pipeline
+      - mcp_forge
+      - mcp_detail
+      - rag_detail
+
+  - group: "Data Layer"
+    group_hu: "Adatréteg"
+    icon: "ph-database"
+    layers:
+      - architecture
+      - star_schema
+      - ragdb_schema
+      - ingestion
+
 # ── Layers: drill-down hierarchy ────────────────────────────────
 # All layers use PNG images with clickRegions for drill-down.
 # clickRegions rect format: [x%, y%, width%, height%] relative to image

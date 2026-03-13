@@ -616,6 +616,56 @@
         const $tree = document.getElementById('toc-tree');
         if (!$tree || !config || !config.layers) return;
 
+        $tree.innerHTML = '';
+
+        // Case A: Curated TOC from YAML
+        if (config.toc && Array.isArray(config.toc)) {
+            renderCuratedTOC($tree);
+        } else {
+            // Case B: Automatic Drill-down Tree (Fallback)
+            renderAutoTOC($tree);
+        }
+
+        console.log(`[LookIn] TOC built: ${config.layers.length} layers`);
+    }
+
+    function renderCuratedTOC($tree) {
+        for (const group of config.toc) {
+            const header = document.createElement('div');
+            header.className = 'toc-group-header';
+            const groupTitle = lang === 'hu' && group.group_hu ? group.group_hu : group.group;
+            const icon = group.icon || 'ph-folders';
+
+            header.innerHTML = `
+                <i class="ph ph-caret-down toc-group-chevron"></i>
+                <i class="ph ${icon}" style="margin-right:4px; opacity:0.8;"></i>
+                <span>${groupTitle}</span>
+                <span class="toc-group-count">${group.layers.length}</span>`;
+
+            const container = document.createElement('div');
+            container.className = 'toc-group-items';
+
+            for (const layerId of group.layers) {
+                const layer = config.layers.find(l => l.id === layerId);
+                if (layer) {
+                    container.appendChild(createTOCItem(layer));
+                }
+            }
+
+            header.addEventListener('click', () => {
+                container.classList.toggle('collapsed');
+                const chevron = header.querySelector('.toc-group-chevron');
+                chevron.className = container.classList.contains('collapsed')
+                    ? 'ph ph-caret-right toc-group-chevron'
+                    : 'ph ph-caret-down toc-group-chevron';
+            });
+
+            $tree.appendChild(header);
+            $tree.appendChild(container);
+        }
+    }
+
+    function renderAutoTOC($tree) {
         // Build parent→children map from clickRegions drilldown references
         const childMap = {};   // parentId → [childId, ...]
         const hasParent = {};  // childId → true (if referenced as drilldown)
@@ -635,48 +685,14 @@
         // Root layers = those not referenced as drilldown targets
         const roots = config.layers.filter(l => !hasParent[l.id]);
 
-        $tree.innerHTML = '';
-
-        // Render a layer as a tree item
-        function createItem(layer) {
-            const div = document.createElement('div');
-            div.className = 'toc-item';
-            div.setAttribute('data-layer-id', layer.id);
-
-            // Icon based on source
-            let icon = 'ph-folder';
-            if (layer.source === 'jiramntr') icon = 'ph-database';
-            else if (layer.source === 'johanna') icon = 'ph-robot';
-            else if (layer.source === 'aichat') icon = 'ph-lightning';
-            else if (layer.source === 'mcp-forge') icon = 'ph-wrench';
-            else if (layer.id === 'enterprise') icon = 'ph-buildings';
-
-            // Color from source
-            const sourceColor = layer.source && config.sources[layer.source]
-                ? config.sources[layer.source].color : 'var(--text-muted)';
-
-            const title = lang === 'hu' && layer.title_hu ? layer.title_hu : layer.title;
-            div.innerHTML = `<i class="ph ${icon}" style="color:${sourceColor}"></i><span class="toc-item-label">${title}</span>`;
-
-            div.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navigateTo(layer.id);
-            });
-
-            return div;
-        }
-
-        // Render root layers and their children as collapsible groups
         for (const root of roots) {
             const children = (childMap[root.id] || [])
                 .map(cid => config.layers.find(l => l.id === cid))
                 .filter(Boolean);
 
             if (children.length === 0) {
-                // Standalone item (no children)
-                $tree.appendChild(createItem(root));
+                $tree.appendChild(createTOCItem(root));
             } else {
-                // Group header
                 const header = document.createElement('div');
                 header.className = 'toc-group-header';
                 const rootTitle = lang === 'hu' && root.title_hu ? root.title_hu : root.title;
@@ -687,22 +703,17 @@
 
                 const container = document.createElement('div');
                 container.className = 'toc-group-items';
-                container.setAttribute('data-group-root', root.id);
 
-                // Root item itself
-                container.appendChild(createItem(root));
+                container.appendChild(createTOCItem(root));
 
-                // Child items — also render sub-children inline
                 for (const child of children) {
-                    container.appendChild(createItem(child));
-
-                    // Sub-children (Level 3)
+                    container.appendChild(createTOCItem(child));
                     const subChildren = (childMap[child.id] || [])
                         .map(cid => config.layers.find(l => l.id === cid))
                         .filter(Boolean)
-                        .filter(sc => !children.includes(sc)); // avoid dupes
+                        .filter(sc => !children.includes(sc));
                     for (const sub of subChildren) {
-                        const subItem = createItem(sub);
+                        const subItem = createTOCItem(sub);
                         subItem.style.paddingLeft = '24px';
                         subItem.style.fontSize = '0.8rem';
                         container.appendChild(subItem);
@@ -721,8 +732,32 @@
                 $tree.appendChild(container);
             }
         }
+    }
 
-        console.log(`[LookIn] TOC built: ${config.layers.length} layers`);
+    function createTOCItem(layer) {
+        const div = document.createElement('div');
+        div.className = 'toc-item';
+        div.setAttribute('data-layer-id', layer.id);
+
+        let icon = 'ph-file';
+        if (layer.source === 'jiramntr') icon = 'ph-database';
+        else if (layer.source === 'johanna') icon = 'ph-robot';
+        else if (layer.source === 'aichat') icon = 'ph-lightning';
+        else if (layer.source === 'mcp-forge') icon = 'ph-wrench';
+        else if (layer.id === 'enterprise' || layer.id === 'jira_da_arch') icon = 'ph-buildings';
+
+        const sourceColor = layer.source && config.sources[layer.source]
+            ? config.sources[layer.source].color : 'var(--text-muted)';
+
+        const title = lang === 'hu' && layer.title_hu ? layer.title_hu : layer.title;
+        div.innerHTML = `<i class="ph ${icon}" style="color:${sourceColor}"></i><span class="toc-item-label">${title}</span>`;
+
+        div.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateTo(layer.id);
+        });
+
+        return div;
     }
 
     function updateTOC(layerId) {
