@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LookIn 🔍 — Interactive Architecture Viewer</title>
+    <meta name="description" content="A YAML-controlled, interactive architecture viewer with hand-drawn Mermaid diagrams. Drill down from business flows to table columns — across multiple projects.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Design Tokens ───────────────────────────────────── */
+        :root {
+            --primary-bg: #1a1b1e;
+            --secondary-bg: #25262b;
+            --card-bg: #2c2e33;
+            --accent: #1abc9c;
+            --accent-rgb: 26, 188, 156;
+            --accent-glow: rgba(26, 188, 156, 0.15);
+            --accent-2: #3498db;
+            --accent-3: #e67e22;
+            --accent-4: #9b59b6;
+            --text: #e4e4e7;
+            --text-muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-hand: 'Caveat', cursive;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--primary-bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── Animated Background ─────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 15% 20%, rgba(26, 188, 156, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 85% 80%, rgba(52, 152, 219, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(155, 89, 182, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Sections ────────────────────────────────────────── */
+        section {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* ── Hero ────────────────────────────────────────────── */
+        .hero {
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid rgba(var(--accent-rgb), 0.2);
+            border-radius: 24px;
+            padding: 6px 18px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 28px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .hero-badge .dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        .hero h1 {
+            font-family: var(--font-hand);
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            animation: fadeInUp 0.6s 0.1s ease both;
+            text-shadow: 0 0 60px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .hero h1 .telescope {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            color: var(--text-muted);
+            max-width: 680px;
+            line-height: 1.7;
+            margin-bottom: 36px;
+            animation: fadeInUp 0.6s 0.2s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.6s 0.3s ease both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            font-family: var(--font-ui);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-bg);
+            border-color: rgba(var(--accent-rgb), 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ── Features Grid ───────────────────────────────────── */
+        .features {
+            padding: 80px 32px;
+        }
+
+        .section-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 700;
+            margin-bottom: 48px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(var(--accent-rgb), 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── Code Block ──────────────────────────────────────── */
+        .quickstart {
+            padding: 80px 32px;
+        }
+
+        .code-block {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            max-width: 700px;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ff5f57; }
+        .code-dot.yellow { background: #febc2e; }
+        .code-dot.green { background: #28c840; }
+
+        .code-header span {
+            margin-left: 8px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            padding: 20px 24px;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            color: var(--text);
+        }
+
+        pre .comment { color: #6b7280; }
+        pre .cmd { color: var(--accent); }
+
+        /* ── Structure ───────────────────────────────────────── */
+        .structure {
+            padding: 80px 32px;
+        }
+
+        .tree {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.9;
+            max-width: 700px;
+            color: var(--text-muted);
+        }
+
+        .tree .folder { color: var(--accent); font-weight: 600; }
+        .tree .file { color: var(--text); }
+        .tree .desc { color: #6b7280; font-family: var(--font-ui); font-size: 0.78rem; }
+
+        /* ── Connected Projects ──────────────────────────────── */
+        .projects {
+            padding: 80px 32px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .project-card h4 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .project-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Footer ──────────────────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: 40px 32px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Animations ──────────────────────────────────────── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ── Responsive ──────────────────────────────────────── */
+        @media (max-width: 640px) {
+            .hero { min-height: 70vh; padding-top: 40px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .projects-grid { grid-template-columns: repeat(2, 1fr); }
+            section, .features, .quickstart, .structure, .projects { padding-left: 20px; padding-right: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            100% Static · No Backend Required
+        </div>
+        <h1>LookIn <span class="telescope">🔍</span></h1>
+        <p class="subtitle">
+            A YAML-controlled, interactive architecture viewer with hand-drawn Mermaid diagrams.
+            Drill down from business flows to table columns — across multiple projects.
+        </p>
+        <div class="hero-actions">
+            <a href="https://gnemet.github.io/jira-da/" class="btn btn-primary">
+                🏗️ View JiraDa Architecture
+            </a>
+            <a href="https://github.com/gnemet/lookin" class="btn btn-secondary">
+                ⭐ GitHub Repository
+            </a>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need to explore architecture</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">✏️</span>
+                <h3>Hand-Drawn Style</h3>
+                <p>Chalkboard-aesthetic PNG diagrams with Mermaid's handDrawn theme for an approachable, sketch-like look.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📋</span>
+                <h3>YAML-Controlled</h3>
+                <p>Define layers, drill-downs, click regions, and sources in a single YAML config file. No code changes needed.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🗺️</span>
+                <h3>TOC Sidebar</h3>
+                <p>Collapsible category groups with curated navigation. Jump to any layer instantly with keyboard shortcuts.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📖</span>
+                <h3>Doc Panel</h3>
+                <p>Right-side panel slides in for catalog data, markdown documentation, or Mermaid source — with anchor scrolling.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔗</span>
+                <h3>Multi-Project</h3>
+                <p>Wire multiple projects into one unified view. Color-coded sources show which repo each layer belongs to.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Drill-Down</h3>
+                <p>Click nodes to zoom deeper: Business → Architecture → Schema → Columns. Pan, zoom, and navigate with keyboard.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🖼️</span>
+                <h3>PNG Presentation Mode</h3>
+                <p>Pre-rendered PNG diagrams with click regions for offline/LAN use — no mermaid.js required at runtime.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🌐</span>
+                <h3>Bilingual (EN/HU)</h3>
+                <p>Toggle between English and Hungarian with a header button. All layer titles and ToC groups are translatable.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>GitHub Pages Ready</h3>
+                <p>100% static — just open index.html. Auto-deployed via GitHub Actions. Works offline from any folder.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="quickstart">
+        <div class="section-label">Quick Start</div>
+        <h2 class="section-title">Up and running in seconds</h2>
+        <div class="code-block">
+            <div class="code-header">
+                <span class="code-dot red"></span>
+                <span class="code-dot yellow"></span>
+                <span class="code-dot green"></span>
+                <span>terminal</span>
+            </div>
+            <pre><span class="comment"># Just open in browser</span>
+<span class="cmd">open</span> index.html
+
+<span class="comment"># Or serve locally</span>
+<span class="cmd">python3</span> -m http.server 8000
+
+<span class="comment"># Regenerate docs from source projects</span>
+<span class="cmd">python3</span> generate_docs.py
+
+<span class="comment"># Regenerate PNG diagrams (requires Puppeteer)</span>
+<span class="cmd">./generate_png.sh</span></pre>
+        </div>
+    </section>
+
+    <!-- Structure -->
+    <section class="structure">
+        <div class="section-label">Project Structure</div>
+        <h2 class="section-title">Clean, predictable layout</h2>
+        <div class="tree">
+            <span class="folder">lookin/</span><br>
+            ├── <span class="file">index.html</span> <span class="desc">— Single-page viewer</span><br>
+            ├── <span class="file">app.js</span> <span class="desc">— Navigation, TOC, pan/zoom, rendering</span><br>
+            ├── <span class="file">style.css</span> <span class="desc">— Catppuccin dark theme</span><br>
+            ├── <span class="folder">configs/</span> <span class="desc">— YAML layer configs</span><br>
+            │   └── <span class="file">jirada.yaml</span> <span class="desc">— Layer + drill-down mapping</span><br>
+            ├── <span class="folder">layers/</span> <span class="desc">— Mermaid diagrams per project</span><br>
+            │   ├── <span class="folder">jiramntr/</span> <span class="desc">— DWH architecture (10 diagrams)</span><br>
+            │   ├── <span class="folder">johanna/</span> <span class="desc">— AI chat architecture</span><br>
+            │   ├── <span class="folder">mcp-forge/</span> <span class="desc">— RAG pipeline</span><br>
+            │   └── <span class="folder">aichat/</span> <span class="desc">— AI module</span><br>
+            ├── <span class="folder">docs/</span> <span class="desc">— Markdown docs per layer</span><br>
+            ├── <span class="folder">catalogs/</span> <span class="desc">— JSON table catalogs</span><br>
+            ├── <span class="file">generate_docs.py</span> <span class="desc">— Auto-generate from source</span><br>
+            └── <span class="file">generate_png.sh</span> <span class="desc">— Render MMD → PNG</span>
+        </div>
+    </section>
+
+    <!-- Connected Projects -->
+    <section class="projects">
+        <div class="section-label">Ecosystem</div>
+        <h2 class="section-title">Connected Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <span class="project-dot" style="background: #3498db"></span>
+                <h4>Jiramntr</h4>
+                <p>DWH, ETL, BI, KPI</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot" style="background: #27ae60"></span>
+                <h4>Johanna</h4>
+                <p>AI Chat, RAG, LLM</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot" style="background: #e67e22"></span>
+                <h4>Datagrid</h4>
+                <p>UI Component Library</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot" style="background: #9b59b6"></span>
+                <h4>MCP-Forge</h4>
+                <p>RAG Pipeline Builder</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot" style="background: #f39c12"></span>
+                <h4>AiChat</h4>
+                <p>Shared AI Module</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            LookIn 🔍 — Built by <a href="https://github.com/gnemet">gnemet</a> · Part of the
+            <a href="https://gnemet.github.io/jira-da/">JiraDa Platform</a>
+        </p>
+    </footer>
+</body>
+
+</html>
