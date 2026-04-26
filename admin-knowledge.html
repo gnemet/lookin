@@ -832,7 +832,7 @@ flowchart LR
     </div>
 
     <div class="highlight" style="margin-top:14px;">
-      <strong>Ki futtatja a pipeline-t?</strong> A <code>mcp-forge</code> és <code>pipeline-forge</code> — a Claude Code CLI vezérlésével. Az admin-knowledge MCP szerver csak olvas a kész vektoros adatbázisból.
+      <strong>Ki futtatja a pipeline-t?</strong> A mcp-forge és pipeline-forge — a Claude Code CLI vezérlésével. Az admin-knowledge MCP szerver csak olvas a kész vektoros adatbázisból.
     </div>
   </div>
 
@@ -926,11 +926,11 @@ flowchart LR
     <div class="card" style="margin-bottom:0;">
       <h3 class="mauve" style="margin-bottom:10px;">A szerver felépítése</h3>
       <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.85rem;color:var(--subtext1);">
-        <span><i class="ph ph-file-py" style="color:var(--blue);"></i> <code>mcp_server/server.py</code> — 28 eszköz, ~1200 sor Python</span>
-        <span><i class="ph ph-file-code" style="color:var(--yellow);"></i> <code>.mcp.json</code> — Claude indítási konfiguráció</span>
-        <span><i class="ph ph-database" style="color:var(--green);"></i> <code>mcp_server/cache.db</code> — SQLite névfeloldás-cache</span>
-        <span><i class="ph ph-file-yml" style="color:var(--peach);"></i> <code>config.yaml</code> — küszöbök, timeoutok, linkek</span>
-        <span><i class="ph ph-lock-key" style="color:var(--red);"></i> <code>.env.gpg</code> — titkosított hitelesítők</span>
+        <span><i class="ph ph-file-py" style="color:var(--blue);"></i> mcp_server/server.py — 28 eszköz, ~1200 sor Python</span>
+        <span><i class="ph ph-file-code" style="color:var(--yellow);"></i> .mcp.json — Claude indítási konfiguráció</span>
+        <span><i class="ph ph-database" style="color:var(--green);"></i> mcp_server/cache.db — SQLite névfeloldás-cache</span>
+        <span><i class="ph ph-file-yml" style="color:var(--peach);"></i> config.yaml — küszöbök, timeoutok, linkek</span>
+        <span><i class="ph ph-lock-key" style="color:var(--red);"></i> .env.gpg — titkosított hitelesítők</span>
       </div>
     </div>
   </div>
@@ -944,7 +944,7 @@ flowchart LR
         <div class="card-title">Keresés (1)</div>
         <h3 class="blue">Tudásbázis</h3>
         <ul>
-          <li><code>search_rag</code> — JIRA / Confluence / Web Docs</li>
+          <li>search_rag — JIRA / Confluence / Web Docs</li>
         </ul>
         <div style="margin-top:8px;">
           <span class="badge blue">jira_technical</span>
@@ -1076,7 +1076,7 @@ flowchart LR
           <li>A RAG adatbázison PostgreSQL RLS engedélyezve</li>
           <li>Az it-akos role csak a saját tenant adatait látja</li>
           <li>Más tenants adatai fizikailag el vannak választva</li>
-          <li>Applikáció-szintű szűrés nem szükséges — DB garantálja</li>
+          <li>MCP-szintű szűrés nem szükséges — DB garantálja</li>
         </ul>
       </div>
       <div class="card accent-teal">
@@ -1084,7 +1084,7 @@ flowchart LR
         <div class="card-title">3. réteg</div>
         <h3 class="teal">SECURITY DEFINER</h3>
         <ul>
-          <li>DWH-ban az it-akos role FUNCTION QUERY jogot kap</li>
+          <li>DWH-ban az it-akos role FUNCTION QUERY EXECUTE jogot kap</li>
           <li>Közvetlen tábla SELECT jog nincs</li>
           <li>Minden adat SECURITY DEFINER funkciókon keresztül</li>
           <li>Az admin szabja meg, mit lát az applikáció</li>
@@ -1097,9 +1097,7 @@ flowchart LR
         <h3 class="green">PAT tokenek (Jira / Confluence)</h3>
         <ul>
           <li>Atlassian Personal Access Token — 90 nap érvényesség</li>
-          <li>Jelenleg: jövőbeli mély-fetch eszközökhöz fenntartva</li>
-          <li>A mai 28 eszköz nélkülük is működik</li>
-          <li>Rotáláskor: vault unlock → szerkeszt → lock → push</li>
+          <li></li>
         </ul>
       </div>
       <div class="card">
@@ -1122,7 +1120,7 @@ flowchart LR
       <div class="card accent-blue">
         <h3 class="blue">JIRA ticketek → közvetlen link</h3>
         <p style="font-size:0.9rem;color:var(--subtext1);margin-bottom:12px;">
-          A <code>search_rag</code> eredményében minden <code>ADMIN-####</code> mention automatikusan kattintható hivatkozássá válik.
+          A search_rag eredményében minden ADMIN-#### mention automatikusan kattintható hivatkozássá válik.
         </p>
         <div class="highlight" style="font-family:monospace;font-size:0.82rem;">
           ADMIN-2341 → [ADMIN-2341](https://jira.ulyssys.hu/browse/ADMIN-2341)
@@ -1154,14 +1152,14 @@ flowchart LR
         <p style="font-size:0.83rem;color:var(--subtext0);margin-bottom:8px;">Minden search_rag találat mellé:</p>
         <ul>
           <li><code>links.issue</code> — JIRA URL</li>
-          <li><code>links.people[].teams</code> — Teams link</li>
-          <li><code>links.people[].mailto</code> — Email link</li>
+          <li>links.people[].teams — Teams link</li>
+          <li>links.people[].mailto — Email link</li>
         </ul>
       </div>
       <div class="card">
         <h3 class="yellow">Konfiguráció</h3>
         <ul>
-          <li><code>config.yaml</code> vezérli</li>
+          <li>config.yaml vezérli</li>
           <li>Teams vagy mailto — választható alapértelmezett</li>
           <li>Opcionális tenant ID a Teams linkekhez</li>
         </ul>
@@ -1264,10 +1262,10 @@ sequenceDiagram
       <div class="card">
         <h3 class="peach">Diagnosztika</h3>
         <ul>
-          <li><code>env_info</code> — kapcsolati státusz ellenőrzés</li>
-          <li><code>server_version</code> — melyik verzió fut</li>
-          <li>SQLite cache törlése: <code>rm mcp_server/cache.db</code></li>
-          <li>Claude Code: <code>claude mcp list</code> — MCP státusz</li>
+          <li>env_info — kapcsolati státusz ellenőrzés</li>
+          <li>server_version — melyik verzió fut</li>
+          <li>SQLite cache törlése: rm mcp_server/cache.db</li>
+          <li>Claude Code: claude mcp list — MCP státusz</li>
         </ul>
       </div>
     </div>
@@ -1280,13 +1278,13 @@ sequenceDiagram
     <div class="content-grid cols-2" style="margin-bottom:16px;">
       <div>
         <div class="card accent-blue" style="margin-bottom:14px;">
-          <h3 class="blue">Mit kap egy középvezető?</h3>
+          <h3 class="blue">Mit kap egy csapat?</h3>
           <ul class="big-list">
-            <li>Azonnali válasz 50 000+ ticketből természetes nyelvű kérdéssel</li>
+            <li>A több platformon levő tudásból olyan tudásbázist épít, melyből azonnali választ ad természetes nyelvű kérdésekre</li>
             <li>Szervezeti struktúra, kontaktok, ügyeleti beosztás egy helyen</li>
             <li>Munkaidő-analitika csapatszinten — napi/heti/projekt szerint</li>
-            <li>WildFly 39 és Keycloak 26.6.0 tech doksi beágyazva</li>
-            <li>Kattintható JIRA és Teams linkek minden válaszban</li>
+            <li>Technikai doksik beágyazva</li>
+            <li>Kattintható JIRA és Teams linkek válaszban</li>
           </ul>
         </div>
         <div class="card accent-green">
@@ -1319,7 +1317,7 @@ sequenceDiagram
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
             <span class="badge mauve" style="min-width:90px;text-align:center;">MCP szerver</span>
-            <span>28 eszköz · Python · stdio · GPG vault</span>
+            <span>28 eszköz · Python · stdio </span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
             <span class="badge yellow" style="min-width:90px;text-align:center;">Biztonság</span>
@@ -1329,9 +1327,6 @@ sequenceDiagram
             <span class="badge green" style="min-width:90px;text-align:center;">Interfész</span>
             <span>Claude Code CLI · természetes nyelv</span>
           </div>
-        </div>
-        <div class="highlight" style="margin-top:16px;">
-          <strong>A fejlesztési idő:</strong> ~3 hónap, kis csapattal. A tudásbázis automatikusan karbantartható — emberi beavatkozás csak PAT-rotációnál szükséges (~90 naponta).
         </div>
       </div>
     </div>
