@@ -1747,8 +1747,17 @@
 
       slideEl.querySelectorAll('.mermaid-diagram').forEach((el, i) => {
         if (!el.hasAttribute('data-src')) {
-          /* Remove physical line breaks inside the code block before feeding it to mermaid to prevent hyphen/newline parsing crashes */
-          let src = el.textContent.replace(/\n\s*•/g, ' &lt;br/&gt;•');
+          let src = el.textContent;
+
+          /* --- IDE WRAP JAVÍTÁS (A MEGOLDÁS) --- */
+          /* Ha a kódolód/IDE új sorba törte a kódot mentéskor, az összeomlasztja a Mermaidot. */
+          /* Itt minden sortörést kitörlünk, ami a <br/> tagek után keletkezett, 
+             valamint megkeressük és egy sorba húzzuk az árva bullet pontokat. */
+          src = src.replace(/<br\s*\/?>\s*\n\s*/gi, '<br/>');
+          src = src.replace(/\n\s*•/g, '<br/>•');
+          src = src.replace(/\n\s*(Nyitott P1)/g, '<br/>$1');
+          /* ------------------------------------- */
+
           el.setAttribute('data-src', src.trim());
           el.dataset.rendered = "false";
         }
