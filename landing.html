@@ -352,6 +352,71 @@
             color: var(--text-muted);
         }
 
+        /* ── Presentations ───────────────────────────────────── */
+        .presentations {
+            padding: 0 32px 60px;
+        }
+
+        .pres-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .pres-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(137, 180, 250, 0.25);
+            border-radius: var(--radius);
+            padding: 28px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pres-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at top left, rgba(137, 180, 250, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pres-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(137, 180, 250, 0.5);
+        }
+
+        .pres-card .pres-icon {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .pres-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #89b4fa;
+        }
+
+        .pres-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .pres-card .pres-meta {
+            margin-top: 14px;
+            font-size: 0.75rem;
+            color: rgba(137, 180, 250, 0.6);
+            display: flex;
+            gap: 12px;
+        }
+
         /* ── Footer ──────────────────────────────────────────── */
         footer {
             text-align: center;
@@ -523,6 +588,24 @@
     </section>
 
     <!-- Connected Projects -->
+    <!-- Presentations -->
+    <section class="presentations">
+        <div class="section-label">Presentations</div>
+        <h2 class="section-title">Slide Decks</h2>
+        <div class="pres-grid">
+            <a href="admin-knowledge.html" class="pres-card">
+                <span class="pres-icon">🧠</span>
+                <h4>admin-knowledge</h4>
+                <p>Hogyan jutott el a JIRA-tól és Confluence-tól egészen a Claude válaszáig a vállalati tudás — RAG, MCP, pgvector, DWH.</p>
+                <div class="pres-meta">
+                    <span>⏱ 20–25 perc</span>
+                    <span>🎯 Középvezetői tájékoztató</span>
+                    <span>15 dia</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
     <section class="projects">
         <div class="section-label">Ecosystem</div>
         <h2 class="section-title">Connected Projects</h2>

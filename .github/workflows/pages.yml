@@ -23,11 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare landing page
+      - name: Prepare site
         run: |
           mkdir -p _site
           cp landing.html _site/index.html
           cp favicon.svg _site/
+          cp admin-knowledge.html _site/
+          cp -r vendor _site/vendor
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
