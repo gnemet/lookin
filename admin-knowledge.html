@@ -1529,8 +1529,8 @@
           RAG-->>MCP: Top 3 snippet ADMIN-3421 tartalmával
           MCP-->>CC: [{content_preview: "[ADMIN-3421]...", links: {...}}]
 
-          CC-->>U: Az ügyelet ma éjjel Küs Ákos [Teams↗].&lt;br/&gt;Nyitott P1 ticketek:&lt;br/&gt;- [ADMIN-3421] — 12
-          napja nyitott&lt;br/&gt;- [ADMIN-3560] — 3 napja nyitott
+          CC-->>U: Az ügyelet ma éjjel Küs Ákos [Teams↗].&lt;br/&gt;Nyitott P1 ticketek:&lt;br/&gt;• [ADMIN-3421] — 12
+          napja nyitott&lt;br/&gt;• [ADMIN-3560] — 3 napja nyitott
         </div>
       </div>
     </div>
@@ -1747,7 +1747,8 @@
 
       slideEl.querySelectorAll('.mermaid-diagram').forEach((el, i) => {
         if (!el.hasAttribute('data-src')) {
-          let src = el.textContent;
+          /* Remove physical line breaks inside the code block before feeding it to mermaid to prevent hyphen/newline parsing crashes */
+          let src = el.textContent.replace(/\n\s*•/g, ' &lt;br/&gt;•');
           el.setAttribute('data-src', src.trim());
           el.dataset.rendered = "false";
         }
