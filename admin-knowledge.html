@@ -544,8 +544,8 @@
         <div class="icon-circle red"><i class="ph ph-magnifying-glass-minus"></i></div>
         <h3 class="red">Találhatatlan tudás</h3>
         <ul>
-          <li>50 000+ JIRA ticket az ADMIN projektben</li>
-          <li>Senki nem olvassa el a Confluence-oldalak százait</li>
+          <li>50 000+ JIRA ticket amiben közvetlen érintett az IT csapat</li>
+          <li>Senki sem több száz Confluence oldalt észbentartani és rossz a kereső</li>
           <li>A keresők kulcsszó alapúak, nem értik a kontextust</li>
         </ul>
       </div>
@@ -553,22 +553,25 @@
         <div class="icon-circle yellow"><i class="ph ph-question"></i></div>
         <h3 class="yellow">Tipikus kérdések</h3>
         <ul>
-          <li>"Ki az ügyelet ma éjjel?"</li>
+          <li>"?"</li>
+          <li>"Hol található geoserver?"</li>
+          <li>"Milyen ENTER környezetek vannak?"</li>
+          <li>"Hogyan kell WildFly 39-en log formátumot konfigurálni?"</li>
           <li>"Ki Küs Ákos főnöke, és hogyan érem el?"</li>
           <li>"Van-e nyitott P1 ticket az infra csapatnál?"</li>
-          <li>"Hogyan kell WildFly 39-en Keycloak-ot konfigurálni?"</li>
-          <li>"Mennyi órát dolgozott a csapatom ezen a héten?"</li>
+          <li>"Mennyi órát dolgozott a csapatom múlt a héten?"</li>
         </ul>
       </div>
       <div class="card accent-green">
         <div class="icon-circle green"><i class="ph ph-target"></i></div>
         <h3 class="green">A cél</h3>
         <ul>
+          <li>Közös tudás bázis több forrásból: confluence, jira, sharepoint, használt eszközök hivatalos dokumentációja</li>
           <li>Természetes kérdés → pontos válasz azonnal</li>
           <li>Magyar és angol egyaránt</li>
-          <li>Kattintható JIRA és Teams linkek a válaszban</li>
           <li>Szervezeti adatok + tudásbázis egyben</li>
           <li>Zero hozzáférés-bővítés — RLS, vault</li>
+          <li>Kattintható JIRA és Confluence linkek a válaszban</li>
         </ul>
       </div>
     </div>
@@ -611,7 +614,7 @@ flowchart LR
         Fns --> Tbl
     end
 
-    MCP -->|"válasz + linkek"| Out[["ADMIN-#### → JIRA&lt;br/&gt;Kolléga → Teams/mailto"]]
+    MCP -->|"válasz + linkek"| Out[["PRJ-#### → JIRA&lt;br/&gt;Kolléga → Teams/mailto"]]
     Out --> User
       </div>
     </div>
@@ -641,7 +644,7 @@ flowchart LR
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
           <div class="icon-circle blue"><i class="ph ph-kanban"></i></div>
           <div>
-            <h3 class="blue">JIRA ADMIN projekt</h3>
+            <h3 class="blue">JIRA projektek (ADMIN+ITS)</h3>
             <div class="badge blue">jira_technical</div>
             <div class="badge blue">jira_business</div>
           </div>
@@ -651,14 +654,14 @@ flowchart LR
           <li>Teljes tartalom: leírás, kommentek, munkaidő-naplók</li>
           <li>REST API-n át: bearer token hitelesítéssel</li>
           <li>Osztályozás: technikai vs. üzleti</li>
-          <li>PII-szűrés: emailek, telefonok, TAJ eltávolítva</li>
+          <li>PII-szűrés (Personal Identifiable Inf.): emailek, telefonok, stb.</li>
         </ul>
       </div>
       <div class="card accent-mauve">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
           <div class="icon-circle mauve"><i class="ph ph-article"></i></div>
           <div>
-            <h3 class="mauve">Confluence — CLAUD + DEVOPS</h3>
+            <h3 class="mauve">Confluence</h3>
             <div class="badge mauve">confluence</div>
           </div>
         </div>
@@ -666,7 +669,7 @@ flowchart LR
           <li>1 820+ oldal-chunk — runbookok, specifikációk, útmutatók</li>
           <li>HTML → tiszta szöveg (BeautifulSoup)</li>
           <li>Kategorizálás: skill / doc / project / process</li>
-          <li>Oldal-fa csoportosítás (szülő + gyermek oldalak)</li>
+          <li>Sidebar csoportosítás (szülő + gyermek oldalak)</li>
         </ul>
       </div>
       <div class="card accent-teal">
@@ -712,16 +715,16 @@ flowchart LR
         <div class="label" style="color:var(--subtext0);font-size:0.82rem;">JIRA ticket</div>
       </div>
       <div class="card" style="text-align:center;padding:24px 16px;">
+        <div class="num teal">~10K</div>
+        <div class="label" style="color:var(--subtext0);font-size:0.82rem;">jira ticket csoportosítás</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px 16px;">
         <div class="num mauve">1 820+</div>
         <div class="label" style="color:var(--subtext0);font-size:0.82rem;">Confluence chunk</div>
       </div>
       <div class="card" style="text-align:center;padding:24px 16px;">
         <div class="num peach">732</div>
         <div class="label" style="color:var(--subtext0);font-size:0.82rem;">Web doc oldal<br/>(WildFly + Keycloak)</div>
-      </div>
-      <div class="card" style="text-align:center;padding:24px 16px;">
-        <div class="num teal">~10K</div>
-        <div class="label" style="color:var(--subtext0);font-size:0.82rem;">epic-centric téma<br/>(JIRA csoportosítva)</div>
       </div>
     </div>
 
@@ -783,7 +786,7 @@ flowchart LR
       <div class="flow-step" style="border-color:var(--red);">
         <div class="step-num">02</div>
         <div class="step-name" style="color:var(--red);">PII-szűrés</div>
-        <div class="step-detail">email, telefon,<br/>TAJ, tokenek<br/>eltávolítva</div>
+        <div class="step-detail">email, telefon,<br/>jelszavak, tokenek<br/>eltávolítva</div>
       </div>
       <div class="flow-step" style="border-color:var(--yellow);">
         <div class="step-num">03</div>
@@ -798,7 +801,7 @@ flowchart LR
       <div class="flow-step" style="border-color:var(--teal);">
         <div class="step-num">05</div>
         <div class="step-name" style="color:var(--teal);">Vektorizáció</div>
-        <div class="step-detail">Ollama<br/>snowflake-<br/>arctic-embed2</div>
+        <div class="step-detail">Ollama<br/>snowflake-arctic-embed2</div>
       </div>
       <div class="flow-step" style="border-color:var(--green);">
         <div class="step-num">06</div>
@@ -814,11 +817,11 @@ flowchart LR
           <li>Minden epic egy "témadokumentum" gyermek ticketeivel</li>
           <li>Épic nélküli ticketek: komponens vagy misc csoport</li>
           <li>SHA256 hash — csak a változott tartalom töltődik újra</li>
-          <li>Egy topic: issue kulcs, összefoglaló, kommentek, munkaidő</li>
+          <li>Egy topic: issue kulcs, összefoglaló, kommentek</li>
         </ul>
       </div>
       <div class="card">
-        <h3 class="mauve">Confluence — oldal-fa csoportosítás</h3>
+        <h3 class="mauve">Confluence — sidebar csoportosítás</h3>
         <ul>
           <li>Szülő oldal + gyermek oldalak = egy téma</li>
           <li>Kategóriák: skill / documentation / project / process</li>
@@ -829,7 +832,7 @@ flowchart LR
     </div>
 
     <div class="highlight" style="margin-top:14px;">
-      <strong>Ki futtatja a pipeline-t?</strong> A <code>mcp-forge</code> és <code>pipeline-forge</code> projektek — a Claude Code CLI vezérli őket. Az admin-knowledge MCP szerver csak olvas a kész vektoros adatbázisból.
+      <strong>Ki futtatja a pipeline-t?</strong> A <code>mcp-forge</code> és <code>pipeline-forge</code> — a Claude Code CLI vezérlésével. Az admin-knowledge MCP szerver csak olvas a kész vektoros adatbázisból.
     </div>
   </div>
 
@@ -890,7 +893,7 @@ flowchart LR
 
   <div class="slide" id="s8">
     <div class="slide-label">Az MCP szerver</div>
-    <h2>A "hídprogram" — az MCP szerver</h2>
+    <h2>A "bridge" — az MCP szerver</h2>
 
     <div class="content-grid cols-2" style="margin-bottom:16px;">
       <div class="card accent-blue">
@@ -899,10 +902,9 @@ flowchart LR
           A <strong>Model Context Protocol</strong> (Anthropic szabvány) lehetővé teszi, hogy a Claude külső adatforrásokat és eszközöket hívjon meg strukturáltan — mint egy API, de az AI-ra szabva.
         </p>
         <ul>
-          <li>Claude Code CLI elindítja a Python szervert (<code>.mcp.json</code>)</li>
+          <li>Claude Code CLI elindítja a Python szervert (.mcp.json)</li>
           <li>Kommunikáció: stdio (standard bemenet/kimenet)</li>
-          <li>GPG vault: <code>.env.gpg</code> → <code>.env</code> automatikusan feloldódik</li>
-          <li>Claude "látja" az összes eszközt és leírást</li>
+          <li>Claude használja az összes eszközt és leírást</li>
         </ul>
       </div>
       <div class="card accent-green">
@@ -911,7 +913,7 @@ flowchart LR
           Minden eszköznek van egy szöveges leírása. Claude értelmezi a kérdést, és eldönti, melyik eszközt (vagy kombinációjukat) kell meghívni.
         </p>
         <div class="scenario">
-          <div class="q">Ki az ügyelet ma, és van nyitott P1 ticketük?</div>
+          <div class="q">Ki az ügyeletes ma, és van nyitott P1 ticketük?</div>
           <div class="a">oncall_schedule + issue_aging párhuzamos hívás</div>
         </div>
         <div class="scenario" style="margin-top:8px;">
@@ -953,7 +955,7 @@ flowchart LR
       </div>
       <div class="card accent-mauve">
         <div class="card-title">Szervezet (13)</div>
-        <h3 class="mauve">Felhasználó & org</h3>
+        <h3 class="mauve">Felhasználó & org (MS AD)</h3>
         <ul>
           <li><code>user_details</code> — profil, részleg, főnök</li>
           <li><code>user_contact</code> — email, telefon</li>
@@ -966,7 +968,7 @@ flowchart LR
       </div>
       <div class="card accent-green">
         <div class="card-title">Munkaidő (6)</div>
-        <h3 class="green">Worklog</h3>
+        <h3 class="green">Worklog (Jira)</h3>
         <ul>
           <li><code>worklog_hours</code> — összes óra</li>
           <li><code>worklog_daily</code> — napi részletes</li>
@@ -977,8 +979,8 @@ flowchart LR
         </ul>
       </div>
       <div class="card accent-peach">
-        <div class="card-title">Ticketek (5)</div>
-        <h3 class="peach">Issue analytics</h3>
+        <div class="card-title">Ticketek (5) </div>
+        <h3 class="peach">Issue analytics (Jira)</h3>
         <ul>
           <li><code>issue_details</code> — ticket részletek</li>
           <li><code>issue_aging</code> — nyitott ticketek kora</li>
@@ -989,7 +991,7 @@ flowchart LR
       </div>
       <div class="card accent-yellow">
         <div class="card-title">Ügyelet & rendszer (3)</div>
-        <h3 class="yellow">Oncall & info</h3>
+        <h3 class="yellow">Oncall & info (sharepoint)</h3>
         <ul>
           <li><code>oncall_schedule</code> — ügyeleti beosztás</li>
           <li><code>env_info</code> — kapcsolati státusz</li>
@@ -1061,11 +1063,9 @@ flowchart LR
         <div class="card-title">1. réteg</div>
         <h3 class="red">GPG Vault</h3>
         <ul>
-          <li><code>.env.gpg</code> — titkosítva a git-ben</li>
-          <li><code>VAULT_PASS</code> — csapatkulcs (CI/CD változó)</li>
-          <li>Telepítéskor automatikusan feloldódik</li>
+          <li>.env.gpg — titkosítva a git-ben</li>
+          <li>VAULT_PASS — csapatkulcs </li>
           <li>DB jelszavak, PAT tokenek, host-ok — mind vaultban</li>
-          <li>Maintainer zárolja vissza és pusholja</li>
         </ul>
       </div>
       <div class="card accent-yellow">
@@ -1074,10 +1074,9 @@ flowchart LR
         <h3 class="yellow">Row Level Security (RLS)</h3>
         <ul>
           <li>A RAG adatbázison PostgreSQL RLS engedélyezve</li>
-          <li>Az <code>it-akos</code> role csak a saját tenant adatait látja</li>
+          <li>Az it-akos role csak a saját tenant adatait látja</li>
           <li>Más tenants adatai fizikailag el vannak választva</li>
           <li>Applikáció-szintű szűrés nem szükséges — DB garantálja</li>
-          <li>Pipeline-írás: <code>root</code> (RLS megkerüli)</li>
         </ul>
       </div>
       <div class="card accent-teal">
@@ -1085,7 +1084,7 @@ flowchart LR
         <div class="card-title">3. réteg</div>
         <h3 class="teal">SECURITY DEFINER</h3>
         <ul>
-          <li>DWH-ban az <code>it-akos</code> role csak EXECUTE jogot kap</li>
+          <li>DWH-ban az it-akos role FUNCTION QUERY jogot kap</li>
           <li>Közvetlen tábla SELECT jog nincs</li>
           <li>Minden adat SECURITY DEFINER funkciókon keresztül</li>
           <li>Az admin szabja meg, mit lát az applikáció</li>
