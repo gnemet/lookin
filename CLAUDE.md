@@ -1,35 +1,15 @@
-# Lookin — Architecture Viewer
+# lookin — Architecture viewer
 
-Pure static HTML/CSS/JS — single `index.html` entry point.
-YAML-driven config, Mermaid.js diagrams (hand-drawn, PNG-first), Phosphor icons, dark theme only.
+Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`. YAML-driven config (`configs/jirada.yaml`). Hand-drawn Mermaid diagrams (PNG-first). Phosphor icons. Dark theme only.
 
-**This repo has NO build step, NO server dependency, NO npm at runtime.**
+## Project-specific rules
+- **NO build step, ever.** Files must work when opened directly in a browser. `package.json` exists only for offline `generate_png.sh` (mermaid-cli) — not runtime.
+- Vendor libs only: Mermaid.js, js-yaml, marked.js. Vanilla JS — no jQuery, HTMX, or frameworks.
+- Phosphor icons only — never Font Awesome.
+- No inline `<style>` / `<script>` — CSS in `style.css`, JS in `app.js`.
+- PNG diagrams preferred (pre-rendered); Mermaid.js is fallback.
+- Drill-down: clickable overlay regions positioned by `%`. Action types: drilldown, doc, url, catalog.
 
-## Read before any task
-
-@.agent/rules/antigravity.md
-@.agent/rules/ui-ux.md
-
-## Key rules
-
-- **Static only** — files must work when opened directly in a browser or served by any static file server
-- **No build step — ever** — `package.json` exists only for Mermaid CLI PNG generation (`generate_png.sh`), not runtime
-- **Single entry point**: `index.html` — all content rendered dynamically via `app.js`
-- **YAML-driven config**: navigation, layers, TOC from `configs/jirada.yaml` (parsed client-side)
-- **Phosphor icons** only — never Font Awesome or any other icon library
-- **Dark theme only** — Catppuccin-inspired; light theme is planned, not implemented
-- **Vanilla JS only** — no jQuery, no HTMX, no frameworks; vendor: Mermaid.js, js-yaml, marked.js
-- **No inline styles / scripts** — all CSS in `style.css`, all logic in `app.js`
-- **PNG-first diagrams** — pre-rendered PNGs preferred; Mermaid.js is fallback only
-
-## Diagram generation (PNG)
-
-```bash
-./generate_png.sh   # requires npm install (one-time, not runtime)
-```
-
-## Deploy
-
-```bash
-./deploy_butalam.sh
-```
+## Commands
+- `./generate_png.sh` — regenerate diagrams (one-time, requires `npm install`).
+- `./deploy_butalam.sh` — deploy.
