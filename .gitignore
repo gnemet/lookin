@@ -22,3 +22,4 @@ vendor/
 .doc_hashes
 .stale_docs
 config.yaml
+.claude/session_state.md
