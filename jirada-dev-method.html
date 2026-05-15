@@ -224,8 +224,8 @@
       border-radius: 10px; padding: 14px; overflow: hidden;
       transition: background 0.3s;
     }
-    .mermaid-diagram { display:flex; justify-content:center; align-items:center; min-height:80px; }
-    .mermaid-diagram svg { max-width:100%; max-height:330px; }
+    .mermaid-diagram { display:flex; justify-content:center; align-items:center; min-height:80px; height:100%; }
+    .mermaid-diagram svg { max-width:100%; max-height:100%; }
 
     /* ── Scenario box ── */
     .scenario-box {
@@ -355,76 +355,55 @@
 
   <!-- s3 — Four Engines -->
   <div class="slide" id="s3">
-    <div class="slide-label">Arch&#237;tekt&#250;ra</div>
-    <h2>A n&#233;gy motor</h2>
-    <div class="content-grid cols-4" style="margin-bottom:16px">
-      <div class="card accent-mauve">
-        <h3 class="mauve">pipeline-forge</h3>
-        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px"><code>bin/pf</code></div>
-        <ul>
-          <li>Olvassa: <code>pipelines/*.md</code></li>
-          <li>Futtat: b&#225;rmely t&#246;bbl&#233;p&#233;ses folyamatot</li>
-          <li>50+ adapter, trigger t&#237;pusok</li>
-        </ul>
-      </div>
-      <div class="card accent-blue">
-        <h3 class="blue">entity-forge</h3>
-        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px"><code>bin/entitygen</code></div>
-        <ul>
-          <li>Olvassa: <code>entities/EN-*.md</code></li>
-          <li>Gener&#225;l: SQL + Go + HTML + BI + WF</li>
-          <li>Codegen, nem runtime</li>
-        </ul>
-      </div>
-      <div class="card accent-teal">
-        <h3 class="teal">PostgreSQL</h3>
-        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px">PG 16+</div>
-        <ul>
-          <li>Minden mut&#225;ci&#243; stored function-&#246;n &#225;t</li>
-          <li>SCD2, RLS, pgvector, mks_sql_parser</li>
-          <li>DB gener&#225;lja az id&#337;b&#233;lyegeket</li>
-        </ul>
-      </div>
-      <div class="card accent-peach">
-        <h3 class="peach">aichat</h3>
-        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px">Go library</div>
-        <ul>
-          <li>Config + provider catalog</li>
-          <li>Gemini / Ollama / Claude dispatch</li>
-          <li>NL&#8594;SQL pipeline</li>
-        </ul>
-      </div>
-    </div>
-    <div class="mermaid-wrap">
+    <div class="slide-label">Motor &#246;sszehasonl&#237;t&#225;s</div>
+    <h2>entity-forge vs pipeline-forge &#8212; mikor melyiket?</h2>
+    <div class="mermaid-wrap" style="flex:1;min-height:0;overflow:hidden;">
       <script type="text/x-mermaid" class="mermaid-src">
-graph LR
-    subgraph Specs["Spec fajlok — adat"]
-        P["pipelines/*.md"]
-        E["entities/EN-*.md\nlov/*.md"]
-        C["Config + provider catalog"]
-    end
-    subgraph Engines["Motorok — kod"]
-        PF["pipeline-forge\nbin/pf"]
-        EF["entity-forge\nbin/entitygen"]
-        PG["PostgreSQL\nstored functions"]
-        AI["aichat\nGo library"]
-    end
-    subgraph Output["Kimenet"]
-        RUN["Futo folyamat\n(ETL, RAG, email, WF)"]
-        GEN["Generalt kod\n(SQL, Go, HTML, BI)"]
-        DATA["Adat\n(DWH, pgvector)"]
-        LLM["LLM valasz\n(Gemini/Ollama/Claude)"]
-    end
-    P --> PF --> RUN
-    E --> EF --> GEN
-    GEN --> PG --> DATA
-    C --> AI --> LLM
-    style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
+flowchart LR
+    EN["entities/EN-*.md\nlov/lov_*.md"] --> EF
+    PM["pipelines/*.md\ndeklarat&#237;v l&#233;p&#233;sek"] --> PF
+
+    EF["entity-forge\nbin/entitygen\ncodegen &#8212; one-shot"]
+    PF["pipeline-forge\nbin/pf\nruntime engine"]
+
+    EF -.->|"pfbridge\nentity_generate adapter"| PF
+
+    EF --> SQL["SQL DDL\n+ CRUD functions"]
+    EF --> GOH["Go handlers\n+ HTMX templates"]
+    EF --> BIQ["BI queries\n+ WF scaffolds"]
+
+    PF --> DBO["DB stored\nfunction calls"]
+    PF --> LLMO["LLM dispatch\naichat"]
+    PF --> HTTPO["HTTP / SMTP\n+ workflow steps"]
+
+    SQL --> PG[("PostgreSQL\nSCD2 + RLS")]
+    GOH --> APP["Go App\nvalueForge"]
+    DBO --> PG
+
     style EF fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
     style PG fill:#313244,stroke:#94e2d5,color:#cdd6f4
-    style AI fill:#313244,stroke:#fab387,color:#cdd6f4
+    style APP fill:#313244,stroke:#a6e3a1,color:#cdd6f4
       </script>
       <div class="mermaid-diagram"></div>
+    </div>
+    <div class="content-grid cols-2" style="margin-top:14px;flex-shrink:0">
+      <div class="card accent-blue">
+        <div class="card-title"><i class="ph ph-gear"></i> entity-forge &#8212; mikor?</div>
+        <ul>
+          <li>&#218;j entit&#225;s, LOV, form, BI n&#233;zet tervez&#233;sekor</li>
+          <li>DDL + Go CRUD + HTMX template egyszerre kell</li>
+          <li>A spec (<code>EN-*.md</code>) gener&#225;lja az &#246;sszeset</li>
+        </ul>
+      </div>
+      <div class="card accent-mauve">
+        <div class="card-title"><i class="ph ph-play-circle"></i> pipeline-forge &#8212; mikor?</div>
+        <ul>
+          <li>T&#246;bbl&#233;p&#233;ses folyamat (ETL, RAG, email, j&#243;v&#225;hagy&#225;s)</li>
+          <li>V&#225;ltoz&#225;s = pipeline szerkeszt&#233;s, nincs recompile</li>
+          <li>Suspend/resume, retry, audit automatikusan</li>
+        </ul>
+      </div>
     </div>
   </div>
 
