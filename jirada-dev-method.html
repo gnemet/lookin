@@ -1318,9 +1318,9 @@ VALUES ($1, now());
   updated_at   timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (tenant_code, id, valid_period),
   -- Egy tenant_code+id par nem fedhet at
-  -- valid_period szerint:
+  -- valid_period szerint (btree_gist kell):
   EXCLUDE USING gist (
-    tenant_code WITH =, valid_period WITH &amp;&amp;)
+    tenant_code WITH =, id WITH =, valid_period WITH &amp;&amp;)
 );</div>
         </div>
       </div>
