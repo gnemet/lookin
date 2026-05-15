@@ -9,6 +9,8 @@
     onerror="this.onerror=null;this.href='https://unpkg.com/@phosphor-icons/web@2/src/regular/style.css'">
   <script src="vendor/mermaid.min.js"
     onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';document.head.appendChild(s)"></script>
+  <script src="vendor/marked.min.js"
+    onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js';document.head.appendChild(s)"></script>
   <style>
     /* ── Catppuccin Mocha (Dark) ── */
     :root {
@@ -226,6 +228,28 @@
     }
     .mermaid-diagram { display:flex; justify-content:center; align-items:center; min-height:80px; height:100%; }
     .mermaid-diagram svg { max-width:100%; max-height:100%; }
+
+    /* ── Markdown viewer ── */
+    .md-viewer {
+      background: var(--mantle); border: 1px solid var(--surface0);
+      border-radius: 10px; padding: 14px 18px; overflow-y: auto;
+      font-size: 0.82rem; line-height: 1.7; color: var(--text);
+    }
+    .md-viewer h1 { font-size: 1rem; font-weight: 600; border-bottom: 1px solid var(--surface1); padding-bottom: 5px; margin: 0 0 10px; color: var(--blue); }
+    .md-viewer h2 { font-size: 0.9rem; font-weight: 600; margin: 12px 0 5px; color: var(--mauve); }
+    .md-viewer h3 { font-size: 0.85rem; font-weight: 600; color: var(--teal); margin: 8px 0 3px; }
+    .md-viewer p  { margin: 0 0 7px; }
+    .md-viewer code { background: var(--surface0); border-radius: 3px; padding: 1px 5px; font-size: 0.78rem; color: var(--peach); }
+    .md-viewer pre { background: var(--crust); border: 1px solid var(--surface0); border-radius: 7px; padding: 10px 12px; margin: 6px 0; overflow-x: auto; }
+    .md-viewer pre code { background: none; padding: 0; color: var(--text); font-size: 0.78rem; }
+    .md-viewer ul, .md-viewer ol { padding-left: 18px; margin: 3px 0 7px; list-style: disc; }
+    .md-viewer ol { list-style: decimal; }
+    .md-viewer li { margin: 2px 0; color: var(--subtext1); }
+    .md-viewer li::before { display: none; }
+    .md-viewer blockquote { border-left: 3px solid var(--overlay1); padding-left: 10px; color: var(--subtext0); margin: 6px 0; }
+    .md-viewer hr { border: none; border-top: 1px solid var(--surface1); margin: 10px 0; }
+    .md-front { background: var(--surface0); border-left: 3px solid var(--blue); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; }
+    .md-front pre { background: none !important; border: none !important; padding: 0 !important; margin: 0 !important; font-size: 0.75rem; color: var(--subtext0); }
 
     /* ── Scenario box ── */
     .scenario-box {
@@ -549,7 +573,9 @@ graph TB
     <div class="slide-label">entity-forge</div>
     <h2>Entity spec form&#225;tum &#8212; Annot&#225;lt minim&#225;lis p&#233;lda</h2>
     <div class="split-50">
-      <div class="code-block" style="font-size:0.75rem">---
+      <div style="display:flex;flex-direction:column;height:100%;min-height:0">
+        <script type="text/x-markdown" class="md-src">
+---
 entity: EN-001
 name: kategoria
 schema: app
@@ -568,39 +594,46 @@ business_key: kod
 - name: kod
   type: text
   required: true
-  business_key: true   # -> edit_locked, ORDER BY alapja
+  business_key: true
   labels: { en: "Code", hu: "Kod" }
 
 - name: nev
   type: text
   required: true
-  labels: { en: "Name", hu: "Megnevezes" }
   list:
-    sort: true         # default ORDER BY oszlop
+    sort: true
+  labels: { en: "Name", hu: "Megnevezes" }
 
 - name: leiras
   type: text
-  labels: { en: "Description", hu: "Leiras" }
   display:
-    list_visible: false  # rejtett a listaban
+    list_visible: false
+  labels: { en: "Description", hu: "Leiras" }
 
 ## FORMS
 
+```yaml
 create:
   fields: [kod, nev, leiras]
 edit:
-  inherit: create      # orokli, kiveszi business_key-t
+  inherit: create
 view:
   inherit: edit
-  readonly_roles: [all]  # minden mezo readonly
+  readonly_roles: [all]
+```
 
 ## CRUD
 
+```yaml
 generate: [list, get, insert, update, expire]
 list:
   search_fields: [kod, nev]
   default_sort: { field: nev, dir: asc }
-  page_sizes: [25, 50]</div>
+  page_sizes: [25, 50]
+```
+        </script>
+        <div class="md-viewer" style="flex:1;min-height:0"></div>
+      </div>
       <div>
         <div class="card accent-blue" style="margin-bottom:12px">
           <h3 class="blue">HEADER kulcsmez&#337;k</h3>
@@ -702,16 +735,13 @@ flowchart LR
     <div class="slide-label">pipeline-forge</div>
     <h2>Pipeline form&#225;tum &#8212; Val&#243;s p&#233;lda: Napi ETL</h2>
     <div class="split-40-60">
-      <div>
-        <div class="card accent-mauve" style="margin-bottom:12px">
-          <h3 class="mauve">Frontmatter + Adapters</h3>
-          <div class="code-block" style="font-size:0.76rem">## Pipeline
-
-```yaml
+      <div style="display:flex;flex-direction:column;height:100%;min-height:0">
+        <script type="text/x-markdown" class="md-src">
+---
 name:     "jiramntr_daily_etl"
 trigger:  "jiramntr_etl"
 schedule: "0 2 * * *"
-```
+---
 
 ## Adapters
 
@@ -726,28 +756,26 @@ llm:
 smtp:
   host:   "${SMTP_HOST}"
   to_ops: "${ETL_OPS_EMAIL}"
-```</div>
-        </div>
-        <div class="card accent-sky">
-          <h3 class="sky">on_error routing</h3>
-          <div class="code-block" style="font-size:0.76rem">## Step: trigger_etl -- http
+```
+
+## Steps
+
+### trigger_etl — http
 
 ```yaml
 config:
-  url:    "...url.../scheduler/run"
+  url:    "${config.adapters.http.jiramntr_url}/scheduler/run"
   method: POST
   body:   "job_key=etl:full"
-  output_key: "trigger_response"
+  output_key: trigger_response
 on_error: etl_unreachable
-# ^ named step, ha HTTP hivas sikertelen
-```</div>
-        </div>
-      </div>
-      <div class="code-block" style="font-size:0.76rem">## Step: poll_etl_completion -- shell
+```
+
+### poll_etl_completion — shell
 
 ```yaml
 config:
-  output_key: "etl_final_status"
+  output_key: etl_final_status
 on_error: send_timeout_alert
 ```
 
@@ -755,43 +783,60 @@ on_error: send_timeout_alert
 for i in $(seq 1 180); do
   STATUS=$(psql "${PG_DSN}" -t -A -c \
     "SELECT status FROM meta.etl_log
-     WHERE table_name = 'etl:full'
-       AND start_time >= NOW()-INTERVAL '5 min'
+     WHERE table_name='etl:full'
      ORDER BY start_time DESC LIMIT 1")
-  case "$STATUS" in
-    SUCCESS|FAILED|PARTIAL)
-      echo "$STATUS"; exit 0;;
-  esac
+  case "$STATUS" in SUCCESS|FAILED|PARTIAL)
+    echo "$STATUS"; exit 0;; esac
   sleep 60
 done
 ```
 
-## Step: summarize_run -- llm_generate
+### summarize_run — llm_generate
 
 ```yaml
 config:
-  provider:    "${config.adapters.llm.provider}"
+  provider:      "${config.adapters.llm.provider}"
   system_prompt: "Be concise and factual."
-  output_key: "email_body"
+  output_key:    email_body
 ```
 
-```template
-ETL status: ${etl_final_status}
-Log: ${etl_log_rows}
-
-Write 8-14 line ops email:
-- Line 1: PASS/WARN/FAIL verdict
-- List FAILED steps with error
-- Final line: action required or not
-```
-
-## Step: send_etl_report -- smtp
+### send_etl_report — smtp
 
 ```yaml
 config:
   subject: "[jiramntr] ETL ${etl_final_status}"
-  body_key: "email_body"
-```</div>
+  body_key: email_body
+```
+        </script>
+        <div class="md-viewer" style="flex:1;min-height:0"></div>
+      </div>
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Pipeline f&#225;jl s&#233;m&#225;ja</h3>
+          <ul>
+            <li>YAML frontmatter: <code>name</code>, <code>trigger</code>, <code>schedule</code></li>
+            <li><code>## Adapters</code> blokk: megosztott kapcsolatok</li>
+            <li><code>## Steps</code> blokk: l&#233;p&#233;sek list&#225;ja</li>
+            <li>L&#233;p&#233;s: <code>### &lt;id&gt; — &lt;adapter&gt;</code></li>
+          </ul>
+        </div>
+        <div class="card accent-sky" style="margin-bottom:12px">
+          <h3 class="sky">on_error routing</h3>
+          <ul>
+            <li>N&#233;vvel hivatkozott l&#233;p&#233;sre ugrik hib&#225;n&#225;l</li>
+            <li>K&#252;l&#246;n <code>etl_unreachable</code> &#233;s <code>send_timeout_alert</code> &#225;gak</li>
+            <li>Nincs k&#252;l&#246;n exception handler k&#243;d</li>
+          </ul>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">Interpol&#225;ci&#243;</h3>
+          <ul>
+            <li><code>${'{'}config.adapters.llm.provider{'}'}</code> — adapter config</li>
+            <li><code>${'{'}etl_final_status{'}'}</code> — el&#337;z&#337; l&#233;p&#233;s output</li>
+            <li><code>${'{'}PG_DSN{'}'}</code> — k&#246;rnyezeti v&#225;ltoz&#243;</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1459,6 +1504,7 @@ python -m pytest</div>
     document.getElementById('btn-prev').disabled = cur === 1;
     document.getElementById('btn-next').disabled = cur === total;
     renderMermaid(sl);
+    renderMdViewers(sl);
   }
 
   function go(dir) {
@@ -1479,6 +1525,33 @@ python -m pytest</div>
     const btn = document.getElementById('theme-toggle');
     btn.innerHTML = isDarkMode ? '<i class="ph ph-sun"></i>' : '<i class="ph ph-moon"></i>';
     renderMermaid(document.getElementById('s' + cur), true);
+    renderMdViewers(document.getElementById('s' + cur), true);
+  }
+
+  function renderMdViewers(slideEl, forceReRender) {
+    if (!slideEl || !window.marked) return;
+    slideEl.querySelectorAll('.md-viewer').forEach(outEl => {
+      if (outEl.dataset.rendered === 'true' && !forceReRender) return;
+      const srcEl = outEl.parentElement.querySelector('.md-src');
+      if (!srcEl) return;
+      const raw = srcEl.textContent.trim();
+      let html = '', content = raw;
+      if (content.startsWith('---')) {
+        const end = content.indexOf('\n---', 3);
+        if (end !== -1) {
+          const front = content.substring(4, end);
+          content = content.substring(end + 4).trim();
+          html += '<div class="md-front"><pre>' + escHtml(front) + '</pre></div>';
+        }
+      }
+      html += marked.parse(content, { breaks: false, gfm: true });
+      outEl.innerHTML = html;
+      outEl.dataset.rendered = 'true';
+    });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function renderMermaid(slideEl, forceReRender) {
