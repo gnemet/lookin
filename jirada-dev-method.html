@@ -171,7 +171,7 @@
       border-radius: 10px; padding: 12px 10px; text-align: center; position: relative;
     }
     .flow-step:not(:last-child)::after {
-      content: '&#8250;'; position: absolute; right: -13px; top: 50%;
+      content: '\203A'; position: absolute; right: -13px; top: 50%;
       transform: translateY(-50%); font-size: 1.2rem; color: var(--overlay0); z-index: 1;
     }
     .flow-step + .flow-step { margin-left: 18px; }
@@ -1048,15 +1048,20 @@ SELECT dt.dokumentum_tipus_code,
    AND role = 'admin'          -- ha {"admin":true}
 --&gt;
    AND tenant_code = :tenant   -- :param subst.
-   AND status = '%status%'     -- %key% subst.</div>
+   AND status = '%status%'     -- %key% subst.
+   AND type = $1-&gt;&gt;'type'     -- #'type' (sor ha truthy)</div>
           <table class="data-table" style="margin-top:10px">
             <thead><tr><th>Szintaxis</th><th>Hat&#225;s</th></tr></thead>
             <tbody>
               <tr><td><code>--&lt;KEY &hellip; --&gt;</code></td><td>Block: csak ha KEY truthy a JSON-ban</td></tr>
               <tr><td><code>:key</code></td><td>Param &#8212; sor t&#246;rl&#337;dik ha kulcs hi&#225;nyzik</td></tr>
               <tr><td><code>%key%</code></td><td>&#201;rt&#233;k &#8212; &#252;res string ha kulcs hi&#225;nyzik</td></tr>
+              <tr><td><code>&hellip; -- #'key'</code></td><td>Line filter &#8212; sor csak ha KEY truthy (&#233;rt&#233;k nem helyettes&#237;t&#337;dik)</td></tr>
             </tbody>
           </table>
+          <div style="margin-top:8px;font-size:0.8rem;color:var(--subtext0)">
+            P&#233;lda: <code>WHERE status = $1-&gt;&gt;'status' -- #'status'</code> &#8212; sor csak ha <code>status</code> jelen van a JSON-ban
+          </div>
         </div>
         <div class="card accent-teal">
           <h3 class="teal">mks_parser JSONB oper&#225;torok</h3>
