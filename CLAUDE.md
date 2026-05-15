@@ -1,5 +1,8 @@
 # lookin — Architecture viewer
 
+> Platform rules live in `../all_rules_for_claude.md` (root). This file only carries lookin-specific deltas.
+> Last refreshed: 2026-05-15.
+
 Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`. YAML-driven config (`configs/jirada.yaml`). Hand-drawn Mermaid diagrams (PNG-first). Phosphor icons. Dark theme only.
 
 ## Project-specific rules
