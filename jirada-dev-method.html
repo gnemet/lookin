@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JiraDa Platform — Fejlesztési módszer</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="vendor/phosphor-icons.css"
+    onerror="this.onerror=null;this.href='https://unpkg.com/@phosphor-icons/web@2/src/regular/style.css'">
+  <script src="vendor/mermaid.min.js"
+    onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';document.head.appendChild(s)"></script>
+  <style>
+    /* ── Catppuccin Mocha (Dark) ── */
+    :root {
+      --base:     #1e1e2e;
+      --mantle:   #181825;
+      --crust:    #11111b;
+      --surface0: #313244;
+      --surface1: #45475a;
+      --surface2: #585b70;
+      --overlay0: #6c7086;
+      --overlay1: #7f849c;
+      --text:     #cdd6f4;
+      --subtext0: #a6adc8;
+      --subtext1: #bac2de;
+      --blue:     #89b4fa;
+      --green:    #a6e3a1;
+      --yellow:   #f9e2af;
+      --red:      #f38ba8;
+      --mauve:    #cba6f7;
+      --pink:     #f5c2e7;
+      --teal:     #94e2d5;
+      --sky:      #89dceb;
+      --peach:    #fab387;
+      --sapphire: #74c7ec;
+    }
+    /* ── Catppuccin Latte (Light) ── */
+    [data-theme="light"] {
+      --base:     #eff1f5; --mantle:   #e6e9ef; --crust:    #dce0e8;
+      --surface0: #ccd0da; --surface1: #bcc0cc; --surface2: #acb0be;
+      --overlay0: #9ca0b0; --overlay1: #8c8fa1; --text:     #4c4f69;
+      --subtext0: #6c6f85; --subtext1: #5c5f77; --blue:     #1e66f5;
+      --green:    #40a02b; --yellow:   #df8e1d; --red:      #d20f39;
+      --mauve:    #8839ef; --pink:     #ea76cb; --teal:     #179299;
+      --sky:      #04a5e5; --peach:    #fe640b; --sapphire: #209fb5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--base); color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      height: 100vh; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Header ── */
+    .pres-header {
+      height: 48px; background: var(--mantle);
+      border-bottom: 1px solid var(--surface0);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .pres-header .logo-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 600; color: var(--blue);
+    }
+    .pres-header .logo-row i { font-size: 18px; }
+    .slide-counter { font-size: 13px; color: var(--subtext0); letter-spacing: 0.5px; }
+    .nav-buttons { display: flex; gap: 8px; }
+    .nav-btn {
+      background: var(--surface0); border: none; color: var(--text);
+      padding: 6px 14px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; display: flex; align-items: center; gap: 6px;
+      transition: background 0.15s, color 0.3s;
+    }
+    .nav-btn:hover { background: var(--surface1); }
+    .nav-btn:disabled { opacity: 0.35; cursor: default; }
+    #theme-toggle { padding: 6px 10px; font-size: 16px; }
+
+    /* ── Progress bar ── */
+    .progress-bar { height: 3px; background: var(--surface0); flex-shrink: 0; }
+    .progress-fill { height: 100%; background: var(--blue); transition: width 0.3s ease; }
+
+    /* ── Slides ── */
+    .slide-wrap { flex: 1; overflow: hidden; position: relative; }
+    .slide {
+      position: absolute; inset: 0; display: none;
+      padding: 36px 56px; overflow-y: auto;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    .slide-label {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--overlay1); margin-bottom: 6px;
+    }
+    .slide h1 {
+      font-size: 2.2rem; font-weight: 700; color: var(--blue);
+      line-height: 1.15; margin-bottom: 6px;
+    }
+    .slide h2 {
+      font-size: 1.5rem; font-weight: 600; color: var(--mauve);
+      margin-bottom: 16px; border-bottom: 1px solid var(--surface1); padding-bottom: 10px;
+    }
+    .slide-sub { font-size: 1rem; color: var(--subtext1); margin-bottom: 28px; }
+
+    /* ── Grid / Cards ── */
+    .content-grid { display: grid; gap: 18px; margin-top: 8px; }
+    .content-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .content-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .content-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .split-50    { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .split-40-60 { display: grid; grid-template-columns: 2fr 3fr; gap: 18px; }
+    .split-60-40 { display: grid; grid-template-columns: 3fr 2fr; gap: 18px; }
+
+    .card {
+      background: var(--mantle); border: 1px solid var(--surface0);
+      border-radius: 12px; padding: 18px 20px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .card.accent-blue   { border-color: var(--blue);   }
+    .card.accent-green  { border-color: var(--green);  }
+    .card.accent-mauve  { border-color: var(--mauve);  }
+    .card.accent-peach  { border-color: var(--peach);  }
+    .card.accent-teal   { border-color: var(--teal);   }
+    .card.accent-sky    { border-color: var(--sky);    }
+    .card.accent-yellow { border-color: var(--yellow); }
+    .card.accent-red    { border-color: var(--red);    }
+
+    .card-title {
+      font-size: 0.76rem; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--overlay1); margin-bottom: 8px;
+    }
+    .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .card h3.blue   { color: var(--blue);   }
+    .card h3.green  { color: var(--green);  }
+    .card h3.mauve  { color: var(--mauve);  }
+    .card h3.peach  { color: var(--peach);  }
+    .card h3.teal   { color: var(--teal);   }
+    .card h3.sky    { color: var(--sky);    }
+    .card h3.yellow { color: var(--yellow); }
+    .card h3.red    { color: var(--red);    }
+
+    ul { list-style: none; }
+    ul li {
+      font-size: 0.9rem; color: var(--subtext1);
+      padding: 3px 0; display: flex; align-items: baseline; gap: 8px;
+    }
+    ul li::before { content: '&#8250;'; color: var(--overlay1); flex-shrink: 0; }
+
+    /* ── Stat numbers ── */
+    .stat { text-align: center; }
+    .stat .num { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
+    .stat .label { font-size: 0.78rem; color: var(--subtext0); margin-top: 4px; }
+    .num.blue   { color: var(--blue);   }
+    .num.green  { color: var(--green);  }
+    .num.mauve  { color: var(--mauve);  }
+    .num.peach  { color: var(--peach);  }
+    .num.teal   { color: var(--teal);   }
+    .num.yellow { color: var(--yellow); }
+    .num.red    { color: var(--red);    }
+
+    /* ── Flow steps ── */
+    .flow { display: flex; align-items: stretch; flex-wrap: wrap; }
+    .flow-step {
+      flex: 1; min-width: 100px;
+      background: var(--mantle); border: 1px solid var(--surface0);
+      border-radius: 10px; padding: 12px 10px; text-align: center; position: relative;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '&#8250;'; position: absolute; right: -13px; top: 50%;
+      transform: translateY(-50%); font-size: 1.2rem; color: var(--overlay0); z-index: 1;
+    }
+    .flow-step + .flow-step { margin-left: 18px; }
+    .flow-step .step-num { font-size: 0.68rem; color: var(--overlay0); margin-bottom: 5px; }
+    .flow-step .step-name { font-size: 0.83rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .flow-step .step-detail { font-size: 0.76rem; color: var(--subtext0); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 20px; font-size: 0.78rem; font-weight: 500;
+    }
+    .badge.blue    { background: color-mix(in srgb,var(--blue) 18%,transparent);    color:var(--blue);    border:1px solid color-mix(in srgb,var(--blue) 35%,transparent); }
+    .badge.green   { background: color-mix(in srgb,var(--green) 18%,transparent);   color:var(--green);   border:1px solid color-mix(in srgb,var(--green) 35%,transparent); }
+    .badge.mauve   { background: color-mix(in srgb,var(--mauve) 18%,transparent);   color:var(--mauve);   border:1px solid color-mix(in srgb,var(--mauve) 35%,transparent); }
+    .badge.peach   { background: color-mix(in srgb,var(--peach) 18%,transparent);   color:var(--peach);   border:1px solid color-mix(in srgb,var(--peach) 35%,transparent); }
+    .badge.teal    { background: color-mix(in srgb,var(--teal) 18%,transparent);    color:var(--teal);    border:1px solid color-mix(in srgb,var(--teal) 35%,transparent); }
+    .badge.sky     { background: color-mix(in srgb,var(--sky) 18%,transparent);     color:var(--sky);     border:1px solid color-mix(in srgb,var(--sky) 35%,transparent); }
+    .badge.yellow  { background: color-mix(in srgb,var(--yellow) 18%,transparent);  color:var(--yellow);  border:1px solid color-mix(in srgb,var(--yellow) 35%,transparent); }
+    .badge.red     { background: color-mix(in srgb,var(--red) 18%,transparent);     color:var(--red);     border:1px solid color-mix(in srgb,var(--red) 35%,transparent); }
+    .badge-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px; }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: var(--crust); border-radius: 8px;
+      padding: 12px 14px; font-family: 'Fira Code','Cascadia Code',monospace;
+      font-size: 0.79rem; color: var(--green); line-height: 1.65;
+      overflow-x: auto; white-space: pre; border: 1px solid var(--surface0);
+      transition: background 0.3s;
+    }
+
+    /* ── Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .data-table th {
+      background: var(--surface0); color: var(--text); padding: 8px 11px;
+      text-align: left; font-weight: 600; font-size: 0.8rem;
+    }
+    .data-table td {
+      padding: 6px 11px; border-bottom: 1px solid var(--surface0);
+      color: var(--subtext1); vertical-align: top;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: color-mix(in srgb,var(--surface0) 35%,transparent); }
+    .data-table td code {
+      font-family: monospace; font-size: 0.81rem; color: var(--peach);
+      background: var(--crust); padding: 1px 5px; border-radius: 3px;
+    }
+
+    /* ── Mermaid diagrams ── */
+    .mermaid-wrap {
+      background: var(--mantle); border: 1px solid var(--surface0);
+      border-radius: 10px; padding: 14px; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .mermaid-diagram { display:flex; justify-content:center; align-items:center; min-height:80px; }
+    .mermaid-diagram svg { max-width:100%; max-height:330px; }
+
+    /* ── Scenario box ── */
+    .scenario-box {
+      background: var(--crust); border: 1px solid var(--surface1);
+      border-radius: 10px; padding: 14px 18px;
+    }
+    .scenario-box .q { color:var(--yellow); font-size:0.88rem; margin-bottom:6px; display:flex; align-items:flex-start; gap:8px; }
+    .scenario-box .a { color:var(--green);  font-size:0.86rem; padding-left:22px; display:flex; align-items:flex-start; gap:8px; }
+
+    /* ── Title slide ── */
+    .title-slide { justify-content:center; align-items:center; text-align:center; }
+    .title-slide h1 { font-size:2.6rem; margin-bottom:10px; }
+    .title-slide .slide-sub { font-size:1.05rem; margin-bottom:22px; }
+
+    /* ── Footer ── */
+    .pres-footer {
+      height: 36px; background: var(--mantle); border-top: 1px solid var(--surface0);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; font-size: 12px; color: var(--subtext0);
+      flex-shrink: 0; transition: background 0.3s;
+    }
+    kbd {
+      background: var(--surface1); border: 1px solid var(--surface2);
+      border-radius: 4px; padding: 1px 5px; font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="pres-header">
+  <div class="logo-row">
+    <i class="ph ph-package"></i>
+    JiraDa &#8212; Fejleszt&#233;si m&#243;dszer
+  </div>
+  <div class="nav-buttons">
+    <span class="slide-counter" id="counter">1 / 16</span>
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)"><i class="ph ph-arrow-left"></i> El&#337;z&#337;</button>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">K&#246;vetkez&#337; <i class="ph ph-arrow-right"></i></button>
+    <button class="nav-btn" id="theme-toggle" onclick="toggleTheme()" title="T&#233;ma v&#225;lt&#225;s"><i class="ph ph-sun"></i></button>
+  </div>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:6.25%"></div></div>
+
+<div class="slide-wrap">
+
+  <!-- s1 — Title -->
+  <div class="slide title-slide active" id="s1">
+    <div class="slide-label">JiraDa Platform</div>
+    <h1><i class="ph ph-package" style="color:var(--blue)"></i> Fejleszt&#233;si m&#243;dszer</h1>
+    <p class="slide-sub">Document = Code &nbsp;&middot;&nbsp; Declarative Logic &nbsp;&middot;&nbsp; Four Engines</p>
+    <div class="badge-row">
+      <span class="badge blue"><i class="ph ph-code"></i> entity-forge</span>
+      <span class="badge mauve"><i class="ph ph-flow-arrow"></i> pipeline-forge</span>
+      <span class="badge green"><i class="ph ph-chart-bar"></i> GoBI</span>
+      <span class="badge teal"><i class="ph ph-database"></i> PostgreSQL</span>
+      <span class="badge peach"><i class="ph ph-robot"></i> aichat</span>
+      <span class="badge yellow"><i class="ph ph-magnifying-glass"></i> RAG</span>
+      <span class="badge sky"><i class="ph ph-eye"></i> lookin</span>
+    </div>
+    <div style="margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:760px">
+      <div class="stat"><div class="num blue">15</div><div class="label">repo</div></div>
+      <div class="stat"><div class="num green">279</div><div class="label">pipeline</div></div>
+      <div class="stat"><div class="num mauve">50+</div><div class="label">adapter</div></div>
+      <div class="stat"><div class="num peach">22</div><div class="label">SCD2 t&#225;bla</div></div>
+    </div>
+  </div>
+
+  <!-- s2 — Core Principles -->
+  <div class="slide" id="s2">
+    <div class="slide-label">Alapelvek</div>
+    <h2>H&#225;rom alapill&#233;r</h2>
+    <div class="content-grid cols-3">
+      <div class="card accent-blue">
+        <div class="card-title"><i class="ph ph-file-text"></i> 1. Document = Code</div>
+        <h3 class="blue">Spec = Futtathat&#243;</h3>
+        <ul>
+          <li>Az <code>.md</code> f&#225;jl egyszerre emberi spec &#233;s motor-input</li>
+          <li>Nincs k&#252;l&#246;n dokument&#225;ci&#243; &#8212; a spec &#246;nmagyar&#225;z&#243;</li>
+          <li>Diff-elhet&#337;, review-olhat&#243;, version-controlled</li>
+          <li>Komment a mir&#233;rtet magyar&#225;zza, nem a mit</li>
+        </ul>
+        <div style="margin-top:10px;font-size:0.83rem;color:var(--subtext0)">
+          Artefaktok: <code>entities/EN-*.md</code> &middot; <code>lov/*.md</code> &middot; <code>pipelines/*.md</code>
+        </div>
+      </div>
+      <div class="card accent-mauve">
+        <div class="card-title"><i class="ph ph-flow-arrow"></i> 2. Logic in Pipelines</div>
+        <h3 class="mauve">&#220;zleti logika &#8800; Go k&#243;d</h3>
+        <ul>
+          <li>T&#246;bbl&#233;p&#233;ses folyamatok &#8594; <code>pipelines/*.md</code></li>
+          <li>Go/Python = motor (engine), nem orchestr&#225;tor</li>
+          <li>V&#225;ltoz&#225;s = pipeline szerkeszt&#233;s, nincs recompile</li>
+          <li>Egys&#233;ges retry, audit, suspend/resume minden folyamatra</li>
+        </ul>
+        <div style="margin-top:10px;font-size:0.83rem;color:var(--subtext0)">
+          Motor: pipeline-forge <code>bin/pf</code>
+        </div>
+      </div>
+      <div class="card accent-green">
+        <div class="card-title"><i class="ph ph-database"></i> 3. Data &gt; Hardcode</div>
+        <h3 class="green">Konfigur&#225;ci&#243; = adat</h3>
+        <ul>
+          <li>Model neveket, tenant &#233;rt&#233;keket, label-eket soha ne hardcode-olj</li>
+          <li>DB registry / config YAML az igazs&#225;g forr&#225;sa</li>
+          <li>Capability-based filtering, nem name-based</li>
+          <li>DB gener&#225;lja az id&#337;b&#233;lyegeket, nem a backend</li>
+        </ul>
+        <div style="margin-top:10px;font-size:0.83rem;color:var(--subtext0)">
+          Identit&#225;s &#233;rt&#233;kek: env var / config &#8212; soha default
+        </div>
+      </div>
+    </div>
+    <div class="scenario-box" style="margin-top:18px">
+      <div class="q"><i class="ph ph-warning" style="margin-top:2px;flex-shrink:0"></i>
+        <span>Miel&#337;tt <code>cmd/&lt;folyamat&gt;/main.go</code>-t &#237;rsz: &ldquo;Lehetne ez pipeline f&#225;jl?&rdquo;</span></div>
+      <div class="a"><i class="ph ph-check-circle" style="margin-top:2px;flex-shrink:0"></i>
+        <span>Ha egyn&#233;l t&#246;bb l&#233;p&#233;s van &#8594; igen, pipeline f&#225;jl. Ha LLM-h&#237;v&#225;st kell orchestr&#225;lni &#8594; <code>aichat.AIClient</code>-en &#225;t, soha saj&#225;t provider HTTP.</span></div>
+    </div>
+    <div class="scenario-box" style="margin-top:10px">
+      <div class="q"><i class="ph ph-warning" style="margin-top:2px;flex-shrink:0"></i>
+        <span>&#214;t&#246;dik motor tervez&#233;se (saj&#225;t workflow runner, LLM router, parallel pipeline framework)?</span></div>
+      <div class="a"><i class="ph ph-check-circle" style="margin-top:2px;flex-shrink:0"></i>
+        <span>&#193;llj meg! A platform m&#225;r rendelkezik a n&#233;gy sz&#252;ks&#233;ges motorral. Adj hozz&#225; adaptert vagy b&#337;v&#237;tsd a spec form&#225;tumot.</span></div>
+    </div>
+  </div>
+
+  <!-- s3 — Four Engines -->
+  <div class="slide" id="s3">
+    <div class="slide-label">Arch&#237;tekt&#250;ra</div>
+    <h2>A n&#233;gy motor</h2>
+    <div class="content-grid cols-4" style="margin-bottom:16px">
+      <div class="card accent-mauve">
+        <h3 class="mauve">pipeline-forge</h3>
+        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px"><code>bin/pf</code></div>
+        <ul>
+          <li>Olvassa: <code>pipelines/*.md</code></li>
+          <li>Futtat: b&#225;rmely t&#246;bbl&#233;p&#233;ses folyamatot</li>
+          <li>50+ adapter, trigger t&#237;pusok</li>
+        </ul>
+      </div>
+      <div class="card accent-blue">
+        <h3 class="blue">entity-forge</h3>
+        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px"><code>bin/entitygen</code></div>
+        <ul>
+          <li>Olvassa: <code>entities/EN-*.md</code></li>
+          <li>Gener&#225;l: SQL + Go + HTML + BI + WF</li>
+          <li>Codegen, nem runtime</li>
+        </ul>
+      </div>
+      <div class="card accent-teal">
+        <h3 class="teal">PostgreSQL</h3>
+        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px">PG 16+</div>
+        <ul>
+          <li>Minden mut&#225;ci&#243; stored function-&#246;n &#225;t</li>
+          <li>SCD2, RLS, pgvector, mks_sql_parser</li>
+          <li>DB gener&#225;lja az id&#337;b&#233;lyegeket</li>
+        </ul>
+      </div>
+      <div class="card accent-peach">
+        <h3 class="peach">aichat</h3>
+        <div style="font-size:0.8rem;color:var(--subtext0);margin-bottom:8px">Go library</div>
+        <ul>
+          <li>Config + provider catalog</li>
+          <li>Gemini / Ollama / Claude dispatch</li>
+          <li>NL&#8594;SQL pipeline</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mermaid-wrap">
+      <script type="text/x-mermaid" class="mermaid-src">
+graph LR
+    subgraph Specs["Spec fajlok — adat"]
+        P["pipelines/*.md"]
+        E["entities/EN-*.md\nlov/*.md"]
+        C["Config + provider catalog"]
+    end
+    subgraph Engines["Motorok — kod"]
+        PF["pipeline-forge\nbin/pf"]
+        EF["entity-forge\nbin/entitygen"]
+        PG["PostgreSQL\nstored functions"]
+        AI["aichat\nGo library"]
+    end
+    subgraph Output["Kimenet"]
+        RUN["Futo folyamat\n(ETL, RAG, email, WF)"]
+        GEN["Generalt kod\n(SQL, Go, HTML, BI)"]
+        DATA["Adat\n(DWH, pgvector)"]
+        LLM["LLM valasz\n(Gemini/Ollama/Claude)"]
+    end
+    P --> PF --> RUN
+    E --> EF --> GEN
+    GEN --> PG --> DATA
+    C --> AI --> LLM
+    style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style EF fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style PG fill:#313244,stroke:#94e2d5,color:#cdd6f4
+    style AI fill:#313244,stroke:#fab387,color:#cdd6f4
+      </script>
+      <div class="mermaid-diagram"></div>
+    </div>
+  </div>
+
+  <!-- s4 — Platform Architecture -->
+  <div class="slide" id="s4">
+    <div class="slide-label">Platform</div>
+    <h2>Platform arch&#237;tekt&#250;ra &#8212; repo t&#233;rk&#233;p</h2>
+    <div class="split-60-40">
+      <div class="mermaid-wrap">
+        <script type="text/x-mermaid" class="mermaid-src">
+graph TB
+    subgraph Libs["Go konyvtarak"]
+        AC["aichat"]
+        DG["datagrid"]
+        GB["GoBI"]
+        PF["pipeline-forge"]
+        EF["entity-forge"]
+    end
+    subgraph Svc["Szolgaltatasok"]
+        JM["jiramntr\nDWH monitor"]
+        JO["johanna\nAI chat"]
+        VF["valueForge\nCRM/BPM"]
+        MF["mcp-forge\nRAG builder"]
+    end
+    subgraph Know["Tudasbazis"]
+        AK["admin-knowledge\nMCP server"]
+        IT["iier-tudastar"]
+        KM["kovacs-muhely"]
+    end
+    subgraph Infra["Infra"]
+        LK["lookin"]
+        MS["mks_sql_parser\nPG extension"]
+    end
+    AC --> JO & VF
+    DG --> JM & VF
+    GB --> VF
+    PF --> VF & MF & AK & IT & KM
+    EF --> VF
+    EF -.->|"pfbridge\nentity_generate adapter"| PF
+    JO --> JM
+    MF --> AK & IT
+    MS --> GB
+    style VF fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style AK fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+        </script>
+        <div class="mermaid-diagram"></div>
+      </div>
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">Go k&#246;nyvt&#225;rak</h3>
+          <ul>
+            <li><strong>aichat</strong> &#8212; multi-LLM dispatcher</li>
+            <li><strong>datagrid</strong> &#8212; metadata-driven grid</li>
+            <li><strong>GoBI</strong> &#8212; BI query renderer</li>
+            <li><strong>pipeline-forge</strong> &#8212; pipeline engine</li>
+            <li><strong>entity-forge</strong> &#8212; code generator</li>
+          </ul>
+        </div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Szolg&#225;ltat&#225;sok</h3>
+          <ul>
+            <li><strong>jiramntr</strong> &#8212; JIRA DWH monitor</li>
+            <li><strong>johanna</strong> &#8212; AI chat (SSO, multi-corp)</li>
+            <li><strong>valueForge</strong> &#8212; CRM/BPM convergence</li>
+            <li><strong>mcp-forge</strong> &#8212; RAG catalog builder</li>
+          </ul>
+        </div>
+        <div class="card accent-green">
+          <h3 class="green">Tud&#225;sb&#225;zis &amp; Infra</h3>
+          <ul>
+            <li><strong>admin-knowledge</strong> &#8212; 59 MCP tool</li>
+            <li><strong>iier-tudastar</strong> &#8212; IIER RAG MCP</li>
+            <li><strong>lookin</strong> &#8212; static arch viewer</li>
+            <li><strong>mks_sql_parser</strong> &#8212; PG C extension</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s5 — entity-forge: What it generates -->
+  <div class="slide" id="s5">
+    <div class="slide-label">entity-forge</div>
+    <h2>entity-forge &#8212; Mi mit gener&#225;l?</h2>
+    <div class="split-40-60" style="margin-bottom:14px">
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">Input: Entity spec</h3>
+          <div style="font-size:0.82rem;color:var(--subtext0);margin-bottom:8px">
+            <code>entities/EN-018_dokumentum_tipus.md</code>
+          </div>
+          <ul>
+            <li><strong>HEADER</strong> &#8212; metaadat (schema, SCD2, RLS&hellip;)</li>
+            <li><strong>COLUMNS</strong> &#8212; mez&#337;k, t&#237;pusok, LOV hivatkoz&#225;sok</li>
+            <li><strong>RELATIONSHIPS</strong> &#8212; FK &#233;s back-referenci&#225;k</li>
+            <li><strong>CRUD</strong> &#8212; gener&#225;land&#243; m&#369;veletek list&#225;ja</li>
+            <li><strong>FORMS</strong> &#8212; create / edit / view vari&#225;nsok</li>
+            <li><strong>AI_CONTEXT</strong> &#8212; AI sz&#225;m&#225;ra teljes kontextus</li>
+          </ul>
+        </div>
+        <div class="card accent-mauve">
+          <h3 class="mauve">Gener&#225;l&#225;s parancs</h3>
+          <div class="code-block" style="font-size:0.77rem">SKIP_DIRTY_CHECK=1 \
+  bash scripts/build.sh
+
+# Eredmeny:
+# OK  EN-018_dokumentum_tipus.md
+#     -> 9 file(s)</div>
+          <div style="margin-top:10px;font-size:0.82rem;color:var(--red)">
+            <i class="ph ph-warning"></i>
+            Gener&#225;lt f&#225;jlokat soha ne szerkeszd!
+          </div>
+        </div>
+      </div>
+      <div>
+        <table class="data-table">
+          <thead><tr><th>Gener&#225;lt f&#225;jl</th><th>Tartalom</th></tr></thead>
+          <tbody>
+            <tr><td><code>database/generated/EN-018_*.sql</code></td><td>DDL + CRUD stored functions: list, get, insert, update, expire</td></tr>
+            <tr><td><code>internal/catalog/dokumentum_tipus.json</code></td><td>Datagrid column catalog &#8212; oszlopok, t&#237;pusok, rendez&#233;s</td></tr>
+            <tr><td><code>ui/pages/dokumentum_tipus_list.html</code></td><td>Lista oldal HTMX template</td></tr>
+            <tr><td><code>ui/partials/*_rows.html</code></td><td>Datagrid sorok HTMX fragment</td></tr>
+            <tr><td><code>ui/partials/*_form_create.html</code></td><td>Create/edit form HTMX fragment</td></tr>
+            <tr><td><code>internal/handlers/*_gen.go</code></td><td>Go handler &#8212; list, form, save, expire</td></tr>
+            <tr><td><code>bi/queries/app/dokumentum_tipus.md</code></td><td>GoBI BI lek&#233;rdez&#233;s f&#225;jl (mks_sql_parser)</td></tr>
+            <tr><td><code>pipelines/WF-dokumentum_tipus-*.md</code></td><td>Workflow scaffold &#8212; create / update / expire</td></tr>
+            <tr><td><code>resources/entity_{en,hu}.json</code></td><td>i18n label kulcsok</td></tr>
+          </tbody>
+        </table>
+        <div class="scenario-box" style="margin-top:12px">
+          <div class="q"><i class="ph ph-warning" style="flex-shrink:0;margin-top:2px"></i>
+            <span>Mez&#337; v&#225;ltoztat&#225;s, LOV hozz&#225;ad&#225;s, form vari&#225;ns m&#243;dos&#237;t&#225;s?</span></div>
+          <div class="a"><i class="ph ph-check-circle" style="flex-shrink:0;margin-top:2px"></i>
+            <span>Szerkeszd az <code>entities/EN-*.md</code> spec-et, futtasd &#250;jra a <code>build.sh</code>-t. Ne ny&#250;lj a gener&#225;lt f&#225;jlokhoz.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s6 — entity-forge: Entity spec format -->
+  <div class="slide" id="s6">
+    <div class="slide-label">entity-forge</div>
+    <h2>Entity spec form&#225;tum &#8212; Annot&#225;lt minim&#225;lis p&#233;lda</h2>
+    <div class="split-50">
+      <div class="code-block" style="font-size:0.75rem">---
+entity: EN-001
+name: kategoria
+schema: app
+table: app.kategoria
+type: Torzsadat
+sensitivity: Alacsony
+# ^ Alacsony -> RLS nem kotelezo
+scd2: false
+# ^ false -> mutable tabla, nincs temporal lanc
+rls: false
+business_key: kod
+---
+
+## COLUMNS
+
+- name: kod
+  type: text
+  required: true
+  business_key: true   # -> edit_locked, ORDER BY alapja
+  labels: { en: "Code", hu: "Kod" }
+
+- name: nev
+  type: text
+  required: true
+  labels: { en: "Name", hu: "Megnevezes" }
+  list:
+    sort: true         # default ORDER BY oszlop
+
+- name: leiras
+  type: text
+  labels: { en: "Description", hu: "Leiras" }
+  display:
+    list_visible: false  # rejtett a listaban
+
+## FORMS
+
+create:
+  fields: [kod, nev, leiras]
+edit:
+  inherit: create      # orokli, kiveszi business_key-t
+view:
+  inherit: edit
+  readonly_roles: [all]  # minden mezo readonly
+
+## CRUD
+
+generate: [list, get, insert, update, expire]
+list:
+  search_fields: [kod, nev]
+  default_sort: { field: nev, dir: asc }
+  page_sizes: [25, 50]</div>
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">HEADER kulcsmez&#337;k</h3>
+          <table class="data-table">
+            <thead><tr><th>Mez&#337;</th><th>Hat&#225;s</th></tr></thead>
+            <tbody>
+              <tr><td><code>scd2: true</code></td><td>Gener&#225;l <code>valid_period tstzrange</code>, <code>is_current</code>, audit mez&#337;ket, btree_gist constraint-et</td></tr>
+              <tr><td><code>rls: true</code></td><td>Automatikus <code>ENABLE ROW LEVEL SECURITY</code> + policy gener&#225;l&#225;s</td></tr>
+              <tr><td><code>sensitivity</code></td><td>Alacsony / K&#246;zepes / Magas &#8212; K&#246;zepes felett RLS k&#246;telez&#337;</td></tr>
+              <tr><td><code>tenant_partitioned</code></td><td>Multi-tenant izol&#225;l&#225;s t&#225;bla szinten</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Mez&#337; t&#237;pusok</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
+            <span class="badge blue">text</span><span class="badge blue">integer</span>
+            <span class="badge blue">numeric</span><span class="badge blue">boolean</span>
+            <span class="badge blue">date</span><span class="badge blue">timestamptz</span>
+            <span class="badge blue">uuid</span><span class="badge mauve">enum (LOV)</span>
+            <span class="badge teal">jsonb</span><span class="badge green">text[]</span>
+          </div>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">SCD2 + RLS bekapcsolva</h3>
+          <div class="code-block" style="font-size:0.77rem">sensitivity: Kozepes
+# ^ -> RLS kotelezo
+scd2: true
+# ^ -> valid_period tstzrange,
+#   is_current GENERATED ALWAYS AS
+#   (upper_inf(valid_period)) STORED,
+#   btree_gist EXCLUDE USING gist
+rls: true
+# ^ -> meta.has_tenant_access policy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s7 — entity-forge: Codegen flow -->
+  <div class="slide" id="s7">
+    <div class="slide-label">entity-forge</div>
+    <h2>Gener&#225;l&#225;s folyamata &#8212; Entity spec &#8594; Production k&#243;d</h2>
+    <div class="mermaid-wrap" style="margin-bottom:16px">
+      <script type="text/x-mermaid" class="mermaid-src">
+flowchart LR
+    SPEC["entities/\nEN-018_*.md"] --> PARSER["entity-forge\nparser + generator\n(Go)"]
+    PARSER --> SQL["database/generated/\n*.sql\n(DDL + CRUD fn-ek)"]
+    PARSER --> CAT["internal/catalog/\n*.json\n(datagrid config)"]
+    PARSER --> HDL["internal/handlers/\n*_gen.go\n(Go handler)"]
+    PARSER --> UI["ui/pages/ + partials/\n*.html\n(HTMX template)"]
+    PARSER --> BI["bi/queries/app/\n*.md\n(GoBI lekerdezs)"]
+    PARSER --> WF["pipelines/\nWF-*-create/update/expire.md\n(workflow scaffold)"]
+    PARSER --> I18N["resources/\nentity_{en,hu}.json\n(i18n)"]
+    SQL -->|"migrate up"| DB[("PostgreSQL\napp schema")]
+    CAT --> DG["datagrid\nlibrary"]
+    HDL -->|"go build"| BIN["server binary"]
+    UI  -->|"go:embed"| BIN
+    BI  --> GOBI["GoBI engine"]
+    style SPEC fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style PARSER fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style DB fill:#313244,stroke:#94e2d5,color:#cdd6f4
+      </script>
+      <div class="mermaid-diagram"></div>
+    </div>
+    <div class="content-grid cols-3">
+      <div class="card accent-blue">
+        <h3 class="blue">1. Spec szerkeszt&#233;se</h3>
+        <ul>
+          <li>Mez&#337; hozz&#225;ad&#225;s/m&#243;dos&#237;t&#225;s az <code>EN-*.md</code>-ben</li>
+          <li>LOV hivatkoz&#225;s, sensitivity, scd2 flag</li>
+          <li>Form vari&#225;ns, CRUD m&#369;veletek</li>
+        </ul>
+      </div>
+      <div class="card accent-mauve">
+        <h3 class="mauve">2. Gener&#225;l&#225;s + build</h3>
+        <div class="code-block" style="font-size:0.77rem;margin-top:6px">SKIP_DIRTY_CHECK=1 \
+  bash scripts/build.sh</div>
+        <ul style="margin-top:8px">
+          <li>entitygen parser fut&#225;sa</li>
+          <li><code>go build ./...</code> az &#246;sszes gener&#225;lt f&#225;jllal</li>
+        </ul>
+      </div>
+      <div class="card accent-teal">
+        <h3 class="teal">3. Migration</h3>
+        <div class="code-block" style="font-size:0.77rem;margin-top:6px">migrate \
+  -path ./migrations \
+  -database $DB_URL up</div>
+        <ul style="margin-top:8px">
+          <li>Idempotens SQL &#8212; &#250;jrafuttathat&#243;</li>
+          <li>DDL tervet mutasd meg el&#337;bb!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s8 — pipeline-forge: Pipeline format -->
+  <div class="slide" id="s8">
+    <div class="slide-label">pipeline-forge</div>
+    <h2>Pipeline form&#225;tum &#8212; Val&#243;s p&#233;lda: Napi ETL</h2>
+    <div class="split-40-60">
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Frontmatter + Adapters</h3>
+          <div class="code-block" style="font-size:0.76rem">## Pipeline
+
+```yaml
+name:     "jiramntr_daily_etl"
+trigger:  "jiramntr_etl"
+schedule: "0 2 * * *"
+```
+
+## Adapters
+
+```yaml
+http:
+  jiramntr_url: "${JIRAMNTR_URL}"
+db:
+  dsn: "${PG_DSN}"
+llm:
+  provider:    "${AI_PROVIDER}"
+  temperature: 0.1
+smtp:
+  host:   "${SMTP_HOST}"
+  to_ops: "${ETL_OPS_EMAIL}"
+```</div>
+        </div>
+        <div class="card accent-sky">
+          <h3 class="sky">on_error routing</h3>
+          <div class="code-block" style="font-size:0.76rem">## Step: trigger_etl -- http
+
+```yaml
+config:
+  url:    "...url.../scheduler/run"
+  method: POST
+  body:   "job_key=etl:full"
+  output_key: "trigger_response"
+on_error: etl_unreachable
+# ^ named step, ha HTTP hivas sikertelen
+```</div>
+        </div>
+      </div>
+      <div class="code-block" style="font-size:0.76rem">## Step: poll_etl_completion -- shell
+
+```yaml
+config:
+  output_key: "etl_final_status"
+on_error: send_timeout_alert
+```
+
+```bash
+for i in $(seq 1 180); do
+  STATUS=$(psql "${PG_DSN}" -t -A -c \
+    "SELECT status FROM meta.etl_log
+     WHERE table_name = 'etl:full'
+       AND start_time >= NOW()-INTERVAL '5 min'
+     ORDER BY start_time DESC LIMIT 1")
+  case "$STATUS" in
+    SUCCESS|FAILED|PARTIAL)
+      echo "$STATUS"; exit 0;;
+  esac
+  sleep 60
+done
+```
+
+## Step: summarize_run -- llm_generate
+
+```yaml
+config:
+  provider:    "${config.adapters.llm.provider}"
+  system_prompt: "Be concise and factual."
+  output_key: "email_body"
+```
+
+```template
+ETL status: ${etl_final_status}
+Log: ${etl_log_rows}
+
+Write 8-14 line ops email:
+- Line 1: PASS/WARN/FAIL verdict
+- List FAILED steps with error
+- Final line: action required or not
+```
+
+## Step: send_etl_report -- smtp
+
+```yaml
+config:
+  subject: "[jiramntr] ETL ${etl_final_status}"
+  body_key: "email_body"
+```</div>
+    </div>
+  </div>
+
+  <!-- s9 — pipeline-forge: Adapter library -->
+  <div class="slide" id="s9">
+    <div class="slide-label">pipeline-forge</div>
+    <h2>Adapter k&#246;nyvt&#225;r</h2>
+    <div class="split-50">
+      <div>
+        <table class="data-table">
+          <thead><tr><th>Csoport</th><th>Adapter</th><th>Mit csin&#225;l</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="3"><span class="badge teal">DB</span></td><td><code>db_query</code></td><td>SELECT stored function-&#246;n &#225;t</td></tr>
+            <tr><td><code>db_execute</code></td><td>INSERT/UPDATE stored function-&#246;n &#225;t</td></tr>
+            <tr><td><code>postgres</code></td><td>Raw SQL (admin use only)</td></tr>
+            <tr><td rowspan="3"><span class="badge blue">HTTP</span></td><td><code>http</code></td><td>&#193;ltal&#225;nos HTTP h&#237;v&#225;s</td></tr>
+            <tr><td><code>jira</code></td><td>JIRA REST API (issues, transitions)</td></tr>
+            <tr><td><code>confluence</code></td><td>Confluence REST + page fetch</td></tr>
+            <tr><td rowspan="3"><span class="badge peach">AI</span></td><td><code>llm_generate</code></td><td>LLM sz&#246;veg gener&#225;l&#225;s</td></tr>
+            <tr><td><code>embed_query</code></td><td>Ollama embedding</td></tr>
+            <tr><td><code>rerank</code></td><td>Cross-encoder reranking</td></tr>
+            <tr><td rowspan="3"><span class="badge yellow">RAG</span></td><td><code>rag_search</code></td><td>pgvector HNSW keres&#233;s</td></tr>
+            <tr><td><code>rag_compact_search</code></td><td>T&#246;m&#246;r&#237;tett RAG output</td></tr>
+            <tr><td><code>output</code></td><td>Pipeline eredm&#233;ny form&#225;z&#225;s</td></tr>
+            <tr><td rowspan="3"><span class="badge mauve">Control</span></td><td><code>human_task</code></td><td>Emberi j&#243;v&#225;hagy&#225;s (suspend/resume)</td></tr>
+            <tr><td><code>rule_engine</code></td><td>SZ-xx &#252;zleti szab&#225;ly futtat&#225;s</td></tr>
+            <tr><td><code>log</code></td><td>Strukturált GELF log</td></tr>
+            <tr><td rowspan="2"><span class="badge sky">IO</span></td><td><code>smtp</code></td><td>Email k&#252;ld&#233;s</td></tr>
+            <tr><td><code>shell</code></td><td>Shell script futtat&#225;s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Teljes adapter regisztr&#225;l&#225;sa &#8212; 6 hely</h3>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-top:8px">
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">1</span> <code>adapter/&lt;type&gt;/&lt;type&gt;.go</code> &#8212; Adapter interface</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">2</span> <code>cmd/pf/main.go</code> &#8212; <code>reg.Register(...)</code></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">3</span> <code>cmd/pf-ui/server.go</code> NewServer() &#8212; Register</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">4</span> <code>cmd/pf-ui/server.go</code> builtinStepTypes</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">5</span> <code>cmd/pf-ui/ui/dag.css</code> &#8212; <code>.node--&lt;type&gt;</code></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.84rem"><span class="badge blue">6</span> <code>docs/adapters/&lt;group&gt;.md</code> &#8212; dokument&#225;ci&#243;</div>
+          </div>
+        </div>
+        <div class="card accent-sky">
+          <h3 class="sky">Step interpol&#225;ci&#243;</h3>
+          <div class="code-block" style="font-size:0.78rem">{{ $payload.tenant }}
+# ^ input payload mezo
+
+{{ $node["Step Id"].json.field }}
+# ^ elozo step output erteke
+
+${config.adapters.db.dsn}
+# ^ adapter konfig referencia
+
+${ETL_OPS_EMAIL}   # env var
+${TODAY}           # beepitett valtozo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s10 — pipeline-forge: Workflow -->
+  <div class="slide" id="s10">
+    <div class="slide-label">pipeline-forge</div>
+    <h2>Workflow pipeline-ok &#8212; Suspend / Resume emberi j&#243;v&#225;hagy&#225;ssal</h2>
+    <div class="split-60-40" style="margin-bottom:14px">
+      <div class="mermaid-wrap">
+        <script type="text/x-mermaid" class="mermaid-src">
+sequenceDiagram
+    participant Handler as Go Handler
+    participant Engine as pipeline-forge
+    participant DB as PostgreSQL
+    participant User as Jovahagyo
+
+    Handler->>Engine: StartWorkflow("WF-request-create", entityID)
+    Engine->>DB: pipeline_run sor letrehozas
+    Engine->>DB: human_task: INSERT pending step (SCD2)
+    Engine-->>Handler: RunSuspended (instanceID)
+
+    Note over User: Email ertesites megy a jovahagyonak
+
+    User->>Handler: Dontes: Jovahagyva / Elutasitva
+    Handler->>DB: UPDATE step: decision=approved
+    Handler->>Engine: ResumeWorkflow(instanceCode, actorID)
+    Engine->>DB: Lezart step sor olvasasa
+    Engine->>DB: db_execute: app.request_approve(decision)
+    Engine-->>Handler: RunSuccess
+        </script>
+        <div class="mermaid-diagram"></div>
+      </div>
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">human_task step</h3>
+          <div class="code-block" style="font-size:0.75rem">## Step: Manager Approval -- human_task
+
+```yaml
+config:
+  name:        "Vezetoi jovahagyas"
+  assignee_id: "{{ $payload.manager_id }}"
+  due_hours:   48
+```
+# Elso futas:
+#   INSERT pending sor (SCD2), suspend.
+# Resume (jovahagyas utan):
+#   lezart sor olvasasa es folytas.</div>
+        </div>
+        <div class="card accent-blue">
+          <h3 class="blue">Go Workflow API</h3>
+          <div class="code-block" style="font-size:0.75rem">// Inditas
+res, err := pipelines.StartWorkflow(
+  ctx, tenant, code, "WF-name",
+  entityType, entityID, actorID,
+  map[string]any{"key": val})
+// res.Status == RunSuspended
+
+// Folytas (jovahagyas utan)
+res, err = pipelines.ResumeWorkflow(
+  ctx, tenant, code, actorID,
+  map[string]any{"lang": "hu"})</div>
+        </div>
+      </div>
+    </div>
+    <div class="content-grid cols-3">
+      <div class="card">
+        <h3 class="green">valueForge pipeline-ok</h3>
+        <ul>
+          <li>27 FY (folyamat) pipeline</li>
+          <li>39 INT (integr&#225;ci&#243;) pipeline</li>
+          <li>211 WF (workflow scaffold, entitygen)</li>
+          <li>20 RULE-SZ (&#252;zleti szab&#225;lyok)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="teal">Megfigyelhet&#337;s&#233;g</h3>
+        <ul>
+          <li>Minden fut&#225;s &#8594; <code>meta.pipeline_run</code> sor</li>
+          <li>GELF strukturált logging stdout-ra</li>
+          <li><code>bin/pf --dry-run pipeline.md</code></li>
+          <li><code>on_error: named_step</code> fallback routing</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="yellow">Trigger t&#237;pusok</h3>
+        <ul>
+          <li><code>manual</code> &#8212; k&#233;zi / API ind&#237;t&#225;s</li>
+          <li><code>cron</code> &#8212; &#252;temezett (cron kifejez&#233;s)</li>
+          <li><code>event</code> &#8212; esem&#233;ny-vez&#233;relt</li>
+          <li><code>workflow</code> &#8212; hosszan fut&#243; suspend/resume</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s11 — GoBI -->
+  <div class="slide" id="s11">
+    <div class="slide-label">GoBI</div>
+    <h2>GoBI &#8212; BI lek&#233;rdez&#233;sek &#233;s mks_sql_parser dinamikus SQL</h2>
+    <div class="split-50">
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">BI lek&#233;rdez&#233;s f&#225;jl form&#225;tum</h3>
+          <div class="code-block" style="font-size:0.76rem">---
+icon: "ph ph-chart-bar"
+title:
+  en: "Document types"
+  hu: "Dokumentumtipusok"
+---
+
+## Parameters
+
+- name: status
+  type: TEXT
+  input: "lov:SELECT kod AS value,
+    app.lov_label(nev, :current_lang)
+    AS label FROM app.lov_aktiv_statusz
+    WHERE aktiv ORDER BY sort_order"
+  labels: {en: Status, hu: Statusz}
+
+## SQL
+
+SELECT dt.dokumentum_tipus_code,
+       dt.tipusnev,
+       app.lov_label(dt.aktiv_statusz,
+         :current_lang) AS statusz
+  FROM app.dokumentum_tipus dt
+ WHERE dt.tenant_code = :tenant
+--&lt;status
+   AND dt.aktiv_statusz = :status
+--&gt;
+   AND dt.is_current
+ ORDER BY dt.tipusnev
+
+## COLUMNS
+
+- column: dokumentum_tipus_code
+  labels: {en: Code, hu: Kod}
+- column: statusz
+  labels: {en: Status, hu: Statusz}</div>
+        </div>
+      </div>
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">mks_sql_parser &#8212; Dinamikus SQL szintaxis</h3>
+          <div class="code-block" style="font-size:0.76rem">SELECT id, name, status
+  FROM app.entity
+ WHERE is_current              -- mindig bent
+--&lt;admin
+   AND role = 'admin'          -- ha {"admin":true}
+--&gt;
+   AND tenant_code = :tenant   -- :param subst.
+   AND status = '%status%'     -- %key% subst.</div>
+          <table class="data-table" style="margin-top:10px">
+            <thead><tr><th>Szintaxis</th><th>Hat&#225;s</th></tr></thead>
+            <tbody>
+              <tr><td><code>--&lt;KEY &hellip; --&gt;</code></td><td>Block: csak ha KEY truthy a JSON-ban</td></tr>
+              <tr><td><code>:key</code></td><td>Param &#8212; sor t&#246;rl&#337;dik ha kulcs hi&#225;nyzik</td></tr>
+              <tr><td><code>%key%</code></td><td>&#201;rt&#233;k &#8212; &#252;res string ha kulcs hi&#225;nyzik</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">mks_parser JSONB oper&#225;torok</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
+            <span class="badge blue"><code>-&gt;#</code> numeric</span>
+            <span class="badge blue"><code>-&gt;^</code> bigint</span>
+            <span class="badge blue"><code>-&gt;@</code> timestamp</span>
+            <span class="badge blue"><code>-&gt;&amp;</code> boolean</span>
+            <span class="badge green"><code>-&gt;&gt;&gt;</code> text[]</span>
+            <span class="badge green"><code>-&gt;^^</code> int[]</span>
+            <span class="badge mauve"><code>===</code> array eq</span>
+          </div>
+          <div style="margin-top:10px;font-size:0.82rem;color:var(--subtext0)">
+            K&#233;t futtat&#225;si m&#243;d: PG extension (<code>SELECT mks_parser($sql, $json)</code>) &#233;s Go <code>bi.PreprocNative</code> (CI). Mindk&#233;t m&#243;d azonos SQL-t kell adjon ugyanarra az inputra.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s12 — Database: JSONB CRUD -->
+  <div class="slide" id="s12">
+    <div class="slide-label">Adatb&#225;zis</div>
+    <h2>JSONB CRUD minta &#8212; Minden adat stored function-&#246;n &#225;t</h2>
+    <div class="content-grid cols-2" style="margin-bottom:14px">
+      <div class="card accent-red">
+        <h3 class="red"><i class="ph ph-x-circle"></i> SOHA &#8212; Inline DML Go/Python k&#243;dban</h3>
+        <div class="code-block" style="font-size:0.78rem;border-color:var(--red)">// BAD -- kozvetlen DML
+pool.Exec(ctx,
+  `INSERT INTO app.entity (name, tenant_code)
+   VALUES ($1, $2)`, name, tenant)
+
+# BAD -- kozvetlen SELECT
+cur.execute("SELECT * FROM dwh.dim_user
+  WHERE user_key = %s", (key,))</div>
+      </div>
+      <div class="card accent-green">
+        <h3 class="green"><i class="ph ph-check-circle"></i> MINDIG &#8212; Stored function h&#237;v&#225;s</h3>
+        <div class="code-block" style="font-size:0.78rem;border-color:var(--green)">// GOOD -- Go caller
+payload, _ := json.Marshal(map[string]any{
+    "tenant": tenant, "id": id})
+var raw []byte
+pool.QueryRow(ctx,
+    "SELECT app.entity_get($1::jsonb)",
+    string(payload)).Scan(&amp;raw)
+
+# GOOD -- Python caller
+cur.execute(
+    "SELECT dwh.user_get_key(%s)", (name,))</div>
+      </div>
+    </div>
+    <div class="split-60-40">
+      <div class="card accent-blue">
+        <h3 class="blue">JSONB function minta (SQL)</h3>
+        <div class="code-block" style="font-size:0.76rem">CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
+RETURNS jsonb
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = pg_catalog, app, meta AS $fn$
+    SELECT jsonb_build_object(
+        'rows',  jsonb_agg(row_to_json(r)),
+        'total', COUNT(*) OVER ()
+    )
+    FROM (
+        SELECT col1, col2, col3
+          FROM app.entity
+         WHERE tenant_code = p_data->>'tenant'
+           AND is_current
+         ORDER BY col1
+         LIMIT  COALESCE((p_data->>'limit')::int, 25)
+         OFFSET COALESCE((p_data->>'offset')::int, 0)
+    ) r;
+$fn$;</div>
+      </div>
+      <div>
+        <div class="card accent-mauve" style="margin-bottom:12px">
+          <h3 class="mauve">Mi&#233;rt JSONB?</h3>
+          <ul>
+            <li>Mez&#337; hozz&#225;ad&#225;s = csak JSON payload v&#225;ltozik</li>
+            <li>Nincs function signature change</li>
+            <li>Nincs Go/Python caller change</li>
+            <li>Nincs pipeline step change</li>
+          </ul>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">Id&#337;b&#233;lyegek &#8212; DB gener&#225;lja</h3>
+          <div class="code-block" style="font-size:0.78rem">-- GOOD: DB clock
+INSERT INTO app.entity (name, created_at)
+VALUES ($1, now());
+
+-- BAD: backend clock -- soha ne adj
+-- time.Now() / datetime.now() parametert!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s13 — Database: SCD2 + RLS -->
+  <div class="slide" id="s13">
+    <div class="slide-label">Adatb&#225;zis</div>
+    <h2>SCD2 &#8212; Temporal Versioning &amp; Row Level Security</h2>
+    <div class="split-50" style="margin-bottom:14px">
+      <div>
+        <div class="card accent-teal" style="margin-bottom:12px">
+          <h3 class="teal">SCD2 t&#225;blaszerkezet (gener&#225;lt DDL)</h3>
+          <div class="code-block" style="font-size:0.76rem">CREATE TABLE app.dokumentum_tipus (
+  id          uuid NOT NULL DEFAULT gen_random_uuid(),
+  tenant_code text NOT NULL,
+  -- business columns:
+  dokumentum_tipus_code text NOT NULL,
+  tipusnev              text,
+  -- SCD2 audit cols (entity-forge generalja):
+  valid_period tstzrange NOT NULL
+                DEFAULT tstzrange(now(), NULL),
+  is_current   boolean GENERATED ALWAYS AS
+                (upper_inf(valid_period)) STORED,
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (tenant_code, id, valid_period),
+  -- Egy tenant_code+id par nem fedhet at
+  -- valid_period szerint:
+  EXCLUDE USING gist (
+    tenant_code WITH =, valid_period WITH &amp;&amp;)
+);</div>
+        </div>
+      </div>
+      <div>
+        <div class="card accent-yellow" style="margin-bottom:12px">
+          <h3 class="yellow">SCD2 olvas&#225;s &#233;s mut&#225;ci&#243;</h3>
+          <div class="code-block" style="font-size:0.78rem">-- Aktualis rekordok (ket egyenerteeku mod):
+WHERE upper_inf(valid_period)  -- pontos
+WHERE is_current               -- kényelmes
+
+-- Historikus lekerdezés:
+WHERE valid_period @>
+  '2026-01-15'::timestamptz</div>
+          <div style="margin-top:10px;font-size:0.82rem;color:var(--red)">
+            <i class="ph ph-warning"></i>
+            Soha ne adj raw UPDATE-et SCD2 t&#225;bl&#225;kon! Mindig CRUD function-&#246;n &#225;t. 22 leaf part&#237;ci&#243; van <code>btree_gist &amp;&amp;</code> constraint-tel.
+          </div>
+        </div>
+        <div class="card accent-mauve">
+          <h3 class="mauve">RLS Policy (gener&#225;lt)</h3>
+          <div class="code-block" style="font-size:0.78rem">ALTER TABLE app.dokumentum_tipus
+  ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY p_read
+  ON app.dokumentum_tipus FOR SELECT
+  USING (meta.has_tenant_access(tenant_code));
+
+CREATE POLICY p_write
+  ON app.dokumentum_tipus FOR INSERT
+  WITH CHECK (
+    meta.can_write_tenant(tenant_code));</div>
+        </div>
+      </div>
+    </div>
+    <div class="content-grid cols-3">
+      <div class="card"><div class="stat"><div class="num teal">22</div><div class="label">SCD2 leaf part&#237;ci&#243;</div></div>
+        <ul style="margin-top:10px"><li>valueForge</li><li><code>btree_gist &amp;&amp;</code> constraint</li></ul></div>
+      <div class="card"><div class="stat"><div class="num mauve">sensitivity</div></div>
+        <ul style="margin-top:10px">
+          <li>Alacsony &#8594; RLS opcion&#225;lis</li>
+          <li>K&#246;zepes &#8594; RLS k&#246;telez&#337;</li>
+          <li>Magas &#8594; RLS + auditlog</li>
+        </ul></div>
+      <div class="card"><div class="stat"><div class="num yellow">rule</div></div>
+        <ul style="margin-top:10px">
+          <li><code>ENABLE RLS</code> + policy egy&#252;tt mindig</li>
+          <li>App nem re-sz&#225;molja a tenant filtert</li>
+          <li>SECURITY DEFINER + <code>search_path</code></li>
+        </ul></div>
+    </div>
+  </div>
+
+  <!-- s14 — RAG Architecture -->
+  <div class="slide" id="s14">
+    <div class="slide-label">RAG</div>
+    <h2>RAG arch&#237;tekt&#250;ra &#8212; admin-knowledge 3 r&#233;teg&#369; rendszer</h2>
+    <div class="split-60-40" style="margin-bottom:14px">
+      <div class="mermaid-wrap">
+        <script type="text/x-mermaid" class="mermaid-src">
+graph TB
+    subgraph T1["1. reteg -- Python MCP Server"]
+        MCP["server.py  59 MCP tool\nNev-feloldas, SQLite cache\nLink rendering (_enrich_rows)"]
+    end
+    subgraph T2["2. reteg -- Pipeline Engine"]
+        PF["bin/pf  pipeline-forge"]
+        P1["rag/search_rag.md\nembed -> vector -> output"]
+        P2["org/user_details.md\ndwh.user_get_key()"]
+        P3["inventory/inventory_mutate.md\n3-step audit loop"]
+    end
+    subgraph T3["3. reteg -- Adatok"]
+        RAG[("rag3_db\nsys-gpu01\npgvector HNSW")]
+        DWH[("jiramntr_db\nsys-butalam\nSECURITY DEFINER")]
+        JIRA["JIRA REST\n(PAT szukseges)"]
+    end
+    CC["Claude Code\nCLI"] -->|"stdio MCP"| MCP
+    MCP -->|"subprocess"| PF
+    PF --> P1 & P2 & P3
+    P1 -->|"cosine search"| RAG
+    P2 -->|"dwh.user_*"| DWH
+    P3 -->|"Audit loop"| JIRA
+    P3 -->|"audit row"| DWH
+    style MCP fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style PF fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style RAG fill:#313244,stroke:#94e2d5,color:#cdd6f4
+    style DWH fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+        </script>
+        <div class="mermaid-diagram"></div>
+      </div>
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">6 RAG collection</h3>
+          <table class="data-table">
+            <thead><tr><th>Collection</th><th>M&#233;ret</th></tr></thead>
+            <tbody>
+              <tr><td><code>jira_admin</code></td><td>~27k chunk</td></tr>
+              <tr><td><code>confluence</code></td><td>~1.8k chunk</td></tr>
+              <tr><td><code>web_docs</code></td><td>WildFly 39 + Keycloak</td></tr>
+              <tr><td><code>dwh_users</code></td><td>per-user dossier</td></tr>
+              <tr><td><code>dwh_inventory</code></td><td>IT/AD eszk&#246;z&#246;k</td></tr>
+              <tr><td><code>dwh_issues</code></td><td>issue metadata + worklog</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">Write: 3-step Audit Loop</h3>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-top:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.84rem"><span class="badge mauve">1</span> Enqueue: INSERT audit sor (<code>pending</code>)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.84rem"><span class="badge mauve">2</span> Call: JIRA REST POST (per-user PAT)</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.84rem"><span class="badge mauve">3</span> Finalize: UPDATE audit sor (HTTP status, key)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-grid cols-3">
+      <div class="card">
+        <h3 class="peach">Embedding</h3>
+        <ul>
+          <li>Ollama <code>snowflake-arctic-embed2</code></li>
+          <li>GPU server: sys-gpu01:11434</li>
+          <li>pgvector HNSW index</li>
+          <li>Reranker: letiltva (NaN bug Ollama)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="sky">Search logic helye</h3>
+        <ul>
+          <li>Keres&#233;si logika: <code>pipelines/*.md</code></li>
+          <li><code>server.py</code> = MCP engine, nem search</li>
+          <li><code>_enrich_rows()</code>: link rendering Python-ban</li>
+          <li><code>pf</code> binary: PF_BIN &#8594; bin/pf &#8594; PATH</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="green">DWH hozz&#225;f&#233;r&#233;s</h3>
+        <ul>
+          <li>Csak <code>dwh.*</code> SECURITY DEFINER function</li>
+          <li>Nincs <code>SELECT</code> a <code>dim_*</code> t&#225;bl&#225;kon</li>
+          <li>LDAP tilos &#8212; DWH t&#252;kr&#246;zi az attrib&#250;tumokat</li>
+          <li><code>'me'</code>: <code>$USER</code> env var &#8594; DWH</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s15 — Security Model -->
+  <div class="slide" id="s15">
+    <div class="slide-label">Biztons&#225;g</div>
+    <h2>Biztonsági modell &#8212; V&#233;delemben m&#233;lys&#233;g (Defense in Depth)</h2>
+    <div class="split-60-40" style="margin-bottom:14px">
+      <div class="mermaid-wrap">
+        <script type="text/x-mermaid" class="mermaid-src">
+graph LR
+    subgraph L1["1. Titkositas -- GPG Vault"]
+        GPG[".env.gpg (commitalt)\ncsapat vault_pass\nscripts/vault.sh lock/unlock"]
+    end
+    subgraph L2["2. DB hozzaferes-vezérles"]
+        SEC["SECURITY DEFINER\ndwh.user_get_*\ndwh.inventory_*\nEXECUTE jog csak"]
+        RLS["Row Level Security\nmeta.has_tenant_access\nmeta.can_write_tenant"]
+    end
+    subgraph L3["3. Transport + Web"]
+        TLS["PostgreSQL\nsslmode=require"]
+        HDR["HTTP headers\nX-Frame-Options: DENY\nnosniff, referrer"]
+        WS["WebSocket\norigin allowlist"]
+    end
+    DEV["Fejleszto"] -->|"vault unlock"| GPG
+    GPG -->|".env"| APP["Alkalmazas"]
+    APP -->|"EXECUTE only"| SEC
+    RLS --> SEC
+    APP -->|"sslmode=require"| TLS
+    style GPG fill:#313244,stroke:#f9e2af,color:#cdd6f4
+    style RLS fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+    style SEC fill:#313244,stroke:#94e2d5,color:#cdd6f4
+        </script>
+        <div class="mermaid-diagram"></div>
+      </div>
+      <div>
+        <div class="card accent-yellow" style="margin-bottom:12px">
+          <h3 class="yellow">GPG Vault szab&#225;lyok</h3>
+          <ul>
+            <li>Commitálva: <code>.env.gpg</code> (titkos&#237;tott)</li>
+            <li>Gitignore: <code>.env</code> &#8212; soha ne commitáld</li>
+            <li>API kulcsok fejl&#233;cben, soha URL-ben</li>
+            <li>Log-ban titkot soha &#8212; <code>***</code> masking</li>
+          </ul>
+        </div>
+        <div class="card accent-red">
+          <h3 class="red">Input validation szab&#225;lyok</h3>
+          <ul>
+            <li>SQL injection: soha string concat, <code>$1</code> mindig</li>
+            <li>Path traversal: <code>filepath.Clean()</code> + base ellen&#337;rz&#233;s</li>
+            <li>Dynamic identifier: <code>^[a-zA-Z_][a-zA-Z0-9_.]*$</code></li>
+            <li>YAML: csak <code>yaml.safe_load()</code> &#8212; soha <code>yaml.load()</code></li>
+            <li>AI SQL: timeout &#8804; 5s, sor limit &#8804; 1000</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content-grid cols-3">
+      <div class="card">
+        <h3 class="teal">SECURITY DEFINER</h3>
+        <ul>
+          <li>App role: <code>EXECUTE</code> jogosults&#225;g</li>
+          <li>Nincs <code>SELECT</code> a <code>dim_*</code> t&#225;bl&#225;kon</li>
+          <li>Function: <code>search_path = pg_catalog, schema</code></li>
+          <li>AI SQL: <code>default_transaction_read_only=on</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="mauve">Tenant izol&#225;ci&#243;</h3>
+        <ul>
+          <li>RLS: <code>meta.has_tenant_access(tenant_code)</code></li>
+          <li>App soha ne re-sz&#225;molja a filtert</li>
+          <li>GUC: <code>SET app.tenant_code = $1</code> session-ben</li>
+          <li>SCD2 btree_gist izol&#225;ci&#243;</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="blue">Web biztons&#225;g</h3>
+        <ul>
+          <li><code>X-Frame-Options: DENY</code></li>
+          <li><code>X-Content-Type-Options: nosniff</code></li>
+          <li>WebSocket: origin allowlist, soha <code>return true</code></li>
+          <li>Template: soha <code>template.HTML</code> cast untrusted data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s16 — Development Workflow -->
+  <div class="slide" id="s16">
+    <div class="slide-label">Fejleszt&#233;si workflow</div>
+    <h2>Git workflow &middot; Build &middot; Deploy &middot; Cross-project blast radius</h2>
+    <div class="split-50" style="margin-bottom:14px">
+      <div>
+        <div class="card accent-blue" style="margin-bottom:12px">
+          <h3 class="blue">Branch naming</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+            <span class="badge blue">feature/*</span>
+            <span class="badge green">fix/*</span>
+            <span class="badge teal">data/*</span>
+            <span class="badge peach">ai/*</span>
+            <span class="badge mauve">docs/*</span>
+          </div>
+          <ul style="margin-top:10px">
+            <li>Nincs k&#246;zvetlen commit <code>main</code>-be</li>
+            <li>Issues: <code>[repo-name]</code> prefix a GitHub project-ben</li>
+            <li>Milestone &#8594; negyedéves release</li>
+          </ul>
+        </div>
+        <div class="card accent-teal">
+          <h3 class="teal">Deploy flow</h3>
+          <div class="flow" style="margin-top:10px">
+            <div class="flow-step">
+              <div class="step-num">1</div><div class="step-name">Ellen&#337;rz&#233;s</div>
+              <div class="step-detail">systemctl status<br>butalam</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">2</div><div class="step-name">Build</div>
+              <div class="step-detail">go build ./...<br>bin&#225;ris commit</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">3</div><div class="step-name">Push</div>
+              <div class="step-detail">git push<br>main branch</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">4</div><div class="step-name">Deploy</div>
+              <div class="step-detail">deploy_butalam.sh<br>systemctl restart</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card accent-yellow" style="margin-bottom:12px">
+          <h3 class="yellow">Cross-project blast radius</h3>
+          <ul>
+            <li>Library szerkeszt&#233;s el&#337;tt: olvasd a <code>projects.md</code> Connections-t</li>
+            <li>Nyilv&#225;nos API v&#225;ltoz&#225;s &#8594; build &#246;sszes consumer el&#337;bb</li>
+            <li><code>mks_parser($sql text, $json text)</code> &#8212; soha ne t&#246;rd</li>
+            <li><code>go.mod replace</code> direktív&#225;k = azonnal propag&#225;l</li>
+          </ul>
+          <div class="code-block" style="font-size:0.77rem;margin-top:8px"># Pre-commit Go
+/usr/local/go/bin/go build ./...
+/usr/local/go/bin/go vet ./...
+/usr/local/go/bin/go test ./...
+
+# Pre-commit Python
+ruff check . &amp;&amp; black --check .
+python -m pytest</div>
+        </div>
+        <div class="card accent-red">
+          <h3 class="red">Ne csin&#225;ld &#8212; Platform szab&#225;lyok</h3>
+          <ul>
+            <li>ORM tilos &#8212; <code>pgx/v5 + pgxpool</code> az &#250;j k&#243;dba</li>
+            <li>SPA framework tilos &#8212; HTMX + vanilla JS</li>
+            <li>Frontend build l&#233;p&#233;s tilos <code>lookin</code>-ba</li>
+            <li>Migration futtat&#225;s terv + j&#243;v&#225;hagy&#225;s n&#233;lk&#252;l tilos</li>
+            <li>Tenant &#233;rt&#233;kek hardcode-ol&#225;sa Go/JS k&#243;dba tilos</li>
+            <li>K&#246;zvetlen DML t&#225;bl&#225;kon tilos &#8212; function-&#246;n &#225;t</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slide-wrap -->
+
+<footer class="pres-footer">
+  <span><i class="ph ph-package" style="color:var(--blue)"></i> JiraDa Platform &#8212; Fejleszt&#233;si m&#243;dszer 2026</span>
+  <span>Navig&#225;ci&#243;: <kbd>&#8592;</kbd> <kbd>&#8594;</kbd> nyilak vagy <kbd>Sz&#243;k&#246;z</kbd></span>
+</footer>
+
+<script>
+  let cur = 1;
+  const total = 16;
+  let isDarkMode = true;
+
+  function updateUI() {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    const sl = document.getElementById('s' + cur);
+    if (sl) sl.classList.add('active');
+    document.getElementById('counter').textContent = cur + ' / ' + total;
+    document.getElementById('progress').style.width = (cur / total * 100) + '%';
+    document.getElementById('btn-prev').disabled = cur === 1;
+    document.getElementById('btn-next').disabled = cur === total;
+    renderMermaid(sl);
+  }
+
+  function go(dir) {
+    const next = cur + dir;
+    if (next < 1 || next > total) return;
+    cur = next;
+    updateUI();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); go(1);  }
+    if (e.key === 'ArrowLeft'  || e.key === 'Backspace') { e.preventDefault(); go(-1); }
+  });
+
+  function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    const btn = document.getElementById('theme-toggle');
+    btn.innerHTML = isDarkMode ? '<i class="ph ph-sun"></i>' : '<i class="ph ph-moon"></i>';
+    renderMermaid(document.getElementById('s' + cur), true);
+  }
+
+  function renderMermaid(slideEl, forceReRender) {
+    if (!slideEl || typeof mermaid === 'undefined') return;
+    try {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDarkMode ? 'dark' : 'default',
+        look: 'classic',
+        flowchart: { curve: 'basis' },
+        sequence: { messageMargin: 40, wrap: true }
+      });
+    } catch (e) { console.warn('Mermaid init failed:', e); return; }
+
+    slideEl.querySelectorAll('.mermaid-wrap').forEach(wrap => {
+      const srcEl = wrap.querySelector('.mermaid-src');
+      const outEl = wrap.querySelector('.mermaid-diagram');
+      if (!srcEl || !outEl) return;
+
+      if (!srcEl.hasAttribute('data-src')) {
+        srcEl.setAttribute('data-src', srcEl.textContent.trim());
+        outEl.dataset.rendered = 'false';
+      }
+      if (outEl.dataset.rendered === 'true' && !forceReRender) return;
+
+      const code = srcEl.getAttribute('data-src');
+      const uid = 'mermaid_' + Math.random().toString(36).substring(2, 9);
+      outEl.innerHTML = '';
+
+      mermaid.render(uid, code).then(({ svg }) => {
+        outEl.innerHTML = svg;
+        const svgEl = outEl.querySelector('svg');
+        if (svgEl) { svgEl.removeAttribute('width'); svgEl.removeAttribute('height'); }
+        outEl.dataset.rendered = 'true';
+      }).catch(err => {
+        outEl.innerHTML = '<div style="color:var(--red);font-family:monospace;font-size:12px;padding:10px;border:1px solid var(--red);border-radius:4px;">Diagram hiba:<br>' + (err.message || err) + '</div>';
+      });
+    });
+  }
+
+  updateUI();
+</script>
+</body>
+</html>
