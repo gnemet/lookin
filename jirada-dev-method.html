@@ -857,11 +857,15 @@ flowchart LR
     <div class="split-40-60">
       <div style="display:flex;flex-direction:column;height:100%;min-height:0">
         <script type="text/x-markdown" class="md-src">
----
+# Napi ETL
+
+## Pipeline
+
+```yaml
 name:     "jiramntr_daily_etl"
 trigger:  "jiramntr_etl"
 schedule: "0 2 * * *"
----
+```
 
 ## Adapters
 
@@ -878,9 +882,7 @@ smtp:
   to_ops: "${ETL_OPS_EMAIL}"
 ```
 
-## Steps
-
-### trigger_etl — http
+## Step: trigger_etl — http
 
 ```yaml
 config:
@@ -891,7 +893,7 @@ config:
 on_error: etl_unreachable
 ```
 
-### poll_etl_completion — shell
+## Step: poll_etl_completion — shell
 
 ```yaml
 config:
@@ -911,7 +913,7 @@ for i in $(seq 1 180); do
 done
 ```
 
-### summarize_run — llm_generate
+## Step: summarize_run — llm_generate
 
 ```yaml
 config:
@@ -920,7 +922,7 @@ config:
   output_key:    email_body
 ```
 
-### send_etl_report — smtp
+## Step: send_etl_report — smtp
 
 ```yaml
 config:
@@ -934,10 +936,10 @@ config:
         <div class="card accent-mauve" style="margin-bottom:12px">
           <h3 class="mauve">Pipeline f&#225;jl s&#233;m&#225;ja</h3>
           <ul>
-            <li>YAML frontmatter: <code>name</code>, <code>trigger</code>, <code>schedule</code></li>
+            <li><code># Title</code> — H1 els&#337; sorban</li>
+            <li><code>## Pipeline</code> YAML blokk: <code>name</code>, <code>trigger</code>, <code>schedule</code></li>
             <li><code>## Adapters</code> blokk: megosztott kapcsolatok</li>
-            <li><code>## Steps</code> blokk: l&#233;p&#233;sek list&#225;ja</li>
-            <li>L&#233;p&#233;s: <code>### &lt;id&gt; — &lt;adapter&gt;</code></li>
+            <li>L&#233;p&#233;s: <code>## Step: &lt;id&gt; &#8212; &lt;adapter&gt;</code></li>
           </ul>
         </div>
         <div class="card accent-sky" style="margin-bottom:12px">
@@ -1050,19 +1052,24 @@ sequenceDiagram
       </div>
       <div>
         <div class="card accent-mauve" style="margin-bottom:12px">
-          <h3 class="mauve">human_task step</h3>
-          <div class="code-block" style="font-size:0.75rem">## Step: Manager Approval -- human_task
+          <script type="text/x-markdown" class="md-src">
+## Step: Manager Approval — human\_task
 
 ```yaml
 config:
-  name:        "Vezetoi jovahagyas"
+  name:        "Vezető jóváhagyás"
   assignee_id: "{{ $payload.manager_id }}"
   due_hours:   48
 ```
-# Elso futas:
+
+```
+# Első futás:
 #   INSERT pending sor (SCD2), suspend.
-# Resume (jovahagyas utan):
-#   lezart sor olvasasa es folytas.</div>
+# Resume (jóváhagyás után):
+#   lezárt sor olvasása és folytatás.
+```
+          </script>
+          <div class="md-viewer" style="overflow-y:auto"></div>
         </div>
         <div class="card accent-blue">
           <h3 class="blue">Go Workflow API</h3>
@@ -1116,18 +1123,22 @@ res, err = pipelines.ResumeWorkflow(
     <div class="slide-label">GoBI</div>
     <h2>GoBI &#8212; BI lek&#233;rdez&#233;sek &#233;s mks_sql_parser dinamikus SQL</h2>
     <div class="split-50">
-      <div>
-        <div class="card accent-blue" style="margin-bottom:12px">
-          <h3 class="blue">BI lek&#233;rdez&#233;s f&#225;jl form&#225;tum</h3>
-          <div class="code-block" style="font-size:0.76rem">---
+      <div style="display:flex;flex-direction:column;height:100%;min-height:0">
+        <script type="text/x-markdown" class="md-src">
+# Document types
+
+## Report
+
+```yaml
 icon: "ph ph-chart-bar"
 title:
   en: "Document types"
   hu: "Dokumentumtipusok"
----
+```
 
 ## Parameters
 
+```yaml
 - name: status
   type: TEXT
   input: "lov:SELECT kod AS value,
@@ -1135,28 +1146,34 @@ title:
     AS label FROM app.lov_aktiv_statusz
     WHERE aktiv ORDER BY sort_order"
   labels: {en: Status, hu: Statusz}
+```
 
 ## SQL
 
+```sql
 SELECT dt.dokumentum_tipus_code,
        dt.tipusnev,
        app.lov_label(dt.aktiv_statusz,
          :current_lang) AS statusz
   FROM app.dokumentum_tipus dt
  WHERE dt.tenant_code = :tenant
---&lt;status
+--<status
    AND dt.aktiv_statusz = :status
---&gt;
+-->
    AND dt.is_current
  ORDER BY dt.tipusnev
+```
 
 ## COLUMNS
 
+```yaml
 - column: dokumentum_tipus_code
   labels: {en: Code, hu: Kod}
 - column: statusz
-  labels: {en: Status, hu: Statusz}</div>
-        </div>
+  labels: {en: Status, hu: Statusz}
+```
+        </script>
+        <div class="md-viewer" style="flex:1;min-height:0;overflow-y:auto"></div>
       </div>
       <div>
         <div class="card accent-mauve" style="margin-bottom:12px">
@@ -1455,6 +1472,7 @@ graph TB
     <div class="split-60-40" style="margin-bottom:14px">
       <div class="mermaid-wrap">
         <script type="text/x-mermaid" class="mermaid-src">
+%%{init: {'flowchart': {'fontSize': 18}}}%%
 graph LR
     subgraph L1["1. Titkositas -- GPG Vault"]
         GPG[".env.gpg (commitalt)\ncsapat vault_pass\nscripts/vault.sh lock/unlock"]
