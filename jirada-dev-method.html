@@ -286,7 +286,7 @@
     JiraDa &#8212; Fejleszt&#233;si m&#243;dszer
   </div>
   <div class="nav-buttons">
-    <span class="slide-counter" id="counter">1 / 16</span>
+    <span class="slide-counter" id="counter">1 / 18</span>
     <button class="nav-btn" id="btn-prev" onclick="go(-1)"><i class="ph ph-arrow-left"></i> El&#337;z&#337;</button>
     <button class="nav-btn" id="btn-next" onclick="go(1)">K&#246;vetkez&#337; <i class="ph ph-arrow-right"></i></button>
     <button class="nav-btn" id="theme-toggle" onclick="toggleTheme()" title="T&#233;ma v&#225;lt&#225;s"><i class="ph ph-sun"></i></button>
@@ -432,86 +432,203 @@ flowchart LR
     </div>
   </div>
 
-  <!-- s4 — Platform Architecture -->
+  <!-- s4 — Kód generálás: spec → alkalmazás -->
   <div class="slide" id="s4">
-    <div class="slide-label">Platform</div>
-    <h2>Platform arch&#237;tekt&#250;ra &#8212; repo t&#233;rk&#233;p</h2>
-    <div class="split-60-40" style="flex:1;min-height:0;align-items:stretch">
-      <div class="mermaid-wrap" style="height:100%;overflow:hidden">
-        <script type="text/x-mermaid" class="mermaid-src">
-graph TB
-    subgraph Libs["Go konyvtarak"]
-        AC["aichat"]
-        DG["datagrid"]
-        GB["GoBI"]
-        PF["pipeline-forge"]
-        EF["entity-forge"]
+    <div class="slide-label">Kód generálás</div>
+    <h2>entity spec &#8594; k&#233;sz alkalmaz&#225;s &#8212; az eg&#233;sz folyamat</h2>
+    <div class="mermaid-wrap" style="flex:1;min-height:0;overflow:hidden;">
+      <script type="text/x-mermaid" class="mermaid-src">
+%%{init: {'flowchart': {'fontSize': 18}}}%%
+graph LR
+    subgraph IN["Specifikáció  (bemenet)"]
+        EN["EN-*.md\nentity spec"]
+        LV["lov_*.md\nLOV spec"]
     end
-    subgraph Svc["Szolgaltatasok"]
-        JM["jiramntr\nDWH monitor"]
-        JO["johanna\nAI chat"]
-        VF["valueForge\nCRM/BPM"]
-        MF["mcp-forge\nRAG builder"]
+    EF["entity-forge\nkód generátor"]
+    subgraph GEN["Generált fájlok  (vf/generated)"]
+        SQ["SQL DDL\n+ CRUD funkciók"]
+        GH["Go handler\n+ HTMX template"]
+        CJ["datagrid\nkatalóg JSON"]
+        PL["pipeline\n*.md"]
     end
-    subgraph Know["Tudasbazis"]
-        AK["admin-knowledge\nMCP server"]
-        IT["iier-tudastar"]
-        KM["kovacs-muhely"]
+    PF["pipeline-forge\nfuttatja a pipeline-t"]
+    subgraph OUT["Futó rendszer  (kimenet)"]
+        PG[("PostgreSQL\n+ migrációk")]
+        APP["valueForge app\nhandlerek + UI"]
     end
-    subgraph Infra["Infra"]
-        LK["lookin"]
-        MS["mks_sql_parser\nPG extension"]
-    end
-    AC --> JO & VF
-    DG --> JM & VF
-    GB --> VF
-    PF --> VF & MF & AK & IT & KM
-    EF --> VF
-    EF -.->|"pfbridge\nentity_generate adapter"| PF
-    JO --> JM
-    MF --> AK & IT
-    MS --> GB
-    style VF fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    EN --> EF
+    LV --> EF
+    EF --> SQ & GH & CJ & PL
+    EF -.->|"pfbridge"| PF
+    PL --> PF
+    SQ --> PG
+    GH --> APP
+    CJ --> APP
+    PF --> APP
+    style EF fill:#313244,stroke:#89b4fa,color:#cdd6f4
     style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
-    style AK fill:#313244,stroke:#a6e3a1,color:#cdd6f4
-        </script>
-        <div class="mermaid-diagram"></div>
+    style PG fill:#313244,stroke:#94e2d5,color:#cdd6f4
+    style APP fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+      </script>
+      <div class="mermaid-diagram"></div>
+    </div>
+    <div class="content-grid cols-3" style="margin-top:14px;flex-shrink:0">
+      <div class="card accent-blue">
+        <div class="card-title"><i class="ph ph-file-text"></i> Bemenet: spec f&#225;jl</div>
+        <ul>
+          <li>1 db <code>EN-*.md</code> &#8212; t&#225;bla, mez&#337;k, CRUD, form, AI kontextus</li>
+          <li>Emberi olvasásra sz&#225;nt, ez a forr&#225;s az igazs&#225;ghoz</li>
+          <li>LOV spec: sz&#243;t&#225;r t&#225;bl&#225;k, enum &#233;rt&#233;kek</li>
+        </ul>
       </div>
-      <div>
-        <div class="card accent-blue" style="margin-bottom:12px">
-          <h3 class="blue">Go k&#246;nyvt&#225;rak</h3>
-          <ul>
-            <li><strong>aichat</strong> &#8212; multi-LLM dispatcher</li>
-            <li><strong>datagrid</strong> &#8212; metadata-driven grid</li>
-            <li><strong>GoBI</strong> &#8212; BI query renderer</li>
-            <li><strong>pipeline-forge</strong> &#8212; pipeline engine</li>
-            <li><strong>entity-forge</strong> &#8212; code generator</li>
-          </ul>
-        </div>
-        <div class="card accent-mauve" style="margin-bottom:12px">
-          <h3 class="mauve">Szolg&#225;ltat&#225;sok</h3>
-          <ul>
-            <li><strong>jiramntr</strong> &#8212; JIRA DWH monitor</li>
-            <li><strong>johanna</strong> &#8212; AI chat (SSO, multi-corp)</li>
-            <li><strong>valueForge</strong> &#8212; CRM/BPM convergence</li>
-            <li><strong>mcp-forge</strong> &#8212; RAG catalog builder</li>
-          </ul>
-        </div>
-        <div class="card accent-green">
-          <h3 class="green">Tud&#225;sb&#225;zis &amp; Infra</h3>
-          <ul>
-            <li><strong>admin-knowledge</strong> &#8212; 59 MCP tool</li>
-            <li><strong>iier-tudastar</strong> &#8212; IIER RAG MCP</li>
-            <li><strong>lookin</strong> &#8212; static arch viewer</li>
-            <li><strong>mks_sql_parser</strong> &#8212; PG C extension</li>
-          </ul>
-        </div>
+      <div class="card accent-mauve">
+        <div class="card-title"><i class="ph ph-gear"></i> Motor: entity-forge + pipeline-forge</div>
+        <ul>
+          <li>Parancs: <code>SKIP_DIRTY_CHECK=1 bash scripts/build.sh</code></li>
+          <li>entity-forge: SQL, Go, HTML, JSON egyszerre</li>
+          <li>pipeline-forge: pipeline l&#233;p&#233;sek v&#233;grehajt&#225;sa (pfbridge)</li>
+        </ul>
+      </div>
+      <div class="card accent-green">
+        <div class="card-title"><i class="ph ph-rocket-launch"></i> Kimenet: k&#233;sz alkalmaz&#225;s</div>
+        <ul>
+          <li>PostgreSQL: DDL migr&#225;ci&#243;k + stored functions</li>
+          <li>valueForge app: handler, template, datagrid</li>
+          <li><strong>Gener&#225;lt f&#225;jlokat soha ne szerkeszd k&#233;zzel!</strong></li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <!-- s5 — entity-forge: What it generates -->
+  <!-- s5 — Tudásbázis építés: dokumentumok → AI tudás -->
   <div class="slide" id="s5">
+    <div class="slide-label">Tud&#225;sb&#225;zis</div>
+    <h2>RAG pipeline &#8212; dokumentumokb&#243;l AI tud&#225;s</h2>
+    <div class="mermaid-wrap" style="flex:1;min-height:0;overflow:hidden;">
+      <script type="text/x-mermaid" class="mermaid-src">
+%%{init: {'flowchart': {'fontSize': 18}}}%%
+graph LR
+    subgraph SRC["Forrás dokumentumok"]
+        CF["Confluence\noldalak"]
+        JI["JIRA\nticketek"]
+        UR["URL / egyéb\nforrások"]
+    end
+    subgraph ENG["Motorok"]
+        MF["mcp-forge\nRAG builder"]
+        PF["pipeline-forge"]
+        OL["Ollama\nembedding — gpu01"]
+    end
+    RD[("rag3_db\npgvector")]
+    subgraph MCPS["MCP szerverek"]
+        AK["admin-knowledge\n59 MCP tool"]
+        IT["iier-tudastar\nIIER tenant"]
+    end
+    CF & JI & UR --> MF
+    MF --> PF
+    PF --> OL
+    OL --> RD
+    RD --> AK & IT
+    style MF fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style PF fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style RD fill:#313244,stroke:#94e2d5,color:#cdd6f4
+    style AK fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+    style IT fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+      </script>
+      <div class="mermaid-diagram"></div>
+    </div>
+    <div class="content-grid cols-3" style="margin-top:14px;flex-shrink:0">
+      <div class="card accent-blue">
+        <div class="card-title"><i class="ph ph-books"></i> Forr&#225;s: v&#225;llalati tud&#225;s</div>
+        <ul>
+          <li>Confluence: specifik&#225;ci&#243;k, d&#246;nt&#233;sek, le&#237;r&#225;sok</li>
+          <li>JIRA: ticketek, kommentek, st&#225;tuszok</li>
+          <li>URL: k&#252;ls&#337; dokumentumok, API le&#237;r&#225;sok</li>
+        </ul>
+      </div>
+      <div class="card accent-mauve">
+        <div class="card-title"><i class="ph ph-cpu"></i> Motor: mcp-forge + pipeline-forge</div>
+        <ul>
+          <li>mcp-forge: forr&#225;s konfig + RAG pipeline szervez</li>
+          <li>pipeline-forge: fetch &#8594; chunk &#8594; embed l&#233;p&#233;sek</li>
+          <li>Ollama: sz&#246;veg &#8594; vektor (snowflake-arctic-embed2)</li>
+        </ul>
+      </div>
+      <div class="card accent-green">
+        <div class="card-title"><i class="ph ph-brain"></i> Kimenet: AI tud&#225;sb&#225;zis</div>
+        <ul>
+          <li>rag3_db: pgvector &#8212; szemantikus keres&#233;s</li>
+          <li>admin-knowledge: 59 MCP tool, Confluence + DWH</li>
+          <li>iier-tudastar: IIER tenant RLS-iz ol&#225;lt pilot</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s6 — AI chat futás: kérdéstől a válaszig -->
+  <div class="slide" id="s6">
+    <div class="slide-label">AI chat</div>
+    <h2>AI chat fut&#225;s &#8212; k&#233;rd&#233;st&#337;l a v&#225;laszig</h2>
+    <div class="mermaid-wrap" style="flex:1;min-height:0;overflow:hidden;">
+      <script type="text/x-mermaid" class="mermaid-src">
+%%{init: {'flowchart': {'fontSize': 18}}}%%
+graph LR
+    USR(["Felhasználó"])
+    subgraph JO["johanna  —  SSO + WebSocket"]
+        AUTH["autentikáció\nmulti-corporate SSO"]
+        ORCH["aichat pipeline\norchestrátor"]
+    end
+    subgraph KNOW["Tudáslekérdezés"]
+        MCP["admin-knowledge MCP\nRAG szemantikus keresés"]
+        SQL["NL → SQL\njiramntr DWH lekérdezés"]
+    end
+    subgraph LLM["LLM motorok"]
+        OLM["Ollama\nlokális — gpu01"]
+        GMN["Gemini / Claude\nfelhő API"]
+    end
+    USR -->|"kérdés"| AUTH
+    AUTH --> ORCH
+    ORCH --> MCP & SQL
+    MCP & SQL --> LLM
+    LLM -->|"válasz"| USR
+    style AUTH fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style ORCH fill:#313244,stroke:#89b4fa,color:#cdd6f4
+    style MCP fill:#313244,stroke:#a6e3a1,color:#cdd6f4
+    style SQL fill:#313244,stroke:#94e2d5,color:#cdd6f4
+    style OLM fill:#313244,stroke:#cba6f7,color:#cdd6f4
+    style GMN fill:#313244,stroke:#cba6f7,color:#cdd6f4
+      </script>
+      <div class="mermaid-diagram"></div>
+    </div>
+    <div class="content-grid cols-3" style="margin-top:14px;flex-shrink:0">
+      <div class="card accent-blue">
+        <div class="card-title"><i class="ph ph-chat-circle-dots"></i> johanna &#8212; bel&#233;p&#233;si pont</div>
+        <ul>
+          <li>SSO autentik&#225;ci&#243; &#8212; multi-corporate</li>
+          <li>WebSocket: val&#243;s idej&#369; chat felület</li>
+          <li>Persona-alap&#250; szem&#233;lyre szab&#225;s</li>
+        </ul>
+      </div>
+      <div class="card accent-green">
+        <div class="card-title"><i class="ph ph-magnifying-glass"></i> Tud&#225;slekérdez&#233;s</div>
+        <ul>
+          <li>admin-knowledge: RAG szemantikus keres&#233;s rag3_db-b&#337;l</li>
+          <li>NL &#8594; SQL: term&#233;szetes nyelv&#369; DWH lek&#233;rdez&#233;s</li>
+          <li>Kontextus &#246;ssze&#225;ll&#237;t&#225;s az LLM sz&#225;m&#225;ra</li>
+        </ul>
+      </div>
+      <div class="card accent-mauve">
+        <div class="card-title"><i class="ph ph-robot"></i> LLM &#8212; v&#225;lasz gener&#225;l&#225;s</div>
+        <ul>
+          <li>Ollama: helyi GPU (gpu01) &#8212; adatv&#233;delem</li>
+          <li>Gemini / Claude: felh&#337; API &#8212; teljes&#237;tm&#233;ny</li>
+          <li>aichat diszp&#233;cser: modell + tenant alapj&#225;n v&#225;laszt</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- s7 — entity-forge: What it generates -->
+  <div class="slide" id="s7">
     <div class="slide-label">entity-forge</div>
     <h2>entity-forge &#8212; Mi mit gener&#225;l?</h2>
     <div class="split-40-60" style="margin-bottom:14px">
@@ -570,7 +687,7 @@ graph TB
   </div>
 
   <!-- s6 — entity-forge: Entity spec format -->
-  <div class="slide" id="s6">
+  <div class="slide" id="s8">
     <div class="slide-label">entity-forge</div>
     <h2>Entity spec form&#225;tum &#8212; Annot&#225;lt minim&#225;lis p&#233;lda</h2>
     <div class="split-50">
@@ -677,7 +794,7 @@ rls: true
   </div>
 
   <!-- s7 — entity-forge: Codegen flow -->
-  <div class="slide" id="s7">
+  <div class="slide" id="s9">
     <div class="slide-label">entity-forge</div>
     <h2>Gener&#225;l&#225;s folyamata &#8212; Entity spec &#8594; Production k&#243;d</h2>
     <div class="mermaid-wrap" style="margin-bottom:16px">
@@ -734,7 +851,7 @@ flowchart LR
   </div>
 
   <!-- s8 — pipeline-forge: Pipeline format -->
-  <div class="slide" id="s8">
+  <div class="slide" id="s10">
     <div class="slide-label">pipeline-forge</div>
     <h2>Pipeline form&#225;tum &#8212; Val&#243;s p&#233;lda: Napi ETL</h2>
     <div class="split-40-60">
@@ -844,7 +961,7 @@ config:
   </div>
 
   <!-- s9 — pipeline-forge: Adapter library -->
-  <div class="slide" id="s9">
+  <div class="slide" id="s11">
     <div class="slide-label">pipeline-forge</div>
     <h2>Adapter k&#246;nyvt&#225;r</h2>
     <div class="split-50">
@@ -903,7 +1020,7 @@ ${TODAY}           # beepitett valtozo</div>
   </div>
 
   <!-- s10 — pipeline-forge: Workflow -->
-  <div class="slide" id="s10">
+  <div class="slide" id="s12">
     <div class="slide-label">pipeline-forge</div>
     <h2>Workflow pipeline-ok &#8212; Suspend / Resume emberi j&#243;v&#225;hagy&#225;ssal</h2>
     <div class="split-60-40" style="margin-bottom:14px">
@@ -995,7 +1112,7 @@ res, err = pipelines.ResumeWorkflow(
   </div>
 
   <!-- s11 — GoBI -->
-  <div class="slide" id="s11">
+  <div class="slide" id="s13">
     <div class="slide-label">GoBI</div>
     <h2>GoBI &#8212; BI lek&#233;rdez&#233;sek &#233;s mks_sql_parser dinamikus SQL</h2>
     <div class="split-50">
@@ -1086,7 +1203,7 @@ SELECT dt.dokumentum_tipus_code,
   </div>
 
   <!-- s12 — Database: JSONB CRUD -->
-  <div class="slide" id="s12">
+  <div class="slide" id="s14">
     <div class="slide-label">Adatb&#225;zis</div>
     <h2>JSONB CRUD minta &#8212; Minden adat stored function-&#246;n &#225;t</h2>
     <div class="content-grid cols-2" style="margin-bottom:14px">
@@ -1162,7 +1279,7 @@ VALUES ($1, now());
   </div>
 
   <!-- s13 — Database: SCD2 + RLS -->
-  <div class="slide" id="s13">
+  <div class="slide" id="s15">
     <div class="slide-label">Adatb&#225;zis</div>
     <h2>SCD2 &#8212; Temporal Versioning &amp; Row Level Security</h2>
     <div class="split-50" style="margin-bottom:14px">
@@ -1240,7 +1357,7 @@ CREATE POLICY p_write
   </div>
 
   <!-- s14 — RAG Architecture -->
-  <div class="slide" id="s14">
+  <div class="slide" id="s16">
     <div class="slide-label">RAG</div>
     <h2>RAG arch&#237;tekt&#250;ra &#8212; admin-knowledge 3 r&#233;teg&#369; rendszer</h2>
     <div class="split-60-40" style="margin-bottom:14px">
@@ -1332,7 +1449,7 @@ graph TB
   </div>
 
   <!-- s15 — Security Model -->
-  <div class="slide" id="s15">
+  <div class="slide" id="s17">
     <div class="slide-label">Biztons&#225;g</div>
     <h2>Biztonsági modell &#8212; V&#233;delemben m&#233;lys&#233;g (Defense in Depth)</h2>
     <div class="split-60-40" style="margin-bottom:14px">
@@ -1416,7 +1533,7 @@ graph LR
   </div>
 
   <!-- s16 — Development Workflow -->
-  <div class="slide" id="s16">
+  <div class="slide" id="s18">
     <div class="slide-label">Fejleszt&#233;si workflow</div>
     <h2>Git workflow &middot; Build &middot; Deploy &middot; Cross-project blast radius</h2>
     <div class="split-50" style="margin-bottom:14px">
@@ -1500,7 +1617,7 @@ python -m pytest</div>
 
 <script>
   let cur = 1;
-  const total = 16;
+  const total = 18;
   let isDarkMode = true;
 
   function updateUI() {
