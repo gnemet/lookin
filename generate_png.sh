@@ -14,7 +14,7 @@ MMDC="$SRC/node_modules/.bin/mmdc"
 
 # ── Parse flags ──────────────────────────────────────────────────
 FORCE=false
-BACKGROUND=true   # default: dark chalkboard background (#2a2a2a)
+BACKGROUND=true   # default: chalkboard background (#1a1a1a)
 
 for arg in "$@"; do
     case "$arg" in
@@ -24,8 +24,8 @@ for arg in "$@"; do
         -h|--help)
             echo "Usage: $0 [--force] [--no-bg] [--bg]"
             echo "  --force   Regenerate all PNGs regardless of timestamps"
-            echo "  --no-bg   Use transparent background (default: dark #2a2a2a)"
-            echo "  --bg      Use dark chalkboard background (default)"
+            echo "  --no-bg   Use transparent background (default: chalkboard #1a1a1a)"
+            echo "  --bg      Use chalkboard background (default)"
             exit 0
             ;;
         *) echo "Unknown flag: $arg"; exit 1 ;;
@@ -40,35 +40,23 @@ if [ -z "$CHROME" ]; then
 fi
 echo "Using browser: $CHROME"
 
-# ── Background color ─────────────────────────────────────────────
+# ── Mermaid config matching LookIn's chalkboard theme ────────────
+# Single source of truth: configs/chalkboard.json (+ configs/chalkboard.css for handwriting font)
+CONFIG_FILE="$SRC/configs/chalkboard.json"
+CSS_FILE="$SRC/configs/chalkboard.css"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "❌ Missing $CONFIG_FILE"
+    exit 1
+fi
+
+# ── Background color (must mirror themeVariables.background) ─────
 if [ "$BACKGROUND" = true ]; then
-    BG_COLOR="#2a2a2a"
-    echo "Background: dark chalkboard ($BG_COLOR)"
+    BG_COLOR="#1a1a1a"
+    echo "Background: chalkboard ($BG_COLOR)"
 else
     BG_COLOR="transparent"
     echo "Background: transparent"
 fi
-
-# ── Mermaid config matching LookIn's chalkboard theme ────────────
-CONFIG_FILE=$(mktemp /tmp/mmdc_config.XXXXXX.json)
-cat > "$CONFIG_FILE" <<'EOF'
-{
-  "theme": "dark",
-  "look": "handDrawn",
-  "fontFamily": "sans-serif",
-  "themeVariables": {
-    "darkMode": true,
-    "background": "#2a2a2a",
-    "primaryColor": "#3a3a3a",
-    "primaryTextColor": "#f0e6d3",
-    "primaryBorderColor": "#888",
-    "secondaryColor": "#333",
-    "lineColor": "#ccc",
-    "textColor": "#f0e6d3"
-  },
-  "flowchart": { "curve": "natural", "nodeSpacing": 40, "rankSpacing": 60, "padding": 15 }
-}
-EOF
 
 # ── Puppeteer config: use system Chrome ──────────────────────────
 PUPPETEER_CONFIG=$(mktemp /tmp/mmdc_puppet.XXXXXX.json)
@@ -104,7 +92,7 @@ for mmd in $(find "$SRC/layers" -name "*.mmd" | sort); do
 
     echo -n "  📐 $relpath → $relout ... "
 
-    if $MMDC -i "$mmd" -o "$pngpath" -c "$CONFIG_FILE" -p "$PUPPETEER_CONFIG" \
+    if $MMDC -i "$mmd" -o "$pngpath" -c "$CONFIG_FILE" -C "$CSS_FILE" -p "$PUPPETEER_CONFIG" \
         -b "$BG_COLOR" -w 2560 -s 3 2>/tmp/mmdc_err.log; then
         echo "✅ ($(du -h "$pngpath" | cut -f1))"
         count=$((count + 1))
@@ -114,7 +102,7 @@ for mmd in $(find "$SRC/layers" -name "*.mmd" | sort); do
     fi
 done
 
-rm -f "$CONFIG_FILE" "$PUPPETEER_CONFIG"
+rm -f "$PUPPETEER_CONFIG"
 
 echo ""
 echo "Done! Generated $count, skipped $skipped up-to-date, $errors errors"

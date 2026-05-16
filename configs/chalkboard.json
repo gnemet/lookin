@@ -1,0 +1,22 @@
+{
+  "theme": "base",
+  "look": "handDrawn",
+  "fontFamily": "Caveat, 'Patrick Hand', 'Comic Sans MS', cursive",
+  "themeVariables": {
+    "darkMode": true,
+    "background":         "#1a1a1a",
+    "primaryColor":       "#262626",
+    "primaryTextColor":   "#f0e6d3",
+    "primaryBorderColor": "#e8d9b8",
+    "secondaryColor":     "#2a2a2a",
+    "tertiaryColor":      "#333333",
+    "lineColor":          "#d6c79a",
+    "textColor":          "#f0e6d3",
+    "mainBkg":            "#262626",
+    "edgeLabelBackground":"#1a1a1a",
+    "clusterBkg":         "#1f1f1f",
+    "clusterBorder":      "#a89b6e",
+    "fontSize":           "18px"
+  },
+  "flowchart": { "curve": "natural", "nodeSpacing": 40, "rankSpacing": 60, "padding": 15 }
+}

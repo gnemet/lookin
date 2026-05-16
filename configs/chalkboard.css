@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&display=swap');
+
+.label,
+.edgeLabel,
+.nodeLabel,
+.cluster-label,
+text {
+  font-family: 'Caveat', 'Patrick Hand', 'Comic Sans MS', cursive !important;
+}
+
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon,
+.node path {
+  stroke-width: 1.5px;
+}
