@@ -50,4 +50,4 @@ That's it. No others without an explicit conversation.
 
 ## What lookin currently visualizes
 
-Per `projects.md`, only **jiramntr** is in the catalog (`catalogs/jiramntr/` — 14 files). admin-knowledge has a partial HTML page. Other projects (johanna, aichat, datagrid, mcp-forge, pipeline-forge) are *future* targets — do not claim coverage that does not exist on disk.
+Per `projects.md`, only **jiramntr** is in the catalog (`catalogs/jiramntr/` — 14 files). Other projects (johanna, aichat, datagrid, mcp-forge, pipeline-forge) are *future* targets — do not claim coverage that does not exist on disk.
