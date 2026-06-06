@@ -44,9 +44,8 @@ rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/catalogs/" "$TARGET:$DEST/catalogs
 echo "Syncing docs..."
 rsync -az --delete -e "ssh -i $SSH_KEY" "$SRC/docs/" "$TARGET:$DEST/docs/"
 
-# 3. Create symlinks for each registered project (sudo for dirs owned by other users)
+# 3. Create symlinks for each registered project (requires NOPASSWD: /usr/bin/ln on remote for other users' dirs)
 echo "Creating symlinks..."
-REMOTE_PWD=$(grep "^REMOTE_PWD=" "$SRC/../jiramntr/.env" 2>/dev/null | cut -d'=' -f2- | tr -d '"' || true)
 for entry in "${SYMLINK_TARGETS[@]}"; do
     static_dir=$(echo "$entry" | awk '{print $1}')
     url_path=$(echo "$entry" | awk '{print $2}')
@@ -55,7 +54,7 @@ for entry in "${SYMLINK_TARGETS[@]}"; do
     ssh -i "$SSH_KEY" "$TARGET" "
         if [ -d $static_dir ]; then
             ln -sfn $DEST $static_dir/lookin 2>/dev/null || \
-            echo '$REMOTE_PWD' | sudo -S ln -sfn $DEST $static_dir/lookin 2>/dev/null || true
+            sudo ln -sfn $DEST $static_dir/lookin 2>/dev/null || true
             echo '  ✓ $project: $url_path → $DEST'
         else
             echo '  ⚠ $project: $static_dir not found, skipping'
