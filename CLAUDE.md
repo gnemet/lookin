@@ -16,3 +16,13 @@ Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`
 ## Commands
 - `./generate_png.sh` — regenerate diagrams (one-time, requires `npm install`).
 - `./deploy_butalam.sh` — deploy.
+
+## SDD — spec-driven development
+
+**New non-trivial feature = spec folder FIRST** (`docs/specs/<feature>/`), committed
+before any implementation file. Infra/library tier: skip `brief.md` — a context
+paragraph at the top of `requirements.md` (EARS clauses) + `design.md` (enforcement
+map, one row per requirement ID) + `tasks.md` (a task closes only when its mechanism
+exists AND verification passes) is enough; add `audit.md` for adversarial findings +
+accepted residual risk. Skeleton to copy: `docs/specs/_template/`. Worked reference:
+`pipeline-forge/docs/specs/remote-mcp/`.
