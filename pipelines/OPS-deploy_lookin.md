@@ -148,14 +148,16 @@ config:
 ## Step: cleanup — ssh
 
 Kill any leftover standalone Python preview server (port 8081) — no longer needed
-now that LookIn is served as static files behind each project.
+now that LookIn is served as static files behind each project. The `[p]ython3`
+bracket guards against `pkill -f` matching its own command line (which would
+SIGTERM this very shell → spurious exit 143).
 
 ```yaml
 config:
   host:    "${DEPLOY_HOST}"
   user:    "${DEPLOY_USER}"
   key:     "${DEPLOY_KEY}"
-  command: "pkill -f 'python3.*8081' 2>/dev/null || true"
+  command: "pkill -f '[p]ython3.*8081' 2>/dev/null || true"
 ```
 
 ## Step: done — log

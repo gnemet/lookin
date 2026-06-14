@@ -28,8 +28,9 @@ PF_BIN="${PF_BIN:-}"
 [ -z "$PF_BIN" ] && command -v pf >/dev/null 2>&1                  && PF_BIN="$(command -v pf)"
 
 # ── Route to pipeline ─────────────────────────────────────────────────────────
+# --no-checkpoint: a deploy must run every step every time, never resume a partial run.
 if [ -n "$PF_BIN" ] && [ -x "$PF_BIN" ]; then
-  exec "$PF_BIN" "$SCRIPT_DIR/pipelines/OPS-deploy_lookin.md"
+  exec "$PF_BIN" --no-checkpoint "$SCRIPT_DIR/pipelines/OPS-deploy_lookin.md"
 fi
 
 # ── Inline fallback (CI / cold-start) ────────────────────────────────────────
@@ -75,5 +76,5 @@ for entry in "${SYMLINK_TARGETS[@]}"; do
     "
 done
 
-ssh -i "$SSH_KEY" "$TARGET" "pkill -f 'python3.*8081' 2>/dev/null || true"
+ssh -i "$SSH_KEY" "$TARGET" "pkill -f '[p]ython3.*8081' 2>/dev/null || true"
 echo "✅ LookIn deployed to $TARGET:$DEST/"
