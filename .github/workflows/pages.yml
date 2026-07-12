@@ -21,14 +21,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare site
         run: |
           mkdir -p _site
           cp landing.html _site/index.html
           cp favicon.svg _site/
-          cp admin-knowledge.html _site/
           cp -r vendor _site/vendor
 
       - name: Setup Pages
