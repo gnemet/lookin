@@ -4,9 +4,6 @@
 > EARS form. Business **why** → `brief.md` (tag each req with its goal `G#`).
 > Enforcement → `design.md`. Open work → `tasks.md`.
 >
-> For pure infra/library work with no BRD, replace the goal tags with a single
-> context paragraph here instead.
->
 > Patterns: **U** Ubiquitous (always) · **E** Event (When …) · **S** State
 > (While …) · **X** Unwanted (If … then …) · **O** Optional (Where … enabled).
 > Status: `[x]` verified · `[~]` partial · `[ ]` planned.

@@ -1,9 +1,9 @@
 # <Feature> — Brief (BRD)
 
 > The **why**. One page max. Goals carry IDs (`G#`) that EARS clauses in
-> `requirements.md` trace back to. SKIP this file for pure infra/library work —
-> a one-paragraph context header in `requirements.md` is enough there. Write a
-> BRD only when the feature has real business stakeholders / goals.
+> `requirements.md` trace back to. **Mandatory for every new spec** — infra /
+> library work included; keep it compact there (problem, goals, scope in a few
+> lines). Existing brief-less specs are grandfathered, not backfilled.
 
 ## Problem
 <What hurts today, in business terms. Not the solution.>
