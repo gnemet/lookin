@@ -6,7 +6,8 @@
 >
 > Patterns: **U** Ubiquitous (always) · **E** Event (When …) · **S** State
 > (While …) · **X** Unwanted (If … then …) · **O** Optional (Where … enabled).
-> Status: `[x]` verified · `[~]` partial · `[ ]` planned.
+> Status: draft — one of draft / active / done (YYYY-MM-DD) / superseded → [[spec]] / abandoned (YYYY-MM-DD, reason).
+> Status legend: `[x]` verified · `[~]` partial · `[ ]` planned.
 >
 > EARS shapes (copy one):
 > - Ubiquitous:  *The <system> **shall** <response>.*
