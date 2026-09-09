@@ -2,7 +2,7 @@
 
 > The **what**. Behavioral invariants, one constrained testable clause each, in
 > EARS form. Business **why** → `brief.md` (tag each req with its goal `G#`).
-> Enforcement → `design.md`. Open work → `tasks.md`.
+> Enforcement → `design.md`. Proof (written first) → `tests.md`. Open work → `tasks.md`.
 >
 > Patterns: **U** Ubiquitous (always) · **E** Event (When …) · **S** State
 > (While …) · **X** Unwanted (If … then …) · **O** Optional (Where … enabled).
