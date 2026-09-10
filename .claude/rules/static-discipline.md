@@ -1,5 +1,7 @@
 # Static-Discipline Rules — lookin
 
+> **Level 3.** Contract: `../../../docs/00_axioms.md`; platform rules index `../../../docs/all_rules_for_claude.md`.
+
 These rules load whenever you work on lookin.
 
 ## Build-step-free, forever
@@ -24,7 +26,7 @@ That's it. No others without an explicit conversation.
 
 ## Icon library
 
-**Phosphor icons only.** Every other project uses Font Awesome — lookin is the exception. Do not "harmonize" lookin to FA.
+**Phosphor icons only** — never Font Awesome.
 
 ## File layout
 
@@ -50,4 +52,4 @@ That's it. No others without an explicit conversation.
 
 ## What lookin currently visualizes
 
-Per `projects.md`, only **jiramntr** is in the catalog (`catalogs/jiramntr/` — 14 files). Other projects (johanna, aichat, datagrid, mcp-forge, pipeline-forge) are *future* targets — do not claim coverage that does not exist on disk.
+Per `projects.md`, only **jiramntr** is in the catalog (`catalogs/jiramntr/` — 6 files). Other projects (johanna, aichat, datagrid, mcp-forge, pipeline-forge) are *future* targets — do not claim coverage that does not exist on disk.

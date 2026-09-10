@@ -19,12 +19,4 @@ Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`
 
 ## SDD — spec-driven development
 
-**New non-trivial feature = spec folder FIRST** (`docs/specs/<feature>/`), committed
-before any implementation file. **`brief.md` is mandatory for every new spec** (ruling
-2026-07-13) — infra / library / refactor included; scale the brief, never skip it (a
-few lines — problem, goals, scope — are enough here). Specs created brief-less before
-the mandate are grandfathered (A10): no backfill, but a grandfathered spec next touched
-gets its brief then. Which of the five files a spec must contain is owned by
-`../docs/rules/01_research_design/documentation_structure.md` (A1) — read it there,
-not here. Skeleton to copy: `docs/specs/_template/`. Worked reference:
-`pipeline-forge/docs/specs/remote-mcp/`.
+SDD: spec folder first (A8) — rules in `../docs/rules/01_research_design/documentation_structure.md`; skeleton `docs/specs/_template/`.
