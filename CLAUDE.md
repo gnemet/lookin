@@ -1,6 +1,6 @@
 # lookin — Architecture viewer
 
-> Platform rules live in `../all_rules_for_claude.md` (root). This file only carries lookin-specific deltas.
+> Platform rules live in `../docs/all_rules_for_claude.md` (root). This file only carries lookin-specific deltas. Axioms: `../docs/00_axioms.md`.
 > Last refreshed: 2026-05-15.
 
 Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`. YAML-driven config (`configs/jirada.yaml`). Hand-drawn Mermaid diagrams (PNG-first). Phosphor icons. Dark theme only.
