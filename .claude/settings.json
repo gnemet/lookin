@@ -41,6 +41,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO=$(git -C \"$CLAUDE_PROJECT_DIR\" rev-parse --show-toplevel 2>/dev/null) && S=\"$(dirname \"$REPO\")/.claude/hooks/pre-push-audit.sh\" && [ -f \"$S\" ] && bash \"$S\" || true'",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }
