@@ -1,17 +1,27 @@
+/* Caveat — vendored variable font (Google Fonts v18), weights 400-700.
+   Source: fonts.gstatic.com via setup_vendor.sh — no CDN at runtime.
+
+   Rewritten 2026-09-12 for the same reason as inter.css: the previous faces pointed at
+   fonts/Caveat-Regular.woff2|.ttf and Caveat-SemiBold.woff2|.ttf, none of which exist —
+   only the VARIABLE subsets were vendored, so Caveat silently fell back to the system
+   stack. Shape mirrored from jetbrains-mono.css. */
+
+/* latin */
 @font-face {
   font-family: 'Caveat';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 700;
   font-display: swap;
-  src: url(fonts/Caveat-Regular.woff2) format('woff2'),
-    url(fonts/Caveat-Regular.ttf) format('truetype');
+  src: url(fonts/Caveat-Variable-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* latin-ext (Hungarian ő/ű etc.) */
 @font-face {
   font-family: 'Caveat';
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400 700;
   font-display: swap;
-  src: url(fonts/Caveat-SemiBold.woff2) format('woff2'),
-    url(fonts/Caveat-SemiBold.ttf) format('truetype');
+  src: url(fonts/Caveat-Variable-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }

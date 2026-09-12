@@ -7,7 +7,12 @@
     <title>LookIn 🔍 — Interactive Architecture Viewer</title>
     <meta name="description" content="A YAML-controlled, interactive architecture viewer with hand-drawn Mermaid diagrams. Drill down from business flows to table columns — across multiple projects.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Vendored fonts, no CDN (ui_and_styling.md:456). These are the same three families
+         the Google Fonts link used to fetch — Inter, Caveat, JetBrains Mono — served from
+         vendor/fonts/ as variable subsets incl. latin-ext for Hungarian ő/ű. -->
+    <link rel="stylesheet" href="vendor/inter.css">
+    <link rel="stylesheet" href="vendor/caveat.css">
+    <link rel="stylesheet" href="vendor/jetbrains-mono.css">
     <style>
         /* ── Design Tokens ───────────────────────────────────── */
         :root {
