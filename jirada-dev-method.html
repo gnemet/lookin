@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JiraDa Platform — Fejlesztési módszer</title>
 <link rel="icon" href="data:,">
-<!-- deck-engine sha256=a308f79a43715b6b3b59bf7272263017d3a5248e89a02eb0d5da936f5355de6e -->
+<!-- deck-engine sha256=4bba74514360dda03c9b9bd4ed8e4589b73c273969b0752913237ccfb403a441 -->
 <style></style>
 <style>/* deck-foundation engine — chrome + components (spec U1, U3).
  * Inlined verbatim into every generated deck, BEFORE the vibe and accent blocks, so a vibe
@@ -29,6 +29,7 @@
   --deck-h1-size: 2.2rem;
   --deck-h2-size: 1.55rem;
   --deck-heading-font: var(--font-sans);
+  --deck-diagram-max-height: 62vh;
   --mermaid-look: classic;
 }
 
@@ -581,9 +582,42 @@ blockquote {
   width: 100%;
 }
 
+/* DB-U1: a diagram never needs more than one screen — taller ones scale down (aspect kept) */
 .mermaid-diagram svg {
   max-width: 100%;
   height: auto;
+  max-height: var(--deck-diagram-max-height);
+}
+
+/* DB-O1/O2: diagram beside the content; ratio reuses 40-60 / 60-40 (first column : second) */
+.side-diagram {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+}
+
+.side-diagram.ratio-40-60 {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+
+.side-diagram.ratio-60-40 {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+.side-diagram > .diagram-col,
+.side-diagram > .content-col {
+  min-width: 0;
+}
+
+.side-diagram > .content-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-gap);
+}
+
+.content-col .content-grid {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .mermaid-error {
@@ -677,7 +711,12 @@ blockquote {
   .content-grid.cols-2,
   .content-grid.cols-3,
   .content-grid.cols-4,
-  .split {
+  .split,
+  .split.ratio-40-60,
+  .split.ratio-60-40,
+  .side-diagram,
+  .side-diagram.ratio-40-60,
+  .side-diagram.ratio-60-40 {
     grid-template-columns: 1fr;
   }
 
@@ -1522,7 +1561,8 @@ ${TODAY}           # beepitett valtozo
 </section>
 </div>
 </div>
-<div class="slide layout-free" id="s12" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">pipeline-forge</span></div><h2> Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással</h2></div><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="sequenceDiagram
+<div class="slide layout-free" id="s12" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">pipeline-forge</span></div><h2> Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással</h2></div>
+<div class="side-diagram ratio-60-40"><div class="diagram-col"><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="sequenceDiagram
     participant Handler as Go Handler
     participant Engine as pipeline-forge
     participant DB as PostgreSQL
@@ -1540,7 +1580,8 @@ ${TODAY}           # beepitett valtozo
     Handler-&gt;&gt;Engine: ResumeWorkflow(instanceCode, actorID)
     Engine-&gt;&gt;DB: Lezart step sor olvasasa
     Engine-&gt;&gt;DB: db_execute: app.request_approve(decision)
-    Engine--&gt;&gt;Handler: RunSuccess"></div></div><div class="content-grid"><article class="card accent-mauve"><div class="card-head"><h3>Step: Manager Approval — human_task</h3></div><div class="body"><pre><code class="language-yaml">config:
+    Engine--&gt;&gt;Handler: RunSuccess"></div></div></div>
+<div class="content-col"><div class="content-grid"><article class="card accent-mauve"><div class="card-head"><h3>Step: Manager Approval — human_task</h3></div><div class="body"><pre><code class="language-yaml">config:
   name:        &quot;Vezető jóváhagyás&quot;
   assignee_id: &quot;{{ $payload.manager_id }}&quot;
   due_hours:   48
@@ -1562,25 +1603,30 @@ res, err = pipelines.ResumeWorkflow(
   ctx, tenant, code, actorID,
   map[string]any{&quot;lang&quot;: &quot;hu&quot;})
 </code></pre>
-</div></article><article class="card accent-green"><div class="card-head"><h3>valueForge pipeline-ok</h3></div><div class="body"><ul>
+</div></article></div><div class="body after"><h4>valueForge pipeline-ok</h4>
+<ul>
 <li>27 FY (folyamat) pipeline</li>
 <li>39 INT (integráció) pipeline</li>
 <li>211 WF (workflow scaffold, entitygen)</li>
 <li>20 RULE-SZ (üzleti szabályok)</li>
 </ul>
-</div></article><article class="card accent-teal"><div class="card-head"><h3>Megfigyelhetőség</h3></div><div class="body"><ul>
+<h4>Megfigyelhetőség</h4>
+<ul>
 <li>Minden futás → <code>meta.pipeline_run</code> sor</li>
 <li>GELF strukturált logging stdout-ra</li>
 <li><code>bin/pf --dry-run pipeline.md</code></li>
 <li><code>on_error: named_step</code> fallback routing</li>
 </ul>
-</div></article><article class="card accent-yellow"><div class="card-head"><h3>Trigger típusok</h3></div><div class="body"><ul>
+<h4>Trigger típusok</h4>
+<ul>
 <li><code>manual</code> — kézi / API indítás</li>
 <li><code>cron</code> — ütemezett (cron kifejezés)</li>
 <li><code>event</code> — esemény-vezérelt</li>
 <li><code>workflow</code> — hosszan futó suspend/resume</li>
 </ul>
-</div></article></div>
+</div>
+</div>
+</div>
 </div>
 <div class="slide layout-split" id="s13" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">GoBI</span></div><h2> GoBI — BI lekérdezések és mks_sql_parser dinamikus SQL</h2></div>
 <div class="split">
@@ -1802,7 +1848,8 @@ CREATE POLICY p_write
 </table>
 </div>
 </div>
-<div class="slide layout-free" id="s16" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">RAG</span></div><h2> RAG archítektúra — admin-knowledge 3 rétegű rendszer</h2></div><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="graph TB
+<div class="slide layout-free" id="s16" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">RAG</span></div><h2> RAG archítektúra — admin-knowledge 3 rétegű rendszer</h2></div>
+<div class="side-diagram ratio-60-40"><div class="diagram-col"><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="graph TB
     subgraph T1[&#34;1. reteg -- Python MCP Server&#34;]
         MCP[&#34;server.py  59 MCP tool\nNev-feloldas, SQLite cache\nLink rendering (_enrich_rows)&#34;]
     end
@@ -1831,7 +1878,8 @@ CREATE POLICY p_write
     class MCP mauve
     class PF blue
     class RAG teal
-    class DWH green"></div></div><div class="content-grid"><article class="card accent-blue"><div class="card-head"><h3>6 RAG collection</h3></div><div class="body"><table>
+    class DWH green"></div></div></div>
+<div class="content-col"><div class="content-grid"><article class="card accent-blue"><div class="card-head"><h3>6 RAG collection</h3></div><div class="body"><table>
 <thead>
 <tr>
 <th>Collection</th>
@@ -1870,27 +1918,33 @@ CREATE POLICY p_write
 <li>Call: JIRA REST POST (per-user PAT)</li>
 <li>Finalize: UPDATE audit sor (HTTP status, key)</li>
 </ol>
-</div></article><article class="card accent-peach"><div class="card-head"><h3>Embedding</h3></div><div class="body"><ul>
+</div></article></div><div class="body after"><h4>Embedding</h4>
+<ul>
 <li>Ollama <code>snowflake-arctic-embed2</code></li>
 <li>GPU server: sys-gpu01:11434</li>
 <li>pgvector HNSW index</li>
 <li>Reranker: letiltva (NaN bug Ollama)</li>
 </ul>
-</div></article><article class="card accent-sky"><div class="card-head"><h3>Search logic helye</h3></div><div class="body"><ul>
+<h4>Search logic helye</h4>
+<ul>
 <li>Keresési logika: <code>pipelines/*.md</code></li>
 <li><code>server.py</code> = MCP engine, nem search</li>
 <li><code>_enrich_rows()</code>: link rendering Python-ban</li>
 <li><code>pf</code> binary: PF_BIN → bin/pf → PATH</li>
 </ul>
-</div></article><article class="card accent-green"><div class="card-head"><h3>DWH hozzáférés</h3></div><div class="body"><ul>
+<h4>DWH hozzáférés</h4>
+<ul>
 <li>Csak <code>dwh.*</code> SECURITY DEFINER function</li>
 <li>Nincs <code>SELECT</code> a <code>dim_*</code> táblákon</li>
 <li>LDAP tilos — DWH tükrözi az attribútumokat</li>
 <li><code>'me'</code>: <code>$USER</code> env var → DWH</li>
 </ul>
-</div></article></div>
 </div>
-<div class="slide layout-free" id="s17" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Biztonság</span></div><h2> Biztonsági modell — Védelemben mélység (Defense in Depth)</h2></div><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="%%{init: {&#39;flowchart&#39;: {&#39;fontSize&#39;: 18}}}%%
+</div>
+</div>
+</div>
+<div class="slide layout-free" id="s17" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Biztonság</span></div><h2> Biztonsági modell — Védelemben mélység (Defense in Depth)</h2></div>
+<div class="side-diagram ratio-60-40"><div class="diagram-col"><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="%%{init: {&#39;flowchart&#39;: {&#39;fontSize&#39;: 18}}}%%
 graph LR
     subgraph L1[&#34;1. Titkositas -- GPG Vault&#34;]
         GPG[&#34;.env.gpg (commitalt)\ncsapat vault_pass\nscripts/vault.sh lock/unlock&#34;]
@@ -1914,7 +1968,8 @@ graph LR
     classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
     class GPG yellow
     class RLS green
-    class SEC teal"></div></div><div class="content-grid"><article class="card accent-yellow"><div class="card-head"><h3>GPG Vault szabályok</h3></div><div class="body"><ul>
+    class SEC teal"></div></div></div>
+<div class="content-col"><div class="content-grid"><article class="card accent-yellow"><div class="card-head"><h3>GPG Vault szabályok</h3></div><div class="body"><ul>
 <li>Commitálva: <code>.env.gpg</code> (titkosított)</li>
 <li>Gitignore: <code>.env</code> — soha ne commitáld</li>
 <li>API kulcsok fejlécben, soha URL-ben</li>
@@ -1927,25 +1982,30 @@ graph LR
 <li>YAML: csak <code>yaml.safe_load()</code> — soha <code>yaml.load()</code></li>
 <li>AI SQL: timeout ≤ 5s, sor limit ≤ 1000</li>
 </ul>
-</div></article><article class="card accent-teal"><div class="card-head"><h3>SECURITY DEFINER</h3></div><div class="body"><ul>
+</div></article></div><div class="body after"><h4>SECURITY DEFINER</h4>
+<ul>
 <li>App role: <code>EXECUTE</code> jogosultság</li>
 <li>Nincs <code>SELECT</code> a <code>dim_*</code> táblákon</li>
 <li>Function: <code>search_path = pg_catalog, schema</code></li>
 <li>AI SQL: <code>default_transaction_read_only=on</code></li>
 </ul>
-</div></article><article class="card accent-mauve"><div class="card-head"><h3>Tenant izoláció</h3></div><div class="body"><ul>
+<h4>Tenant izoláció</h4>
+<ul>
 <li>RLS: <code>meta.has_tenant_access(tenant_code)</code></li>
 <li>App soha ne re-számolja a filtert</li>
 <li>GUC: <code>SET app.tenant_code = $1</code> session-ben</li>
 <li>SCD2 btree_gist izoláció</li>
 </ul>
-</div></article><article class="card accent-blue"><div class="card-head"><h3>Web biztonság</h3></div><div class="body"><ul>
+<h4>Web biztonság</h4>
+<ul>
 <li><code>X-Frame-Options: DENY</code></li>
 <li><code>X-Content-Type-Options: nosniff</code></li>
 <li>WebSocket: origin allowlist, soha <code>return true</code></li>
 <li>Template: soha <code>template.HTML</code> cast untrusted data</li>
 </ul>
-</div></article></div>
+</div>
+</div>
+</div>
 </div>
 <div class="slide layout-split" id="s18" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Fejlesztési workflow</span></div><h2> Git workflow · Build · Deploy · Cross-project blast radius</h2></div>
 <div class="split">

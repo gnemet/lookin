@@ -574,7 +574,7 @@ ${ETL_OPS_EMAIL}   # env var
 ${TODAY}           # beepitett valtozo
 ```
 
-## Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással {layout=free label="pipeline-forge" diagrams=first}
+## Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással {layout=free label="pipeline-forge" diagrams=left ratio=60-40}
 
 ```mermaid
 sequenceDiagram
@@ -628,19 +628,24 @@ res, err = pipelines.ResumeWorkflow(
   map[string]any{"lang": "hu"})
 ```
 
-### valueForge pipeline-ok {accent=green}
+---
+
+#### valueForge pipeline-ok
+
 - 27 FY (folyamat) pipeline
 - 39 INT (integráció) pipeline
 - 211 WF (workflow scaffold, entitygen)
 - 20 RULE-SZ (üzleti szabályok)
 
-### Megfigyelhetőség {accent=teal}
+#### Megfigyelhetőség
+
 - Minden futás → `meta.pipeline_run` sor
 - GELF strukturált logging stdout-ra
 - `bin/pf --dry-run pipeline.md`
 - `on_error: named_step` fallback routing
 
-### Trigger típusok {accent=yellow}
+#### Trigger típusok
+
 - `manual` — kézi / API indítás
 - `cron` — ütemezett (cron kifejezés)
 - `event` — esemény-vezérelt
@@ -857,7 +862,7 @@ CREATE POLICY p_write
 | `btree_gist &&` constraint | Közepes → RLS kötelező | App nem re-számolja a tenant filtert |
 | | Magas → RLS + auditlog | SECURITY DEFINER + `search_path` |
 
-## RAG archítektúra — admin-knowledge 3 rétegű rendszer {layout=free label="RAG" diagrams=first}
+## RAG archítektúra — admin-knowledge 3 rétegű rendszer {layout=free label="RAG" diagrams=left ratio=60-40}
 
 ```mermaid
 graph TB
@@ -907,25 +912,30 @@ graph TB
 2. Call: JIRA REST POST (per-user PAT)
 3. Finalize: UPDATE audit sor (HTTP status, key)
 
-### Embedding {accent=peach}
+---
+
+#### Embedding
+
 - Ollama `snowflake-arctic-embed2`
 - GPU server: sys-gpu01:11434
 - pgvector HNSW index
 - Reranker: letiltva (NaN bug Ollama)
 
-### Search logic helye {accent=sky}
+#### Search logic helye
+
 - Keresési logika: `pipelines/*.md`
 - `server.py` = MCP engine, nem search
 - `_enrich_rows()`: link rendering Python-ban
 - `pf` binary: PF_BIN → bin/pf → PATH
 
-### DWH hozzáférés {accent=green}
+#### DWH hozzáférés
+
 - Csak `dwh.*` SECURITY DEFINER function
 - Nincs `SELECT` a `dim_*` táblákon
 - LDAP tilos — DWH tükrözi az attribútumokat
 - `'me'`: `$USER` env var → DWH
 
-## Biztonsági modell — Védelemben mélység (Defense in Depth) {layout=free label="Biztonság" diagrams=first}
+## Biztonsági modell — Védelemben mélység (Defense in Depth) {layout=free label="Biztonság" diagrams=left ratio=60-40}
 
 ```mermaid
 %%{init: {'flowchart': {'fontSize': 18}}}%%
@@ -968,19 +978,24 @@ graph LR
 - YAML: csak `yaml.safe_load()` — soha `yaml.load()`
 - AI SQL: timeout ≤ 5s, sor limit ≤ 1000
 
-### SECURITY DEFINER {accent=teal}
+---
+
+#### SECURITY DEFINER
+
 - App role: `EXECUTE` jogosultság
 - Nincs `SELECT` a `dim_*` táblákon
 - Function: `search_path = pg_catalog, schema`
 - AI SQL: `default_transaction_read_only=on`
 
-### Tenant izoláció {accent=mauve}
+#### Tenant izoláció
+
 - RLS: `meta.has_tenant_access(tenant_code)`
 - App soha ne re-számolja a filtert
 - GUC: `SET app.tenant_code = $1` session-ben
 - SCD2 btree_gist izoláció
 
-### Web biztonság {accent=blue}
+#### Web biztonság
+
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - WebSocket: origin allowlist, soha `return true`
