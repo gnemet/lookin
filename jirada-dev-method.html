@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JiraDa Platform — Fejlesztési módszer</title>
 <link rel="icon" href="data:,">
-<!-- deck-engine sha256=4bba74514360dda03c9b9bd4ed8e4589b73c273969b0752913237ccfb403a441 -->
+<!-- deck-engine sha256=f778b73b4945b9590fd4c6f13141bd3ec904a8ce591ab71292c4bb0efb9788c6 -->
 <style></style>
 <style>/* deck-foundation engine — chrome + components (spec U1, U3).
  * Inlined verbatim into every generated deck, BEFORE the vibe and accent blocks, so a vibe
@@ -303,8 +303,11 @@ kbd {
   padding-left: 0.2rem;
 }
 
-/* PG-E1: content after the items */
-.after {
+/* PG-E1 / SR-U1: content after the items — text, then a card row; spans the slide width */
+.after-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-gap);
   margin-top: 0.25rem;
 }
 
@@ -950,7 +953,7 @@ blockquote {
 </ul>
 <p>Identitás értékek: env var / config — soha default</p>
 </div></article>
-</div><div class="body after"><blockquote>
+</div><div class="after-block"><div class="body after"><blockquote>
 <p><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> Mielőtt <code>cmd/&lt;folyamat&gt;/main.go</code>-t írsz: “Lehetne ez pipeline fájl?”</p>
 </blockquote>
 <blockquote>
@@ -962,7 +965,7 @@ blockquote {
 <blockquote>
 <p><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> Állj meg! A platform már rendelkezik a négy szükséges motorral. Adj hozzá adaptert vagy bővítsd a spec formátumot.</p>
 </blockquote>
-</div>
+</div></div>
 </div>
 <div class="slide layout-free" id="s3" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Motor összehasonlítás</span></div><h2> entity-forge vs pipeline-forge — mikor melyiket?</h2></div><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="flowchart LR
     EN[&#34;entities/EN-*.md\nlov/lov_*.md&#34;] --&gt; EF
@@ -1603,30 +1606,27 @@ res, err = pipelines.ResumeWorkflow(
   ctx, tenant, code, actorID,
   map[string]any{&quot;lang&quot;: &quot;hu&quot;})
 </code></pre>
-</div></article></div><div class="body after"><h4>valueForge pipeline-ok</h4>
-<ul>
+</div></article></div>
+</div>
+</div><div class="after-block"><div class="content-grid after-grid cols-3"><article class="card accent-green"><div class="card-head"><h3>valueForge pipeline-ok</h3></div><div class="body"><ul>
 <li>27 FY (folyamat) pipeline</li>
 <li>39 INT (integráció) pipeline</li>
 <li>211 WF (workflow scaffold, entitygen)</li>
 <li>20 RULE-SZ (üzleti szabályok)</li>
 </ul>
-<h4>Megfigyelhetőség</h4>
-<ul>
+</div></article><article class="card accent-teal"><div class="card-head"><h3>Megfigyelhetőség</h3></div><div class="body"><ul>
 <li>Minden futás → <code>meta.pipeline_run</code> sor</li>
 <li>GELF strukturált logging stdout-ra</li>
 <li><code>bin/pf --dry-run pipeline.md</code></li>
 <li><code>on_error: named_step</code> fallback routing</li>
 </ul>
-<h4>Trigger típusok</h4>
-<ul>
+</div></article><article class="card accent-yellow"><div class="card-head"><h3>Trigger típusok</h3></div><div class="body"><ul>
 <li><code>manual</code> — kézi / API indítás</li>
 <li><code>cron</code> — ütemezett (cron kifejezés)</li>
 <li><code>event</code> — esemény-vezérelt</li>
 <li><code>workflow</code> — hosszan futó suspend/resume</li>
 </ul>
-</div>
-</div>
-</div>
+</div></article></div></div>
 </div>
 <div class="slide layout-split" id="s13" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">GoBI</span></div><h2> GoBI — BI lekérdezések és mks_sql_parser dinamikus SQL</h2></div>
 <div class="split">
@@ -1733,7 +1733,7 @@ cur.execute(
     &quot;SELECT dwh.user_get_key(%s)&quot;, (name,))
 </code></pre>
 </div></article>
-</div><div class="body after"><h4>JSONB function minta (SQL)</h4>
+</div><div class="after-block"><div class="body after"><h4>JSONB function minta (SQL)</h4>
 <pre><code class="language-sql">CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
 RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER
@@ -1768,7 +1768,7 @@ VALUES ($1, now());
 -- BAD: backend clock -- soha ne adj
 -- time.Now() / datetime.now() parametert!
 </code></pre>
-</div>
+</div></div>
 </div>
 <div class="slide layout-split" id="s15" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Adatbázis</span></div><h2> SCD2 — Temporal Versioning &amp; Row Level Security</h2></div>
 <div class="split">
@@ -1820,7 +1820,7 @@ CREATE POLICY p_write
 </code></pre>
 </div>
 </section>
-</div><div class="body after"><table>
+</div><div class="after-block"><div class="body after"><table>
 <thead>
 <tr>
 <th>22 — SCD2 leaf partíció</th>
@@ -1846,7 +1846,7 @@ CREATE POLICY p_write
 </tr>
 </tbody>
 </table>
-</div>
+</div></div>
 </div>
 <div class="slide layout-free" id="s16" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">RAG</span></div><h2> RAG archítektúra — admin-knowledge 3 rétegű rendszer</h2></div>
 <div class="side-diagram ratio-60-40"><div class="diagram-col"><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="graph TB
@@ -1918,30 +1918,27 @@ CREATE POLICY p_write
 <li>Call: JIRA REST POST (per-user PAT)</li>
 <li>Finalize: UPDATE audit sor (HTTP status, key)</li>
 </ol>
-</div></article></div><div class="body after"><h4>Embedding</h4>
-<ul>
+</div></article></div>
+</div>
+</div><div class="after-block"><div class="content-grid after-grid cols-3"><article class="card accent-peach"><div class="card-head"><h3>Embedding</h3></div><div class="body"><ul>
 <li>Ollama <code>snowflake-arctic-embed2</code></li>
 <li>GPU server: sys-gpu01:11434</li>
 <li>pgvector HNSW index</li>
 <li>Reranker: letiltva (NaN bug Ollama)</li>
 </ul>
-<h4>Search logic helye</h4>
-<ul>
+</div></article><article class="card accent-sky"><div class="card-head"><h3>Search logic helye</h3></div><div class="body"><ul>
 <li>Keresési logika: <code>pipelines/*.md</code></li>
 <li><code>server.py</code> = MCP engine, nem search</li>
 <li><code>_enrich_rows()</code>: link rendering Python-ban</li>
 <li><code>pf</code> binary: PF_BIN → bin/pf → PATH</li>
 </ul>
-<h4>DWH hozzáférés</h4>
-<ul>
+</div></article><article class="card accent-green"><div class="card-head"><h3>DWH hozzáférés</h3></div><div class="body"><ul>
 <li>Csak <code>dwh.*</code> SECURITY DEFINER function</li>
 <li>Nincs <code>SELECT</code> a <code>dim_*</code> táblákon</li>
 <li>LDAP tilos — DWH tükrözi az attribútumokat</li>
 <li><code>'me'</code>: <code>$USER</code> env var → DWH</li>
 </ul>
-</div>
-</div>
-</div>
+</div></article></div></div>
 </div>
 <div class="slide layout-free" id="s17" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Biztonság</span></div><h2> Biztonsági modell — Védelemben mélység (Defense in Depth)</h2></div>
 <div class="side-diagram ratio-60-40"><div class="diagram-col"><div class="mermaid-wrap"><div class="mermaid-diagram" role="img" aria-label="Diagram" data-mermaid="%%{init: {&#39;flowchart&#39;: {&#39;fontSize&#39;: 18}}}%%
@@ -1982,30 +1979,27 @@ graph LR
 <li>YAML: csak <code>yaml.safe_load()</code> — soha <code>yaml.load()</code></li>
 <li>AI SQL: timeout ≤ 5s, sor limit ≤ 1000</li>
 </ul>
-</div></article></div><div class="body after"><h4>SECURITY DEFINER</h4>
-<ul>
+</div></article></div>
+</div>
+</div><div class="after-block"><div class="content-grid after-grid cols-3"><article class="card accent-teal"><div class="card-head"><h3>SECURITY DEFINER</h3></div><div class="body"><ul>
 <li>App role: <code>EXECUTE</code> jogosultság</li>
 <li>Nincs <code>SELECT</code> a <code>dim_*</code> táblákon</li>
 <li>Function: <code>search_path = pg_catalog, schema</code></li>
 <li>AI SQL: <code>default_transaction_read_only=on</code></li>
 </ul>
-<h4>Tenant izoláció</h4>
-<ul>
+</div></article><article class="card accent-mauve"><div class="card-head"><h3>Tenant izoláció</h3></div><div class="body"><ul>
 <li>RLS: <code>meta.has_tenant_access(tenant_code)</code></li>
 <li>App soha ne re-számolja a filtert</li>
 <li>GUC: <code>SET app.tenant_code = $1</code> session-ben</li>
 <li>SCD2 btree_gist izoláció</li>
 </ul>
-<h4>Web biztonság</h4>
-<ul>
+</div></article><article class="card accent-blue"><div class="card-head"><h3>Web biztonság</h3></div><div class="body"><ul>
 <li><code>X-Frame-Options: DENY</code></li>
 <li><code>X-Content-Type-Options: nosniff</code></li>
 <li>WebSocket: origin allowlist, soha <code>return true</code></li>
 <li>Template: soha <code>template.HTML</code> cast untrusted data</li>
 </ul>
-</div>
-</div>
-</div>
+</div></article></div></div>
 </div>
 <div class="slide layout-split" id="s18" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Fejlesztési workflow</span></div><h2> Git workflow · Build · Deploy · Cross-project blast radius</h2></div>
 <div class="split">

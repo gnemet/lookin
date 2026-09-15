@@ -630,21 +630,21 @@ res, err = pipelines.ResumeWorkflow(
 
 ---
 
-#### valueForge pipeline-ok
+### valueForge pipeline-ok {accent=green}
 
 - 27 FY (folyamat) pipeline
 - 39 INT (integráció) pipeline
 - 211 WF (workflow scaffold, entitygen)
 - 20 RULE-SZ (üzleti szabályok)
 
-#### Megfigyelhetőség
+### Megfigyelhetőség {accent=teal}
 
 - Minden futás → `meta.pipeline_run` sor
 - GELF strukturált logging stdout-ra
 - `bin/pf --dry-run pipeline.md`
 - `on_error: named_step` fallback routing
 
-#### Trigger típusok
+### Trigger típusok {accent=yellow}
 
 - `manual` — kézi / API indítás
 - `cron` — ütemezett (cron kifejezés)
@@ -914,21 +914,21 @@ graph TB
 
 ---
 
-#### Embedding
+### Embedding {accent=peach}
 
 - Ollama `snowflake-arctic-embed2`
 - GPU server: sys-gpu01:11434
 - pgvector HNSW index
 - Reranker: letiltva (NaN bug Ollama)
 
-#### Search logic helye
+### Search logic helye {accent=sky}
 
 - Keresési logika: `pipelines/*.md`
 - `server.py` = MCP engine, nem search
 - `_enrich_rows()`: link rendering Python-ban
 - `pf` binary: PF_BIN → bin/pf → PATH
 
-#### DWH hozzáférés
+### DWH hozzáférés {accent=green}
 
 - Csak `dwh.*` SECURITY DEFINER function
 - Nincs `SELECT` a `dim_*` táblákon
@@ -980,21 +980,21 @@ graph LR
 
 ---
 
-#### SECURITY DEFINER
+### SECURITY DEFINER {accent=teal}
 
 - App role: `EXECUTE` jogosultság
 - Nincs `SELECT` a `dim_*` táblákon
 - Function: `search_path = pg_catalog, schema`
 - AI SQL: `default_transaction_read_only=on`
 
-#### Tenant izoláció
+### Tenant izoláció {accent=mauve}
 
 - RLS: `meta.has_tenant_access(tenant_code)`
 - App soha ne re-számolja a filtert
 - GUC: `SET app.tenant_code = $1` session-ben
 - SCD2 btree_gist izoláció
 
-#### Web biztonság
+### Web biztonság {accent=blue}
 
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
