@@ -300,7 +300,7 @@ SKIP_DIRTY_CHECK=1 \
 
 ## Entity spec formátum — Annotált minimális példa {layout=split label="entity-forge"}
 
-### {accent=sapphire}
+### {accent=sapphire scroll=panel}
 ```yaml
 entity: EN-001
 name: kategoria
@@ -437,7 +437,7 @@ migrate \
 
 ## Pipeline formátum — Valós példa: Napi ETL {layout=split ratio=40-60 label="pipeline-forge"}
 
-### Napi ETL {accent=sapphire}
+### Napi ETL {accent=sapphire scroll=panel}
 #### Pipeline
 
 ```yaml
@@ -759,7 +759,7 @@ cur.execute(
 
 ---
 
-#### JSONB function minta (SQL)
+### JSONB function minta (SQL) {accent=sapphire scroll=panel}
 
 ```sql
 CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
@@ -782,7 +782,7 @@ SET search_path = pg_catalog, app, meta AS $fn$
 $fn$;
 ```
 
-#### Miért JSONB?
+### Miért JSONB? {accent=teal}
 
 - Mező hozzáadás = csak JSON payload változik
 - Nincs function signature change

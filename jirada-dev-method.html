@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JiraDa Platform — Fejlesztési módszer</title>
 <link rel="icon" href="data:,">
-<!-- deck-engine sha256=f778b73b4945b9590fd4c6f13141bd3ec904a8ce591ab71292c4bb0efb9788c6 -->
+<!-- deck-engine sha256=3ec0c5c00ebda18df961ebff97693573b8db02f3eb9e5f8e4470ca1422207295 -->
 <style></style>
 <style>/* deck-foundation engine — chrome + components (spec U1, U3).
  * Inlined verbatim into every generated deck, BEFORE the vibe and accent blocks, so a vibe
@@ -30,6 +30,8 @@
   --deck-h2-size: 1.55rem;
   --deck-heading-font: var(--font-sans);
   --deck-diagram-max-height: 62vh;
+  --deck-code-max-height: 45vh;
+  --deck-panel-max-height: 58vh;
   --mermaid-look: classic;
 }
 
@@ -552,12 +554,44 @@ code {
   font-size: 0.9em;
 }
 
+/* CP-U1: a code block is a bounded panel that scrolls itself; the slide stays one screen.
+   The thin scrollbar stays visible on purpose — "there is more code" must be discoverable. */
 pre {
+  max-height: var(--deck-code-max-height);
   overflow: auto;
   padding: 1rem 1.25rem;
   border: 1px solid var(--surface0);
   border-radius: var(--deck-radius);
   background: var(--crust);
+  scrollbar-width: thin;
+}
+
+pre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* CP-O1: code=full on a slide renders its code at full length */
+.slide.code-full pre {
+  max-height: none;
+}
+
+/* CP-O2: {scroll=panel} on an item — its whole body is one bounded panel that scrolls;
+   the code blocks inside it are not capped individually (the panel scrolls, not each block). */
+.scroll-panel > .body {
+  max-height: var(--deck-panel-max-height);
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.scroll-panel > .body pre {
+  max-height: none;
+  overflow: visible;
+}
+
+.scroll-panel > .body:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 pre code {
@@ -750,6 +784,13 @@ blockquote {
   }
 
   .deck {
+    overflow: visible;
+  }
+
+  /* CP-E1: print shows every line */
+  .slide pre,
+  .scroll-panel > .body {
+    max-height: none;
     overflow: visible;
   }
 
@@ -1228,7 +1269,7 @@ graph LR
 </div>
 <div class="slide layout-split" id="s8" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">entity-forge</span></div><h2> Entity spec formátum — Annotált minimális példa</h2></div>
 <div class="split">
-<section class="split-col accent-sapphire"><div class="body"><pre><code class="language-yaml">entity: EN-001
+<section class="split-col accent-sapphire scroll-panel"><div class="body"><pre><code class="language-yaml">entity: EN-001
 name: kategoria
 schema: app
 table: app.kategoria
@@ -1364,7 +1405,7 @@ rls: true
 </div>
 <div class="slide layout-split" id="s10" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">pipeline-forge</span></div><h2> Pipeline formátum — Valós példa: Napi ETL</h2></div>
 <div class="split ratio-40-60">
-<section class="split-col accent-sapphire"><h3> Napi ETL</h3><div class="body"><h4>Pipeline</h4>
+<section class="split-col accent-sapphire scroll-panel"><h3> Napi ETL</h3><div class="body"><h4>Pipeline</h4>
 <pre><code class="language-yaml">name:     &quot;jiramntr_daily_etl&quot;
 trigger:  &quot;jiramntr_etl&quot;
 schedule: &quot;0 2 * * *&quot;
@@ -1733,8 +1774,7 @@ cur.execute(
     &quot;SELECT dwh.user_get_key(%s)&quot;, (name,))
 </code></pre>
 </div></article>
-</div><div class="after-block"><div class="body after"><h4>JSONB function minta (SQL)</h4>
-<pre><code class="language-sql">CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
+</div><div class="after-block"><div class="content-grid after-grid cols-2"><article class="card accent-sapphire scroll-panel"><div class="card-head"><h3>JSONB function minta (SQL)</h3></div><div class="body"><pre><code class="language-sql">CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
 RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER
 SET search_path = pg_catalog, app, meta AS $fn$
@@ -1753,8 +1793,7 @@ SET search_path = pg_catalog, app, meta AS $fn$
     ) r;
 $fn$;
 </code></pre>
-<h4>Miért JSONB?</h4>
-<ul>
+</div></article><article class="card accent-teal"><div class="card-head"><h3>Miért JSONB?</h3></div><div class="body"><ul>
 <li>Mező hozzáadás = csak JSON payload változik</li>
 <li>Nincs function signature change</li>
 <li>Nincs Go/Python caller change</li>
@@ -1768,7 +1807,7 @@ VALUES ($1, now());
 -- BAD: backend clock -- soha ne adj
 -- time.Now() / datetime.now() parametert!
 </code></pre>
-</div></div>
+</div></article></div></div>
 </div>
 <div class="slide layout-split" id="s15" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">Adatbázis</span></div><h2> SCD2 — Temporal Versioning &amp; Row Level Security</h2></div>
 <div class="split">
@@ -4963,6 +5002,11 @@ globalThis["mermaid"] = globalThis.__esbuild_esm_mermaid_nm["mermaid"].default;
     }
     current = target;
     slides.forEach(s => s.classList.toggle('active', s === current));
+    // CP-E2 / CP-O2: a code panel or a scroll=panel body that overflows becomes keyboard-scrollable (Tab + ↑/↓)
+    current.querySelectorAll('pre, .scroll-panel > .body').forEach(p => {
+      if (p.scrollHeight > p.clientHeight + 1) p.tabIndex = 0;
+      else p.removeAttribute('tabindex');
+    });
     const pos = vis.indexOf(current) + 1;
     if (counterCur) counterCur.textContent = String(pos);
     if (counterTot) counterTot.textContent = String(vis.length);
