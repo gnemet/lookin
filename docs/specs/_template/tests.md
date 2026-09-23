@@ -1,4 +1,4 @@
-# <Feature> — Tests (TDD)
+# `<Feature>` — Tests (TDD)
 
 > The **proof, written first**. Each mechanism in `design.md` is defined here by the test that fails
 > before it exists, and **the test is committed red before the code it constrains**. Review reads
@@ -7,18 +7,21 @@
 >
 > Tiers: **T1** static (no external dependency) · **T2** hermetic (throwaway DB / local run, egress
 > blocked) · **T3** contract (a live dependency). **Assert values and counts, never "no error".**
+>
+> Placeholders are written in backticks (`` `<n>` ``) — a bare `<n>` is parsed as an HTML tag and
+> silently dropped by every Markdown renderer.
 
 ## The red-first order
 
 | # | Test | Tier | Asserts | Red until | Req |
 |---|---|---|---|---|---|
-| **TS1** | <what it pins down> | T1/T2/T3 | <the value or count, not "it ran"> | T<n> | U1, E1 |
+| **TS1** | `<what it pins down>` | T1/T2/T3 | `<the value or count, not "it ran">` | `T<n>` | U1, E1 |
 
 ## What a green suite still does not prove
 
-<Everything above is verification — "built it right". Name the acceptance gate (a task in
+*Everything above is verification — "built it right". Name the acceptance gate (a task in
 `tasks.md`) that answers "built the right thing", and say plainly what a fully green suite does
-not yet demonstrate.>
+not yet demonstrate.*
 
 ## Writing rules for this suite
 
