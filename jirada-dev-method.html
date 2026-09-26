@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JiraDa Platform — Fejlesztési módszer</title>
 <link rel="icon" href="data:,">
-<!-- deck-engine sha256=3ec0c5c00ebda18df961ebff97693573b8db02f3eb9e5f8e4470ca1422207295 -->
+<!-- deck-engine sha256=efc3a0e276b668be23a89238843cb0a7677db91a4f5a73b3de075c6c6d61eebd -->
 <style></style>
 <style>/* deck-foundation engine — chrome + components (spec U1, U3).
  * Inlined verbatim into every generated deck, BEFORE the vibe and accent blocks, so a vibe
@@ -564,6 +564,7 @@ pre {
   border-radius: var(--deck-radius);
   background: var(--crust);
   scrollbar-width: thin;
+  scrollbar-color: var(--surface1) transparent;
 }
 
 pre:focus-visible {
@@ -582,6 +583,7 @@ pre:focus-visible {
   max-height: var(--deck-panel-max-height);
   overflow: auto;
   scrollbar-width: thin;
+  scrollbar-color: var(--surface1) transparent;
 }
 
 .scroll-panel > .body pre {
@@ -1270,32 +1272,32 @@ graph LR
 <div class="slide layout-split" id="s8" aria-roledescription="slide"><div class="slide-head"><div class="label-row"><span class="slide-label">entity-forge</span></div><h2> Entity spec formátum — Annotált minimális példa</h2></div>
 <div class="split">
 <section class="split-col accent-sapphire scroll-panel"><div class="body"><pre><code class="language-yaml">entity: EN-001
-name: kategoria
+name: category
 schema: app
-table: app.kategoria
+table: app.category
 type: Torzsadat
 sensitivity: Alacsony
 # ^ Alacsony -&gt; RLS nem kotelezo
 scd2: false
 # ^ false -&gt; mutable tabla, nincs temporal lanc
 rls: false
-business_key: kod
+business_key: code
 </code></pre>
 <h4>COLUMNS</h4>
-<pre><code class="language-yaml">- name: kod
+<pre><code class="language-yaml">- name: code
   type: text
   required: true
   business_key: true
   labels: { en: &quot;Code&quot;, hu: &quot;Kod&quot; }
 
-- name: nev
+- name: name
   type: text
   required: true
   list:
     sort: true
   labels: { en: &quot;Name&quot;, hu: &quot;Megnevezes&quot; }
 
-- name: leiras
+- name: description
   type: text
   display:
     list_visible: false
@@ -1303,7 +1305,7 @@ business_key: kod
 </code></pre>
 <h4>FORMS</h4>
 <pre><code class="language-yaml">create:
-  fields: [kod, nev, leiras]
+  fields: [code, name, description]
 edit:
   inherit: create
 view:
@@ -1313,8 +1315,8 @@ view:
 <h4>CRUD</h4>
 <pre><code class="language-yaml">generate: [list, get, insert, update, expire]
 list:
-  search_fields: [kod, nev]
-  default_sort: { field: nev, dir: asc }
+  search_fields: [code, name]
+  default_sort: { field: name, dir: asc }
   page_sizes: [25, 50]
 </code></pre>
 </div>
@@ -1680,18 +1682,21 @@ title:
 <h4>Parameters</h4>
 <pre><code class="language-yaml">- name: status
   type: TEXT
-  input: &quot;lov:SELECT kod AS value,
-    app.lov_label(nev, :current_lang)
-    AS label FROM app.lov_aktiv_statusz
-    WHERE aktiv ORDER BY sort_order&quot;
+  input: &quot;lov:SELECT code AS value,
+    lov.label(name, :current_lang)
+    AS label FROM lov.aktiv_statusz
+    WHERE active ORDER BY sort_order&quot;
   labels: {en: Status, hu: Statusz}
 </code></pre>
 <h4>SQL</h4>
 <pre><code class="language-sql">SELECT dt.dokumentum_tipus_code,
        dt.tipusnev,
-       app.lov_label(dt.aktiv_statusz,
+       lov.label(ls.name,
          :current_lang) AS statusz
   FROM app.dokumentum_tipus dt
+  LEFT JOIN lov.aktiv_statusz ls
+         ON ls.code = dt.aktiv_statusz
+        AND ls.active
  WHERE dt.tenant_code = :tenant
 --&lt;status
    AND dt.aktiv_statusz = :status

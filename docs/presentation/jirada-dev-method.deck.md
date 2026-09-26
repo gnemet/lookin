@@ -303,35 +303,35 @@ SKIP_DIRTY_CHECK=1 \
 ### {accent=sapphire scroll=panel}
 ```yaml
 entity: EN-001
-name: kategoria
+name: category
 schema: app
-table: app.kategoria
+table: app.category
 type: Torzsadat
 sensitivity: Alacsony
 # ^ Alacsony -> RLS nem kotelezo
 scd2: false
 # ^ false -> mutable tabla, nincs temporal lanc
 rls: false
-business_key: kod
+business_key: code
 ```
 
 #### COLUMNS
 
 ```yaml
-- name: kod
+- name: code
   type: text
   required: true
   business_key: true
   labels: { en: "Code", hu: "Kod" }
 
-- name: nev
+- name: name
   type: text
   required: true
   list:
     sort: true
   labels: { en: "Name", hu: "Megnevezes" }
 
-- name: leiras
+- name: description
   type: text
   display:
     list_visible: false
@@ -342,7 +342,7 @@ business_key: kod
 
 ```yaml
 create:
-  fields: [kod, nev, leiras]
+  fields: [code, name, description]
 edit:
   inherit: create
 view:
@@ -355,8 +355,8 @@ view:
 ```yaml
 generate: [list, get, insert, update, expire]
 list:
-  search_fields: [kod, nev]
-  default_sort: { field: nev, dir: asc }
+  search_fields: [code, name]
+  default_sort: { field: name, dir: asc }
   page_sizes: [25, 50]
 ```
 
@@ -668,10 +668,10 @@ title:
 ```yaml
 - name: status
   type: TEXT
-  input: "lov:SELECT kod AS value,
-    app.lov_label(nev, :current_lang)
-    AS label FROM app.lov_aktiv_statusz
-    WHERE aktiv ORDER BY sort_order"
+  input: "lov:SELECT code AS value,
+    lov.label(name, :current_lang)
+    AS label FROM lov.aktiv_statusz
+    WHERE active ORDER BY sort_order"
   labels: {en: Status, hu: Statusz}
 ```
 
@@ -680,9 +680,12 @@ title:
 ```sql
 SELECT dt.dokumentum_tipus_code,
        dt.tipusnev,
-       app.lov_label(dt.aktiv_statusz,
+       lov.label(ls.name,
          :current_lang) AS statusz
   FROM app.dokumentum_tipus dt
+  LEFT JOIN lov.aktiv_statusz ls
+         ON ls.code = dt.aktiv_statusz
+        AND ls.active
  WHERE dt.tenant_code = :tenant
 --<status
    AND dt.aktiv_statusz = :status
