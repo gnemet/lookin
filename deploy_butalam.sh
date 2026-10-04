@@ -52,7 +52,7 @@ ssh -i "$SSH_KEY" "$TARGET" "mkdir -p $DEST"
 
 echo "Syncing core files..."
 rsync -az -e "ssh -i $SSH_KEY" \
-    "$SRC/index.html" "$SRC/app.js" "$SRC/style.css" "$SRC/favicon.svg" \
+    "$SRC/index.html" "$SRC/app.js" "$SRC/tooltip.js" "$SRC/style.css" "$SRC/favicon.svg" \
     "$TARGET:$DEST/"
 
 for dir in configs vendor layers catalogs docs; do
