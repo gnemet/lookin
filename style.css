@@ -771,3 +771,27 @@ footer {
         font-size: 1.5rem;
     }
 }
+
+/* Tooltips are never the native title= bubble (ui_and_styling.md § Tooltips, owner ruling
+   2026-09-26): tooltip.js — a byte-identical copy of the foundation-ui floor's script; lookin is a
+   vendor-bank opt-out — shows a data-tip's text in this one fixed-position element.
+   The first block bridges the floor's token names onto lookin's palette, scoped to the tooltip;
+   --r-md and --base-rgb (the shadow colour) have no lookin token, so they are declared here.
+   The second block is the floor's rule, byte-identical. Spec docs/specs/themed-tooltip-rollout/. */
+.fui-tip {
+    --bg-card: var(--card-bg);
+    --fg: var(--text-color);
+    --border: var(--border-color);
+    --font-sans: var(--font-ui);
+    --r-md: 4px;
+    --base-rgb: 0, 0, 0;
+}
+.fui-tip {
+  position: fixed; z-index: 1000; pointer-events: none;
+  width: max-content; max-width: 38ch; white-space: normal;
+  padding: 7px 10px; font: 400 12.5px/1.45 var(--font-sans);
+  background: var(--bg-card); color: var(--fg);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  box-shadow: 0 8px 24px rgba(var(--base-rgb), .35);
+}
+.fui-tip[hidden] { display: none; }

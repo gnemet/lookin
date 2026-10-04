@@ -259,7 +259,7 @@
 
                     // Tooltip
                     if (region.tooltip || region.label) {
-                        div.title = region.tooltip || region.label;
+                        div.setAttribute('data-tip', region.tooltip || region.label);
                         const labelEl = document.createElement('span');
                         labelEl.className = 'region-label';
                         labelEl.textContent = region.label || '';
@@ -356,7 +356,7 @@
                 }
 
                 if (nodeConfig.tooltip) {
-                    nodeGroup.setAttribute('title', nodeConfig.tooltip);
+                    nodeGroup.setAttribute('data-tip', nodeConfig.tooltip);
                 }
 
                 // Single-click = drill down, Double-click = show doc

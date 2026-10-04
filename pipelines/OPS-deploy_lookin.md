@@ -47,11 +47,11 @@ config:
 
 ## Step: sync_core — rsync
 
-The four root files; no `--delete` (it would wipe the sibling subdirectories).
+The five root files; no `--delete` (it would wipe the sibling subdirectories).
 
 ```yaml
 config:
-  src:  ["index.html", "app.js", "style.css", "favicon.svg"]
+  src:  ["index.html", "app.js", "tooltip.js", "style.css", "favicon.svg"]
   dest: "${DEPLOY_RSYNC_HOST}:${DEPLOY_DIR}/"
   key:  "${DEPLOY_KEY}"
 ```
