@@ -347,6 +347,12 @@
             margin-bottom: 12px;
         }
 
+        .dot-engine { background: var(--accent-2); }
+        .dot-ai { background: var(--accent); }
+        .dot-foundation { background: var(--accent-4); }
+        .dot-docs { background: var(--accent-3); }
+        .project-card h4 a { color: inherit; text-decoration: none; }
+        .project-card h4 a:hover { color: var(--accent); }
         .project-card h4 {
             font-size: 1rem;
             margin-bottom: 6px;
@@ -597,29 +603,59 @@
         <h2 class="section-title">Connected Projects</h2>
         <div class="projects-grid">
             <div class="project-card">
-                <span class="project-dot" style="background: #3498db"></span>
-                <h4>Jiramntr</h4>
-                <p>DWH, ETL, BI, KPI</p>
+                <span class="project-dot dot-engine"></span>
+                <h4>pipeline-forge</h4>
+                <p>Pipeline engine — every multi-step process</p>
             </div>
             <div class="project-card">
-                <span class="project-dot" style="background: #27ae60"></span>
-                <h4>Johanna</h4>
-                <p>AI Chat, RAG, LLM</p>
+                <span class="project-dot dot-engine"></span>
+                <h4>entity-forge</h4>
+                <p>Codegen — entity spec → SQL, Go, UI</p>
             </div>
             <div class="project-card">
-                <span class="project-dot" style="background: #e67e22"></span>
-                <h4>Datagrid</h4>
-                <p>UI Component Library</p>
+                <span class="project-dot dot-engine"></span>
+                <h4>GoBI</h4>
+                <p>BI engine — reports as catalog entries</p>
             </div>
             <div class="project-card">
-                <span class="project-dot" style="background: #9b59b6"></span>
-                <h4>MCP-Forge</h4>
-                <p>RAG Pipeline Builder</p>
+                <span class="project-dot dot-engine"></span>
+                <h4>datagrid</h4>
+                <p>Grids, pivots, graphs from JSON catalogs</p>
             </div>
             <div class="project-card">
-                <span class="project-dot" style="background: #f39c12"></span>
+                <span class="project-dot dot-ai"></span>
                 <h4>ai-chat</h4>
-                <p>Shared AI Module</p>
+                <p>Shared AI module — NL → SQL → answer</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-foundation"></span>
+                <h4>foundation-go</h4>
+                <p>Go foundation — logging, DB pools, auth</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-foundation"></span>
+                <h4>foundation-ui</h4>
+                <p>App shell, themes, chat panel, deck engine</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-foundation"></span>
+                <h4>foundation-pg</h4>
+                <p>PostgreSQL foundation — JSON-SQL templating, CRUD</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-foundation"></span>
+                <h4>foundation-wiki</h4>
+                <p>AI-built, human-editable wiki method</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-docs"></span>
+                <h4>lookin</h4>
+                <p>Interactive architecture viewer</p>
+            </div>
+            <div class="project-card">
+                <span class="project-dot dot-docs"></span>
+                <h4><a href="https://gnemet.github.io/presentations/">presentations</a></h4>
+                <p>Public decks, built and gated by pipeline-forge</p>
             </div>
         </div>
     </section>
