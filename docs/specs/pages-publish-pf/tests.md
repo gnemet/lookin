@@ -9,5 +9,6 @@ Committed red, before the pipeline.
 | PT2 | `push=true` against a throwaway clone with a local bare `origin`: `origin/gh-pages` exists and its tree lists exactly the PT1 file set | FAIL — no pipeline | PP-E1 |
 | PT3 | a second `push=true` run adds no commit to `origin/gh-pages` and prints `unchanged` | FAIL — no pipeline | PP-X1 |
 | PT4 | `.github/workflows/` contains no Pages workflow | FAIL — `pages.yml` present | PP-U2 |
+| PT5 | runs without `--arg out` leave no stray path in the checkout (an unset arg interpolates as the literal `{{out}}`, not blank) | FAIL — `{{out}}/` created (found 2026-10-05) | PP-O1 |
 
 Green tests are verification only. Acceptance: the owner sees the new page at `gnemet.github.io/lookin`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pages_publish_test.sh — T1 tests for the pipeline-forge GitHub Pages publish (PT1–PT4)
+# pages_publish_test.sh — T1 tests for the pipeline-forge GitHub Pages publish (PT1–PT5)
 # Kind: test
 # Spec: docs/specs/pages-publish-pf/
 #
@@ -59,6 +59,13 @@ else
   after=$(git -C "$BARE" rev-list --count gh-pages 2>/dev/null || echo 0)
   if [ "$before" = 1 ] && [ "$after" = 1 ] && grep -q unchanged "$TMP/pt3.log"; then pass "PT3 (1 commit after 2 runs, unchanged reported)"
   else fail PT3 "commits before=$before after=$after, unchanged reported=$(grep -c unchanged "$TMP/pt3.log")"; fi
+fi
+
+# ── PT5: a run without --arg out leaves nothing behind in the checkout ──────
+if [ ! -f "$CL/$PIPE" ]; then fail PT5 "no $PIPE"
+else
+  stray=$(git -C "$CL" status --porcelain --ignored | grep -v -- "$PIPE" | wc -l)
+  [ "$stray" -eq 0 ] && pass "PT5 (no stray files after runs without out)" || fail PT5 "$stray stray path(s): $(git -C "$CL" status --porcelain --ignored | grep -v -- "$PIPE" | head -3 | tr '\n' ' ')"
 fi
 
 # ── PT4: no Actions workflow publishes Pages ────────────────────────────────
