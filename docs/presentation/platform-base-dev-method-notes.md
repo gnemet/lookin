@@ -18,7 +18,7 @@ _(no notes)_
 
 _(no notes)_
 
-## 5. RAG pipeline — dokumentumokból AI tudás
+## 5. RAG — tartalom és kontextus együtt (#s5)
 
 _(no notes)_
 
