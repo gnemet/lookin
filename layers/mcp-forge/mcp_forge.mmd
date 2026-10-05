@@ -48,7 +48,7 @@ graph TB
         MODE2["🔄 Mode 2: Feedback<br/>Reads Ollama errors<br/>from mcp.feedback<br/>→ fixes → knowledge"]
         MODE3["❓ Mode 3: Q/A Gen<br/>Generates test pairs<br/>from rules<br/>→ mcp.teaching"]
         MODE4["✅ Mode 4: Validate<br/>Replays Q/A through Ollama<br/>Scores results<br/>→ mcp.teaching_run"]
-        TIMER["⏱️ systemd timer<br/>Runs on butalam<br/>Zero changes to ai-chat"]
+        TIMER["⏱️ systemd timer<br/>Runs on the prod server<br/>Zero changes to ai-chat"]
         MODE1 --> MODE3
         MODE2 --> MODE1
         MODE3 --> MODE4

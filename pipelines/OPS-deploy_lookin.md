@@ -1,18 +1,18 @@
-# OPS: Deploy LookIn (static) → butalam
+# OPS: Deploy LookIn (static) → the prod server
 
 LookIn is 100 % static — no build step, ever. Deploy the static assets to
 `/opt/lookin/`, then symlink that directory into each project that wants to serve
 LookIn as a documentation page.
 
 Runs from the lookin repo root. Connection is driven entirely by env vars — set
-them in the environment or via the `deploy_butalam.sh` shim before calling.
+them in the environment or via the `deploy.sh` shim (which reads the local `.env.deploy`) before calling.
 
 Required env vars (set by the shim or CI):
-- `DEPLOY_HOST`       — SSH hostname (e.g. `sys-butalam01`)
-- `DEPLOY_USER`       — SSH username (e.g. `nemetg`)
-- `DEPLOY_KEY`        — path to SSH private key (e.g. `~/.ssh/butala`)
+- `DEPLOY_HOST`       — SSH hostname (e.g. `prod-server`)
+- `DEPLOY_USER`       — SSH username (e.g. `deploy`)
+- `DEPLOY_KEY`        — path to SSH private key (e.g. `~/.ssh/id_ed25519`)
 - `DEPLOY_DIR`        — remote deploy root (e.g. `/opt/lookin`)
-- `DEPLOY_RSYNC_HOST` — rsync host spec including user (e.g. `nemetg@sys-butalam01`)
+- `DEPLOY_RSYNC_HOST` — rsync host spec including user (e.g. `deploy@prod-server`)
 
 The per-project symlink targets live as **data** in the `link_targets` step below
 (was a hardcoded Bash array). Add a project by adding one object to that JSON list.

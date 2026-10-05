@@ -14,7 +14,7 @@
     },
     "user_key": {
       "type": "text",
-      "desc": "Login username (e.g., nemetg)"
+      "desc": "Login username (e.g., jdoe)"
     },
     "user_name": {
       "type": "text",

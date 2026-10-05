@@ -15,10 +15,10 @@
 
 ## Infrastructure
 
-- **Server**: sys-butalam01 (Ubuntu, PostgreSQL 17.7)
-- **GPU**: sys-gpu01 (Ollama LLM — sqlcoder, llama3, qwen3)
-- **Auth**: ldap.alig.hu (Active Directory)
-- **Source**: Oracle FDW → racdb.alig.hu
+- **Server**: prod server (Ubuntu, PostgreSQL 17.7)
+- **GPU**: GPU server (Ollama LLM — sqlcoder, llama3, qwen3)
+- **Auth**: Active Directory (LDAP)
+- **Source**: Oracle FDW → the JIRA Oracle database
 
 ## Databases
 

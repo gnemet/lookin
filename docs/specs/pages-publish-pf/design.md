@@ -17,4 +17,4 @@
 
 **Removed.** `.github/workflows/pages.yml` (G3).
 
-**Not changed.** Butalam deploy pipeline; the site's content.
+**Not changed.** The prod-server deploy pipeline; the site's content.

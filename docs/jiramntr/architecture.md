@@ -39,5 +39,5 @@ Use **views** (without `_h` suffix) for current-state queries — they auto-filt
 
 
 ## ⚙️ ETL
-Yearly partitioned orchestrator runs nightly on butalam,
+Yearly partitioned orchestrator runs nightly on the prod server,
 with pre-flight checks and HWM incremental loading.

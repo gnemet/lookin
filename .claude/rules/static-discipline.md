@@ -48,7 +48,7 @@ That's it. No others without an explicit conversation.
 
 ## Deploy
 
-`./deploy_butalam.sh` — copies static files to `sys-butalam.alig.hu`. No build step in the deploy path.
+`./deploy.sh` — copies static files to the prod server (target in the local `.env.deploy`). No build step in the deploy path.
 
 ## What lookin currently visualizes
 

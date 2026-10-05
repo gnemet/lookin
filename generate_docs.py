@@ -117,7 +117,7 @@ def gen_architecture():
             "Use **views** (without `_h` suffix) for current-state queries \u2014 they auto-filter for active records.",
         ]),
         md_section("\u2699\ufe0f", "ETL", [
-            "Yearly partitioned orchestrator runs nightly on butalam,",
+            "Yearly partitioned orchestrator runs nightly on the prod server,",
             "with pre-flight checks and HWM incremental loading.",
         ]),
     ]
@@ -200,7 +200,7 @@ def gen_ingestion():
             "- \U0001f50d **Pre-flight TCP checks** \u2014 validates source availability before running",
             "- \U0001f4c8 **HWM pattern** \u2014 High Water Mark for incremental loading",
             "- \U0001f4ca **Observability** \u2014 logs timing, row counts, errors to `meta.etl_log`",
-            "- \U0001f554 **Schedule** \u2014 nightly cron on butalam server",
+            "- \U0001f554 **Schedule** \u2014 nightly cron on the prod server",
         ]),
     ]
     return NL.join(parts)
@@ -251,7 +251,7 @@ def gen_star_schema():
 
 def gen_mcp_detail():
     n_catalogs = count_files(JIRAMNTR_DIR / "internal/catalog", "*.json") or 50
-    n_chains = count_files(JIRAMNTR_DIR / "dist/butalam/ai/mcp/templates", "*.md") or 12
+    n_chains = count_files(JIRAMNTR_DIR / "dist", "*/ai/mcp/templates/*.md") or 12
 
     parts = [
         "# \U0001f9e0 MCP Catalog Pipeline",

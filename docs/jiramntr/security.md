@@ -26,7 +26,7 @@ For cross-department data access (e.g. fekegy accessing IIER area data):
 - Admin grants tokens via **Settings → RLS Tokens** page
 - Tokens are validated against SHA256 hash of the SQL block
 - **Auto-rehash**: On server startup, hashes are refreshed — SQL edits don't break tokens
-- Admin users (`nemetg`) bypass all RLS checks
+- Admin users bypass all RLS checks
 
 ### Logging
 All Go applications use structured logging via `log/slog` with key-value pairs.

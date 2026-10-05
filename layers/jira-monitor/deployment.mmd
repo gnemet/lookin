@@ -9,7 +9,7 @@ graph LR
         SCP["scp / sshpass<br/>SSH key"]
     end
 
-    subgraph BUTALAM["🖥️ sys-butalam01"]
+    subgraph PROD["🖥️ prod server"]
         subgraph JIRAMNTR_SVC["📊 /opt/jiramntr"]
             JM_BIN["jiramntr-server<br/>:8080"]
             JM_AI["ai/ scripts/"]
@@ -29,8 +29,8 @@ graph LR
     end
 
     subgraph EXTERNAL["☁️ External"]
-        GPU["sys-gpu01<br/>Ollama :11434"]
-        LDAP["ldap.alig.hu<br/>:389"]
+        GPU["GPU server<br/>Ollama"]
+        LDAP["Active Directory<br/>LDAP"]
     end
 
     SRC --> BUILD --> PACK --> SCP

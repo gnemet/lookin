@@ -25,4 +25,4 @@ TER API   ──→ ext.ter_data ─────────────→┘
 - 🔍 **Pre-flight TCP checks** — validates source availability before running
 - 📈 **HWM pattern** — High Water Mark for incremental loading
 - 📊 **Observability** — logs timing, row counts, errors to `meta.etl_log`
-- 🕔 **Schedule** — nightly cron on butalam server
+- 🕔 **Schedule** — nightly cron on the prod server

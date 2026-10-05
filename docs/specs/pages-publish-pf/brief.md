@@ -10,4 +10,4 @@ reached the site, which still shows the retired JiraDa name and dead links.
   `index.html`, `favicon.svg`, `vendor/`. Nothing else from the repo goes public.
 - **G3** One publish path: the Actions workflow file is removed.
 
-**Scope.** lookin only. The butalam deploy (`OPS-deploy_lookin.md`) is unchanged.
+**Scope.** lookin only. The prod-server deploy (`OPS-deploy_lookin.md`) is unchanged.

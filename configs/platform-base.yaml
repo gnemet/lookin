@@ -123,10 +123,10 @@ layers:
       - label: "LookIn"
         rect: [62, 26, 25, 14]
         tooltip: "LookIn — Architecture Viewer (HTML/JS)"
-      - label: "sys-gpu01"
+      - label: "gpu-server"
         rect: [33, 38, 22, 10]
         doc: jira-monitor/deployment.md
-        tooltip: "Ollama LLM — sys-gpu01"
+        tooltip: "Ollama LLM — GPU server"
       - label: "Gemini API"
         rect: [33, 50, 22, 8]
         tooltip: "Google Gemini API"
@@ -208,7 +208,7 @@ layers:
       - label: "Servers"
         rect: [75, 6, 22, 16]
         drilldown: deployment
-        tooltip: "sys-butalam01 (Prod) + sys-gpu01 (GPU)"
+        tooltip: "prod server + GPU server"
       - label: "AI Providers"
         rect: [75, 25, 22, 12]
         tooltip: "Gemini 2.5-flash/pro, Ollama nomic-embed-text + qwen2.5"
@@ -523,12 +523,12 @@ layers:
         rect: [40, 62, 22, 18]
         drilldown: star_schema
         tooltip: "🗄️ PostgreSQL 17"
-      - label: "sys-gpu01"
+      - label: "gpu-server"
         rect: [72, 10, 18, 16]
-        tooltip: "🖥️ sys-gpu01 — Ollama :11434"
-      - label: "ldap.alig.hu"
+        tooltip: "🖥️ GPU server — Ollama"
+      - label: "LDAP"
         rect: [72, 34, 18, 12]
-        tooltip: "🔐 ldap.alig.hu :389"
+        tooltip: "🔐 Active Directory LDAP"
 
   # ═══════════════════════════════════════════════════════════════
   # Level 3: Star Schema

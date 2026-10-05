@@ -17,8 +17,8 @@
 
 | Server | Services |
 |--------|----------|
-| **sys-butalam01** (Prod) | jiramntr, johanna, mcp-forge, datagrid, lookin |
-| **sys-gpu01** (GPU) | jiramntr (Ollama inference) |
+| **prod server** | jiramntr, johanna, mcp-forge, datagrid, lookin |
+| **GPU server** | jiramntr (Ollama inference) |
 
 ## Data Sources
 

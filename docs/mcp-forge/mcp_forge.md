@@ -41,7 +41,7 @@ Claude acts as the **teacher** for Ollama (the local student SLM):
 | **Mode 3** — Q/A Gen | Generates `mcp.teaching` test pairs from rules |
 | **Mode 4** — Validate | Replays Q/A through Ollama → scores in `mcp.teaching_run` |
 
-Runs as a `systemd` timer on butalam, zero changes to ai-chat Go pipeline.
+Runs as a `systemd` timer on the prod server, zero changes to ai-chat Go pipeline.
 
 ## Embedding Pipeline
 

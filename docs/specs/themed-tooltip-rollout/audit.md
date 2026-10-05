@@ -4,7 +4,7 @@
 
 - `scripts/check/check_tooltips.sh` exits 0. Red before, 11 findings: 4 × TS1, 2 × TS2, 2 × TS3, 1 × TS4, 2 × TS5.
 - `diff tooltip.js ../foundation-ui/ui/js/tooltip.js` — identical at copy time.
-- `bash -n deploy_butalam.sh` clean; `pf --validate pipelines/OPS-deploy_lookin.md` OK (two env-var warnings, expected off the deploy host).
+- `bash -n deploy.sh` clean; `pf --validate pipelines/OPS-deploy_lookin.md` OK (two env-var warnings, expected off the deploy host).
 - Nothing was deployed and the page was not opened in a browser.
 
 ## Residual risk and open items

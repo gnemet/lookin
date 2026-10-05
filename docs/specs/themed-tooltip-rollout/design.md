@@ -19,7 +19,7 @@ it does not live under `vendor/`.
 | `app.js` | `div.title = …` and `setAttribute('title', …)` → `setAttribute('data-tip', …)` |
 | `tooltip.js` | new — byte-identical copy of `foundation-ui/ui/js/tooltip.js` |
 | `style.css` | a token bridge, then the floor's `.fui-tip` rule, byte-identical |
-| `deploy_butalam.sh`, `pipelines/OPS-deploy_lookin.md` | `tooltip.js` added to the core file list |
+| `deploy.sh`, `pipelines/OPS-deploy_lookin.md` | `tooltip.js` added to the core file list |
 | `scripts/check/check_tooltips.sh` | new — the T1 scan (TS1–TS5) |
 
 ## Tokens

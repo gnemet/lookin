@@ -30,7 +30,7 @@ foundation-ui deck engine. `landing.html` has none.
 - Convert the two runtime sites in `app.js` to `setAttribute('data-tip', …)`.
 - Carry a byte-identical copy of the floor's `tooltip.js` at the repo root and the floor's `.fui-tip`
   rule in `style.css`; load the script from `index.html`.
-- Add `tooltip.js` to the two lists of shipped files (`deploy_butalam.sh`, `pipelines/OPS-deploy_lookin.md`).
+- Add `tooltip.js` to the two lists of shipped files (`deploy.sh`, `pipelines/OPS-deploy_lookin.md`).
 - Add `scripts/check/check_tooltips.sh` as the T1 scan.
 
 ## Out of scope (A10)

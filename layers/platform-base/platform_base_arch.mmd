@@ -52,8 +52,8 @@ graph TB
 
     subgraph DEPLOY["🏗️ Deployment"]
         direction LR
-        BUTALAM["🖥️ sys-butalam01<br/>Production<br/>All services"]
-        GPU["⚡ sys-gpu01<br/>GPU Server<br/>Ollama inference"]
+        PROD["🖥️ prod server<br/>Production<br/>All services"]
+        GPU["⚡ GPU server<br/>GPU Server<br/>Ollama inference"]
     end
 
     %% ── Data Flow ──
@@ -73,9 +73,9 @@ graph TB
     MCPFORGE --> JOHANNA
 
     %% ── Deployment ──
-    JIRAMNTR --> BUTALAM
-    JOHANNA --> BUTALAM & GPU
-    MCPFORGE --> BUTALAM
+    JIRAMNTR --> PROD
+    JOHANNA --> PROD & GPU
+    MCPFORGE --> PROD
 
     %% ── Styles ──
     classDef source fill:#2d4a3e,stroke:#4ade80,color:#e2e8f0
@@ -90,4 +90,4 @@ graph TB
     class CHAT,NL2SQL,FEEDBACK johanna
     class CATALOG,TEACHER,RAG mcpforge
     class AICHAT,DATAGRID shared
-    class BUTALAM,GPU deploy
+    class PROD,GPU deploy

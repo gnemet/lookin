@@ -58,7 +58,7 @@ lookin/
 ├── doc_manifest.yaml   # Doc freshness tracking
 ├── generate_docs.py    # Auto-generate docs from source projects
 ├── generate_png.sh     # Render MMD → PNG (chalkboard style)
-└── deploy_butalam.sh   # Deploy to LAN server
+└── deploy.sh           # Deploy to the prod server (target in .env.deploy)
 ```
 
 ## 🔗 Connected Projects

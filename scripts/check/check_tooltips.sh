@@ -88,7 +88,7 @@ PY
 [ -n "$ts4" ] && finding "$ts4"
 
 # TS5 — a deploy must never serve an index.html that points at a script it did not ship.
-for list in deploy_butalam.sh pipelines/OPS-deploy_lookin.md; do
+for list in deploy.sh pipelines/OPS-deploy_lookin.md; do
 	command grep -qF 'tooltip.js' "$ROOT/$list" || finding "TS5 $list does not ship tooltip.js"
 done
 

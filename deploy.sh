@@ -1,24 +1,28 @@
 #!/bin/bash
-# deploy_butalam.sh — thin shim around pipelines/OPS-deploy_lookin.md.
+# deploy.sh — thin shim around pipelines/OPS-deploy_lookin.md (deploy to the prod server).
 #
-# Sets DEPLOY_* env vars for butalam and delegates to the pipeline. Falls back to
-# inline bash for CI / cold-start when bin/pf is not available.
+# Loads the deploy target from .env.deploy (local, gitignored — copy deploy.env.example)
+# and delegates to the pipeline. Falls back to inline bash for CI / cold-start when
+# bin/pf is not available. Fails loud when a DEPLOY_* value is missing (A3): the target
+# host, user and key are never baked into this public repo.
 #
 # LookIn is 100% static — no build step. The pipeline rsyncs the static assets to
-# /opt/lookin/ and symlinks them into each registered project.
+# DEPLOY_DIR and symlinks them into each registered project.
 #
 # Usage:
-#   ./deploy_butalam.sh    # rsync static assets + refresh symlinks → OPS-deploy_lookin.md
+#   ./deploy.sh    # rsync static assets + refresh symlinks → OPS-deploy_lookin.md
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# ── Deploy target config (override any of these in the environment) ───────────
-export DEPLOY_HOST="${DEPLOY_HOST:-sys-butalam01}"
-export DEPLOY_USER="${DEPLOY_USER:-nemetg}"
-export DEPLOY_KEY="${DEPLOY_KEY:-$HOME/.ssh/butala}"
-export DEPLOY_DIR="${DEPLOY_DIR:-/opt/lookin}"
+# ── Deploy target config: .env.deploy (or the environment), never a default ──
+# shellcheck source=/dev/null
+[ -f "$SCRIPT_DIR/.env.deploy" ] && . "$SCRIPT_DIR/.env.deploy"
+for v in DEPLOY_HOST DEPLOY_USER DEPLOY_KEY DEPLOY_DIR; do
+  [ -n "${!v:-}" ] || { echo "deploy.sh: $v is not set — copy deploy.env.example to .env.deploy and fill it in" >&2; exit 1; }
+done
+export DEPLOY_HOST DEPLOY_USER DEPLOY_KEY DEPLOY_DIR
 export DEPLOY_RSYNC_HOST="${DEPLOY_RSYNC_HOST:-${DEPLOY_USER}@${DEPLOY_HOST}}"
 
 # ── pf discovery ─────────────────────────────────────────────────────────────
@@ -34,7 +38,7 @@ if [ -n "$PF_BIN" ] && [ -x "$PF_BIN" ]; then
 fi
 
 # ── Inline fallback (CI / cold-start) ────────────────────────────────────────
-echo "▶ deploy_butalam.sh — running inline (pf not found)"
+echo "▶ deploy.sh — running inline (pf not found)"
 
 SSH_KEY="$DEPLOY_KEY"
 TARGET="$DEPLOY_RSYNC_HOST"
