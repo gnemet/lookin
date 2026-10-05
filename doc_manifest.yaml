@@ -46,7 +46,7 @@ docs:
 
   jiramntr/ai_pipeline.md:
     watches:
-      - aichat/*.go
+      - ai-chat/*.go
       - jiramntr/internal/ai/**/*.go
       - jiramntr/internal/mcp/**/*.go
     description: "AI pipeline, self-teaching, MCP integration"
@@ -59,7 +59,7 @@ docs:
 
   jiramntr/rag_detail.md:
     watches:
-      - aichat/*.go
+      - ai-chat/*.go
       - jiramntr/internal/ai/*.go
       - johanna/internal/rag/**/*.go
     description: "RAG query pipeline across projects"
@@ -75,8 +75,8 @@ docs:
 
   aichat/aichat_module.md:
     watches:
-      - aichat/*.go
-    description: "aichat Go module (pipeline, types, utils)"
+      - ai-chat/*.go
+    description: "ai-chat Go module (pipeline, types, utils)"
 
   mcp-forge/mcp_forge.md:
     watches:
@@ -95,11 +95,11 @@ docs:
     watches: []
     description: "Enterprise overview (manually maintained)"
 
-  jira-da/jira_da.md:
+  platform-base/platform_base.md:
     watches:
       - jiramntr/README.md
       - johanna/README.md
       - mcp-forge/README.md
       - datagrid/README.md
-      - aichat/*.go
-    description: "JiraDa platform overview — repos, infra, data sources"
+      - ai-chat/*.go
+    description: "platform-base (claude-base) overview — repos, infra, data sources"

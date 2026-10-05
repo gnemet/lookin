@@ -6,7 +6,7 @@ graph TB
     subgraph CONFIG["📄 Configuration"]
         direction TB
         YAML["📋 config/*.yaml<br/>project · sources · outputs<br/>adapters · templates"]
-        PROJ_DEF["🏗️ Project Definitions<br/>jiramntr · johanna<br/>aichat · mcp-forge"]
+        PROJ_DEF["🏗️ Project Definitions<br/>jiramntr · johanna<br/>ai-chat · mcp-forge"]
         ENV["🔑 .env Files<br/>DB credentials<br/>API keys · endpoints"]
         YAML --- PROJ_DEF
         YAML --- ENV
@@ -48,7 +48,7 @@ graph TB
         MODE2["🔄 Mode 2: Feedback<br/>Reads Ollama errors<br/>from mcp.feedback<br/>→ fixes → knowledge"]
         MODE3["❓ Mode 3: Q/A Gen<br/>Generates test pairs<br/>from rules<br/>→ mcp.teaching"]
         MODE4["✅ Mode 4: Validate<br/>Replays Q/A through Ollama<br/>Scores results<br/>→ mcp.teaching_run"]
-        TIMER["⏱️ systemd timer<br/>Runs on butalam<br/>Zero changes to aichat"]
+        TIMER["⏱️ systemd timer<br/>Runs on butalam<br/>Zero changes to ai-chat"]
         MODE1 --> MODE3
         MODE2 --> MODE1
         MODE3 --> MODE4
@@ -107,14 +107,14 @@ graph TB
         CFG["config.go<br/>YAML + env var loader<br/>DB · AI · RAG settings"]
         ADAPT["adapters.go<br/>AIClient (Gemini/Ollama)<br/>RAGProvider (pgvector)<br/>SQLExecutor (PostgreSQL)"]
         DISP["display.go<br/>ANSI color output<br/>ASCII table renderer<br/>Debug info formatting"]
-        GOMOD["go.mod<br/>Module with local aichat replace<br/>9.3MB binary"]
+        GOMOD["go.mod<br/>Module with local ai-chat replace<br/>9.3MB binary"]
         MAIN --> CFG
         MAIN --> ADAPT
         MAIN --> DISP
         CFG --> GOMOD
     end
 
-    subgraph AICHAT["🔗 aichat Module (Go)"]
+    subgraph AICHAT["🔗 ai-chat Module (Go)"]
         direction TB
         PIPE["pipeline.go (313 lines)<br/>NL → MCP Context → SQL<br/>→ Execute → NL Response<br/>Multi-turn conversation"]
         TYPES["types.go (120 lines)<br/>AIClient interface<br/>RAGProvider interface<br/>SQLExecutor interface"]
@@ -165,7 +165,7 @@ graph TB
     MODE3 --> TEACH
     MODE4 --> TRUN
 
-    %% ━━━ CLI → aichat → ragdb ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% ━━━ CLI → ai-chat → ragdb ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     ADAPT --> PIPE
     PIPE --> FN2
     FBACK --> AUDIT_LOG

@@ -71,7 +71,7 @@ Collection-based routing: each RAG collection can specify its own provider/model
 ## 🛠️ Technology
 | Layer | Technology |
 |---|---|
-| Backend | Go 1.25 (Standard Library + aichat module) |
+| Backend | Go 1.25 (Standard Library + ai-chat module) |
 | Frontend | HTML5, HTMX, jQuery, Vanilla CSS |
 | Database | PostgreSQL 18 + pgvector (ragdb) |
 | Auth | LDAP + Kerberos SSO (SPNEGO) |

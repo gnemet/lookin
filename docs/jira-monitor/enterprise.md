@@ -8,7 +8,7 @@
 |---------|------|------|------|
 | **Jiramntr** | DWH · BI · KPI · ETL | Go | :8080 |
 | **Johanna** | AI Chat · NL→SQL | Go | :8082 |
-| **aichat** | Shared NL→SQL Pipeline | Go lib | — |
+| **ai-chat** | Shared NL→SQL Pipeline | Go lib | — |
 | **MCP-Forge** | RAG Knowledge Builder | Python | — |
 | **LookIn** | Architecture Viewer | HTML/JS | — |
 | **Datagrid** | Table Renderer | Go lib | — |

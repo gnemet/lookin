@@ -1,5 +1,5 @@
 ---
-title: JiraDa Platform — Fejlesztési módszer
+title: platform-base — Fejlesztési módszer
 project: lookin
 vibe: chalkboard
 lang: hu
@@ -9,15 +9,15 @@ meta:
   - {icon: flow-arrow, text: "pipeline-forge"}
   - {icon: chart-bar, text: "GoBI"}
   - {icon: database, text: "PostgreSQL"}
-  - {icon: robot, text: "aichat"}
+  - {icon: robot, text: "ai-chat"}
   - {icon: magnifying-glass, text: "RAG"}
   - {icon: eye, text: "lookin"}
 ---
 
-## :package: JiraDa Platform — Fejlesztési módszer {layout=title}
+## :package: platform-base — Fejlesztési módszer {layout=title}
 Document = Code · Declarative Logic · Four Engines
 
-**15** repo · **279** pipeline · **50+** adapter · **22** SCD2 tábla
+**39** repo · **800+** pipeline · **90+** adapter
 
 ## Három alapillér {layout=cards label="Alapelvek"}
 
@@ -55,7 +55,7 @@ Identitás értékek: env var / config — soha default
 
 > :info: Mielőtt `cmd/<folyamat>/main.go`-t írsz: “Lehetne ez pipeline fájl?”
 
-> :shield: Ha egynél több lépés van → igen, pipeline fájl. Ha LLM-hívást kell orchestrálni → `aichat.AIClient`-en át, soha saját provider HTTP.
+> :shield: Ha egynél több lépés van → igen, pipeline fájl. Ha LLM-hívást kell orchestrálni → az `ai-chat` `engine.AIClient`-en át, soha saját provider HTTP.
 
 > :info: Ötödik motor tervezése (saját workflow runner, LLM router, parallel pipeline framework)?
 
@@ -65,24 +65,24 @@ Identitás értékek: env var / config — soha default
 
 ```mermaid
 flowchart LR
-    EN["entities/EN-*.md\nlov/lov_*.md"] --> EF
-    PM["pipelines/*.md\ndeklaratív lépések"] --> PF
+    EN["entities/EN-*.md<br/>lov/lov_*.md"] --> EF
+    PM["pipelines/*.md<br/>deklaratív lépések"] --> PF
 
-    EF["entity-forge\nbin/entitygen\ncodegen — one-shot"]
-    PF["pipeline-forge\nbin/pf\nruntime engine"]
+    EF["entity-forge<br/>bin/entitygen<br/>codegen — one-shot"]
+    PF["pipeline-forge<br/>bin/pf<br/>runtime engine"]
 
-    EF -.->|"pfbridge\nentity_generate adapter"| PF
+    EF -.->|"pfbridge<br/>entity_generate adapter"| PF
 
-    EF --> SQL["SQL DDL\n+ CRUD functions"]
-    EF --> GOH["Go handlers\n+ HTMX templates"]
-    EF --> BIQ["BI queries\n+ WF scaffolds"]
+    EF --> SQL["SQL DDL<br/>+ CRUD functions"]
+    EF --> GOH["Go handlers<br/>+ HTMX templates"]
+    EF --> BIQ["BI queries<br/>+ WF scaffolds"]
 
-    PF --> DBO["DB stored\nfunction calls"]
-    PF --> LLMO["LLM dispatch\naichat"]
-    PF --> HTTPO["HTTP / SMTP\n+ workflow steps"]
+    PF --> DBO["DB stored<br/>function calls"]
+    PF --> LLMO["LLM dispatch<br/>ai-chat"]
+    PF --> HTTPO["HTTP / SMTP<br/>+ workflow steps"]
 
-    SQL --> PG[("PostgreSQL\nSCD2 + RLS")]
-    GOH --> APP["Go App\nvalueForge"]
+    SQL --> PG[("PostgreSQL<br/>SCD2 + RLS")]
+    GOH --> APP["Go App<br/>generált"]
     DBO --> PG
 
     classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
@@ -111,20 +111,20 @@ flowchart LR
 %%{init: {'flowchart': {'fontSize': 18}}}%%
 graph LR
     subgraph IN["Specifikáció  (bemenet)"]
-        EN["EN-*.md\nentity spec"]
-        LV["lov_*.md\nLOV spec"]
+        EN["EN-*.md<br/>entity spec"]
+        LV["lov_*.md<br/>LOV spec"]
     end
-    EF["entity-forge\nkód generátor"]
+    EF["entity-forge<br/>kód generátor"]
     subgraph GEN["Generált fájlok  (vf/generated)"]
-        SQ["SQL DDL\n+ CRUD funkciók"]
-        GH["Go handler\n+ HTMX template"]
-        CJ["datagrid\nkatalóg JSON"]
-        PL["pipeline\n*.md"]
+        SQ["SQL DDL<br/>+ CRUD funkciók"]
+        GH["Go handler<br/>+ HTMX template"]
+        CJ["datagrid<br/>katalóg JSON"]
+        PL["pipeline<br/>*.md"]
     end
-    PF["pipeline-forge\nfuttatja a pipeline-t"]
+    PF["pipeline-forge<br/>futtatja a pipeline-t"]
     subgraph OUT["Futó rendszer  (kimenet)"]
-        PG[("PostgreSQL\n+ migrációk")]
-        APP["valueForge app\nhandlerek + UI"]
+        PG[("PostgreSQL<br/>+ migrációk")]
+        APP["Go alkalmazás<br/>handlerek + UI"]
     end
     EN --> EF
     LV --> EF
@@ -157,7 +157,7 @@ graph LR
 
 ### :rocket-launch: Kimenet: kész alkalmazás {accent=green}
 - PostgreSQL: DDL migrációk + stored functions
-- valueForge app: handler, template, datagrid
+- Go alkalmazás: handler, template, datagrid
 - **Generált fájlokat soha ne szerkeszd kézzel!**
 
 ## RAG pipeline — dokumentumokból AI tudás {layout=free label="Tudásbázis" diagrams=first}
@@ -166,29 +166,27 @@ graph LR
 %%{init: {'flowchart': {'fontSize': 18}}}%%
 graph LR
     subgraph SRC["Forrás dokumentumok"]
-        CF["Confluence\noldalak"]
-        JI["JIRA\nticketek"]
-        UR["URL / egyéb\nforrások"]
+        CF["Confluence<br/>oldalak"]
+        JI["JIRA<br/>ticketek"]
+        UR["URL / egyéb<br/>források"]
     end
     subgraph ENG["Motorok"]
-        MF["mcp-forge\nRAG builder"]
-        PF["pipeline-forge"]
-        OL["Ollama\nembedding — gpu01"]
+        PF["pipeline-forge<br/>fetch → chunk → embed"]
+        OL["Ollama<br/>embedding — GPU szerver"]
     end
-    RD[("rag3_db\npgvector")]
+    RD[("RAG DB<br/>pgvector")]
     subgraph MCPS["MCP szerverek"]
-        AK["admin-knowledge\n59 MCP tool"]
-        IT["iier-tudastar\nIIER tenant"]
+        AK["pf-mcpd<br/>multi-tenant MCP"]
+        IT["tenant tudásbázisok<br/>RLS-izolált"]
     end
-    CF & JI & UR --> MF
-    MF --> PF
+    CF & JI & UR --> PF
     PF --> OL
     OL --> RD
     RD --> AK & IT
     classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
     classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
     classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class MF,PF mauve
+    class PF mauve
     class RD teal
     class AK,IT green
 ```
@@ -198,15 +196,15 @@ graph LR
 - JIRA: ticketek, kommentek, státuszok
 - URL: külső dokumentumok, API leírások
 
-### :cpu: Motor: mcp-forge + pipeline-forge {accent=mauve}
-- mcp-forge: forrás konfig + RAG pipeline szervez
+### :cpu: Motor: pipeline-forge {accent=mauve}
+- Forrás konfig + RAG pipeline: `pipelines/*.md`
 - pipeline-forge: fetch → chunk → embed lépések
 - Ollama: szöveg → vektor (snowflake-arctic-embed2)
 
 ### :brain: Kimenet: AI tudásbázis {accent=green}
-- rag3_db: pgvector — szemantikus keresés
-- admin-knowledge: 59 MCP tool, Confluence + DWH
-- iier-tudastar: IIER tenant RLS-iz olált pilot
+- RAG DB: pgvector — szemantikus keresés
+- pf-mcpd: távoli, multi-tenant MCP szerver
+- Tenantonként RLS-izolált tudásbázis
 
 ## AI chat futás — kérdéstől a válaszig {layout=free label="AI chat" diagrams=first}
 
@@ -214,17 +212,17 @@ graph LR
 %%{init: {'flowchart': {'fontSize': 18}}}%%
 graph LR
     USR(["Felhasználó"])
-    subgraph JO["johanna  —  SSO + WebSocket"]
-        AUTH["autentikáció\nmulti-corporate SSO"]
-        ORCH["aichat pipeline\norchestrátor"]
+    subgraph JO["Chat felület  —  SSO + WebSocket"]
+        AUTH["autentikáció<br/>multi-corporate SSO"]
+        ORCH["ai-chat pipeline<br/>orchestrátor"]
     end
     subgraph KNOW["Tudáslekérdezés"]
-        MCP["admin-knowledge MCP\nRAG szemantikus keresés"]
-        SQL["NL → SQL\njiramntr DWH lekérdezés"]
+        MCP["MCP tudásszerver<br/>RAG szemantikus keresés"]
+        SQL["NL → SQL<br/>DWH lekérdezés"]
     end
     subgraph LLM["LLM motorok"]
-        OLM["Ollama\nlokális — gpu01"]
-        GMN["Gemini / Claude\nfelhő API"]
+        OLM["Ollama<br/>lokális — GPU szerver"]
+        GMN["Gemini / Claude<br/>felhő API"]
     end
     USR -->|"kérdés"| AUTH
     AUTH --> ORCH
@@ -241,20 +239,20 @@ graph LR
     class OLM,GMN mauve
 ```
 
-### :chat-circle-dots: johanna — belépési pont {accent=blue}
+### :chat-circle-dots: Chat felület — belépési pont {accent=blue}
 - SSO autentikáció — multi-corporate
 - WebSocket: valós idejű chat felület
 - Persona-alapú személyre szabás
 
 ### :magnifying-glass: Tudáslekérdezés {accent=green}
-- admin-knowledge: RAG szemantikus keresés rag3_db-ből
+- MCP tudásszerver: RAG szemantikus keresés a RAG DB-ből
 - NL → SQL: természetes nyelvű DWH lekérdezés
 - Kontextus összeállítás az LLM számára
 
 ### :robot: LLM — válasz generálás {accent=mauve}
-- Ollama: helyi GPU (gpu01) — adatvédelem
+- Ollama: helyi GPU szerver — adatvédelem
 - Gemini / Claude: felhő API — teljesítmény
-- aichat diszpécser: modell + tenant alapján választ
+- ai-chat diszpécser: modell + tenant alapján választ
 
 ## entity-forge — Mi mit generál? {layout=split ratio=40-60 label="entity-forge"}
 
@@ -390,16 +388,16 @@ rls: true
 
 ```mermaid
 flowchart LR
-    SPEC["entities/\nEN-018_*.md"] --> PARSER["entity-forge\nparser + generator\n(Go)"]
-    PARSER --> SQL["database/generated/\n*.sql\n(DDL + CRUD fn-ek)"]
-    PARSER --> CAT["internal/catalog/\n*.json\n(datagrid config)"]
-    PARSER --> HDL["internal/handlers/\n*_gen.go\n(Go handler)"]
-    PARSER --> UI["ui/pages/ + partials/\n*.html\n(HTMX template)"]
-    PARSER --> BI["bi/queries/app/\n*.md\n(GoBI lekerdezs)"]
-    PARSER --> WF["pipelines/\nWF-*-create/update/expire.md\n(workflow scaffold)"]
-    PARSER --> I18N["resources/\nentity_{en,hu}.json\n(i18n)"]
-    SQL -->|"migrate up"| DB[("PostgreSQL\napp schema")]
-    CAT --> DG["datagrid\nlibrary"]
+    SPEC["entities/<br/>EN-018_*.md"] --> PARSER["entity-forge<br/>parser + generator<br/>(Go)"]
+    PARSER --> SQL["database/generated/<br/>*.sql<br/>(DDL + CRUD fn-ek)"]
+    PARSER --> CAT["internal/catalog/<br/>*.json<br/>(datagrid config)"]
+    PARSER --> HDL["internal/handlers/<br/>*_gen.go<br/>(Go handler)"]
+    PARSER --> UI["ui/pages/ + partials/<br/>*.html<br/>(HTMX template)"]
+    PARSER --> BI["bi/queries/app/<br/>*.md<br/>(GoBI lekerdezs)"]
+    PARSER --> WF["pipelines/<br/>WF-*-create/update/expire.md<br/>(workflow scaffold)"]
+    PARSER --> I18N["resources/<br/>entity_{en,hu}.json<br/>(i18n)"]
+    SQL -->|"migrate up"| DB[("PostgreSQL<br/>app schema")]
+    CAT --> DG["datagrid<br/>library"]
     HDL -->|"go build"| BIN["server binary"]
     UI  -->|"go:embed"| BIN
     BI  --> GOBI["GoBI engine"]
@@ -441,8 +439,8 @@ migrate \
 #### Pipeline
 
 ```yaml
-name:     "jiramntr_daily_etl"
-trigger:  "jiramntr_etl"
+name:     "dwh_daily_etl"
+trigger:  "dwh_etl"
 schedule: "0 2 * * *"
 ```
 
@@ -450,7 +448,7 @@ schedule: "0 2 * * *"
 
 ```yaml
 http:
-  jiramntr_url: "${JIRAMNTR_URL}"
+  dwh_url: "${DWH_URL}"
 db:
   dsn: "${PG_DSN}"
 llm:
@@ -465,7 +463,7 @@ smtp:
 
 ```yaml
 config:
-  url:    "${config.adapters.http.jiramntr_url}/scheduler/run"
+  url:    "${config.adapters.http.dwh_url}/scheduler/run"
   method: POST
   body:   "job_key=etl:full"
   output_key: trigger_response
@@ -505,7 +503,7 @@ config:
 
 ```yaml
 config:
-  subject: "[jiramntr] ETL ${etl_final_status}"
+  subject: "[dwh] ETL ${etl_final_status}"
   body_key: email_body
 ```
 
@@ -630,12 +628,12 @@ res, err = pipelines.ResumeWorkflow(
 
 ---
 
-### valueForge pipeline-ok {accent=green}
+### Pipeline családok {accent=green}
 
-- 27 FY (folyamat) pipeline
-- 39 INT (integráció) pipeline
-- 211 WF (workflow scaffold, entitygen)
-- 20 RULE-SZ (üzleti szabályok)
+- FY — üzleti folyamat
+- INT — integráció
+- WF — workflow scaffold (entitygen)
+- RULE — üzleti szabályok
 
 ### Megfigyelhetőség {accent=teal}
 
@@ -839,7 +837,7 @@ WHERE valid_period @>
   '2026-01-15'::timestamptz
 ```
 
-> :warning: Soha ne adj raw UPDATE-et SCD2 táblákon! Mindig CRUD function-ön át. 22 leaf partíció van `btree_gist &&` constraint-tel.
+> :warning: Soha ne adj raw UPDATE-et SCD2 táblákon! Mindig CRUD function-ön át; a leaf partíciókon `btree_gist &&` constraint véd.
 
 #### RLS Policy (generált)
 
@@ -859,31 +857,31 @@ CREATE POLICY p_write
 
 ---
 
-| 22 — SCD2 leaf partíció | sensitivity | rule |
+| SCD2 partíció | sensitivity | rule |
 |---|---|---|
-| valueForge | Alacsony → RLS opcionális | `ENABLE RLS` + policy együtt mindig |
+| leaf partíciók | Alacsony → RLS opcionális | `ENABLE RLS` + policy együtt mindig |
 | `btree_gist &&` constraint | Közepes → RLS kötelező | App nem re-számolja a tenant filtert |
 | | Magas → RLS + auditlog | SECURITY DEFINER + `search_path` |
 
-## RAG archítektúra — admin-knowledge 3 rétegű rendszer {layout=free label="RAG" diagrams=left ratio=60-40}
+## RAG architektúra — 3 rétegű MCP tudásszerver {layout=free label="RAG" diagrams=left ratio=60-40}
 
 ```mermaid
 graph TB
-    subgraph T1["1. reteg -- Python MCP Server"]
-        MCP["server.py  59 MCP tool\nNev-feloldas, SQLite cache\nLink rendering (_enrich_rows)"]
+    subgraph T1["1. reteg -- MCP Server"]
+        MCP["MCP szerver<br/>Nev-feloldas, cache<br/>Link rendering"]
     end
     subgraph T2["2. reteg -- Pipeline Engine"]
         PF["bin/pf  pipeline-forge"]
-        P1["rag/search_rag.md\nembed -> vector -> output"]
-        P2["org/user_details.md\ndwh.user_get_key()"]
-        P3["inventory/inventory_mutate.md\n3-step audit loop"]
+        P1["rag/search_rag.md<br/>embed -> vector -> output"]
+        P2["org/user_details.md<br/>dwh.user_get_key()"]
+        P3["inventory/inventory_mutate.md<br/>3-step audit loop"]
     end
     subgraph T3["3. reteg -- Adatok"]
-        RAG[("rag3_db\nsys-gpu01\npgvector HNSW")]
-        DWH[("jiramntr_db\nsys-butalam\nSECURITY DEFINER")]
-        JIRA["JIRA REST\n(PAT szukseges)"]
+        RAG[("RAG DB<br/>GPU szerver<br/>pgvector HNSW")]
+        DWH[("DWH DB<br/>prod szerver<br/>SECURITY DEFINER")]
+        JIRA["JIRA REST<br/>(PAT szukseges)"]
     end
-    CC["Claude Code\nCLI"] -->|"stdio MCP"| MCP
+    CC["Claude Code<br/>CLI"] -->|"stdio MCP"| MCP
     MCP -->|"subprocess"| PF
     PF --> P1 & P2 & P3
     P1 -->|"cosine search"| RAG
@@ -900,15 +898,13 @@ graph TB
     class DWH green
 ```
 
-### 6 RAG collection {accent=blue}
-| Collection | Méret |
+### RAG collectionök {accent=blue}
+| Collection | Tartalom |
 |---|---|
-| `jira_admin` | ~27k chunk |
-| `confluence` | ~1.8k chunk |
-| `web_docs` | WildFly 39 + Keycloak |
-| `dwh_users` | per-user dossier |
-| `dwh_inventory` | IT/AD eszközök |
-| `dwh_issues` | issue metadata + worklog |
+| JIRA | ticketek, kommentek |
+| Confluence | specifikációk, döntések |
+| Web | külső dokumentáció |
+| DWH | issue metaadat + worklog |
 
 ### Write: 3-step Audit Loop {accent=teal}
 1. Enqueue: INSERT audit sor (`pending`)
@@ -920,15 +916,15 @@ graph TB
 ### Embedding {accent=peach}
 
 - Ollama `snowflake-arctic-embed2`
-- GPU server: sys-gpu01:11434
+- GPU szerver (Ollama)
 - pgvector HNSW index
-- Reranker: letiltva (NaN bug Ollama)
+- Reranker: cross-encoder (llama-swap)
 
 ### Search logic helye {accent=sky}
 
 - Keresési logika: `pipelines/*.md`
-- `server.py` = MCP engine, nem search
-- `_enrich_rows()`: link rendering Python-ban
+- MCP szerver = engine, nem search
+- Link rendering a szerverben
 - `pf` binary: PF_BIN → bin/pf → PATH
 
 ### DWH hozzáférés {accent=green}
@@ -944,16 +940,16 @@ graph TB
 %%{init: {'flowchart': {'fontSize': 18}}}%%
 graph LR
     subgraph L1["1. Titkositas -- GPG Vault"]
-        GPG[".env.gpg (commitalt)\ncsapat vault_pass\nscripts/vault.sh lock/unlock"]
+        GPG[".env.gpg (commitalt)<br/>csapat vault_pass<br/>scripts/vault.sh lock/unlock"]
     end
     subgraph L2["2. DB hozzaferes-vezérles"]
-        SEC["SECURITY DEFINER\ndwh.user_get_*\ndwh.inventory_*\nEXECUTE jog csak"]
-        RLS["Row Level Security\nmeta.has_tenant_access\nmeta.can_write_tenant"]
+        SEC["SECURITY DEFINER<br/>dwh.user_get_*<br/>dwh.inventory_*<br/>EXECUTE jog csak"]
+        RLS["Row Level Security<br/>meta.has_tenant_access<br/>meta.can_write_tenant"]
     end
     subgraph L3["3. Transport + Web"]
-        TLS["PostgreSQL\nsslmode=require"]
-        HDR["HTTP headers\nX-Frame-Options: DENY\nnosniff, referrer"]
-        WS["WebSocket\norigin allowlist"]
+        TLS["PostgreSQL<br/>sslmode=require"]
+        HDR["HTTP headers<br/>X-Frame-Options: DENY<br/>nosniff, referrer"]
+        WS["WebSocket<br/>origin allowlist"]
     end
     DEV["Fejleszto"] -->|"vault unlock"| GPG
     GPG -->|".env"| APP["Alkalmazas"]
@@ -1009,16 +1005,17 @@ graph LR
 ### Branch naming {accent=blue}
 `feature/*` `fix/*` `data/*` `ai/*` `docs/*`
 
-- Nincs közvetlen commit `main`-be
+- Solo repo: közvetlen push `main`-re, ellenőrzés után
+- GitLab-kanonikus repo: merge request
 - Issues: `[repo-name]` prefix a GitHub project-ben
 - Milestone → negyedéves release
 
 #### Deploy flow
 
-1. **Ellenőrzés** — systemctl status butalam
+1. **Ellenőrzés** — systemctl status (prod szerver)
 2. **Build** — go build ./... bináris commit
 3. **Push** — git push main branch
-4. **Deploy** — deploy_butalam.sh systemctl restart
+4. **Deploy** — deploy script + systemctl restart
 
 ### Cross-project blast radius {accent=yellow}
 - Library szerkesztés előtt: olvasd a `projects.md` Connections-t

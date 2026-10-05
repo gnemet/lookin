@@ -1,4 +1,4 @@
-# 🏗️ JiraDa — Enterprise Platform
+# 🏗️ platform-base (claude-base) — Enterprise Platform
 
 > *Unified project environment for JIRA analytics, AI chat, and DWH management*
 
@@ -9,7 +9,7 @@
 | **jiramntr** | Go | JIRA DWH monitor — ETL, KPI, BI, Datagrid, Security (RLS) |
 | **johanna** | Go | AI chat persona — NL→SQL→NL, RAG, WebSocket, Feedback |
 | **mcp-forge** | Python | MCP chain builder — 7 adapters, 4 generators, Claude Teacher |
-| **aichat** | Go | Shared AI module — pipeline, types, feedback, persona |
+| **ai-chat** | Go | Shared AI module — pipeline, types, feedback, persona |
 | **datagrid** | Go | Dynamic data grid — pivot tables, JSON catalog driven |
 | **lookin** | HTML/JS | Architecture viewer — Mermaid + PNG diagrams, drill-down |
 
@@ -35,7 +35,7 @@ The platform follows a **hub-and-spoke model**:
 - **jiramntr** is the central DWH hub — ingests all external sources via FDW/REST/LDAP
 - **johanna** provides AI chat on top of the DWH data
 - **mcp-forge** builds the knowledge layer (RAG, catalog, teaching pipeline)
-- **aichat** and **datagrid** are shared Go libraries used by multiple services
+- **ai-chat** and **datagrid** are shared Go libraries used by multiple services
 - **lookin** provides interactive architecture documentation
 
 ## Key Design Principles

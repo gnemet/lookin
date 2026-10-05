@@ -9,7 +9,7 @@
 - **No Build Step**: Files must work when opened directly in a browser or served by any static file server.
 - **npm is optional**: `package.json` exists only for mermaid-cli PNG generation (`generate_png.sh`) — not required at runtime.
 - **Single Entry Point**: `index.html` is the only HTML file. All content rendered dynamically.
-- **YAML-Driven Config**: Navigation, layers, and TOC defined in `configs/jirada.yaml` (parsed client-side by js-yaml).
+- **YAML-Driven Config**: Navigation, layers, and TOC defined in `configs/platform-base.yaml` (parsed client-side by js-yaml).
 
 ## 3. Diagram & Content Standards
 - **Mermaid.js**: All architecture diagrams use Mermaid.js with hand-drawn style (`'look': 'handDrawn'`).

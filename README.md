@@ -7,7 +7,7 @@ Deployed at: [gnemet.github.io/lookin](https://gnemet.github.io/lookin/)
 ## ✨ Features
 
 - **Hand-drawn style** — chalkboard-aesthetic PNG diagrams
-- **YAML-controlled** — define layers, drill-downs, and sources in `configs/jirada.yaml`
+- **YAML-controlled** — define layers, drill-downs, and sources in `configs/platform-base.yaml`
 - **TOC Sidebar** — collapsible category groups with curated navigation
 - **Doc Panel** — right-side panel slides in for catalog data or markdown documentation
 - **Multi-project** — wire Jiramntr, Johanna, Datagrid (or any project) into one view
@@ -43,13 +43,13 @@ lookin/
 ├── app.js              # Navigation, TOC, pan/zoom, Mermaid rendering
 ├── style.css           # Catppuccin dark theme
 ├── configs/
-│   └── jirada.yaml     # Layer config + drill-down mapping
+│   └── platform-base.yaml     # Layer config + drill-down mapping
 ├── layers/             # Mermaid diagrams per project
 │   ├── overview/       # Platform overview
 │   ├── jiramntr/       # DWH architecture layers (10 diagrams)
 │   ├── johanna/        # AI chat architecture
 │   ├── mcp-forge/      # RAG pipeline
-│   └── aichat/         # AI module
+│   └── ai-chat/        # AI module
 ├── docs/               # Markdown documentation per layer
 │   ├── jiramntr/       # 9 docs (architecture, star_schema, security...)
 │   ├── johanna/        # AI pipeline docs
@@ -69,4 +69,4 @@ lookin/
 | **Johanna** | AI Chat, RAG, LLM | 🟢 |
 | **Datagrid** | UI Component Library | 🟠 |
 | **MCP-Forge** | RAG Pipeline | 🟣 |
-| **AiChat** | AI Module | 🟡 |
+| **ai-chat** | AI Module | 🟡 |

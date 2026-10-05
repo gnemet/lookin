@@ -2,7 +2,7 @@
 # YAML-controlled interactive architecture drill-down viewer
 # PNG-first mode: all diagrams are pre-rendered PNGs with clickRegion overlays
 
-title: "JiraDa"
+title: "platform-base"
 subtitle: "Click any node to drill deeper"
 theme: handDrawn
 languages: [en, hu]
@@ -25,9 +25,9 @@ sources:
     color: "#27ae60"
 
   aichat:
-    label: "AI-Chat"
-    label_hu: "AI-Chat"
-    path: "../aichat"
+    label: "ai-chat"
+    label_hu: "ai-chat"
+    path: "../ai-chat"
     color: "#9b59b6"
 
   mcp-forge:
@@ -56,7 +56,7 @@ toc:
     icon: "ph-buildings"
     layers:
       - enterprise
-      - jira_da_arch
+      - platform_base_arch
       - deployment
 
   - group: "Applications"
@@ -95,8 +95,8 @@ layers:
   # Level 0: Enterprise ecosystem
   # ═══════════════════════════════════════════════════════════════
   - id: enterprise
-    title: "JiraDa"
-    title_hu: "JiraDa"
+    title: "platform-base"
+    title_hu: "platform-base"
     file: layers/jira-monitor/enterprise.mmd
     doc: jira-monitor/enterprise.md
     clickRegions:
@@ -108,7 +108,7 @@ layers:
         rect: [28, 14, 20, 14]
         drilldown: johanna
         tooltip: "Johanna — AI Chat (:8082)"
-      - label: "aichat"
+      - label: "ai-chat"
         rect: [5, 40, 20, 12]
         drilldown: aichat_module
         tooltip: "Shared NL→SQL Pipeline (Go module)"
@@ -147,14 +147,14 @@ layers:
         tooltip: "ragdb — Embeddings + Knowledge"
 
   # ═══════════════════════════════════════════════════════════════
-  # Level 0b: JiraDa full architecture (chalkboard canvas)
+  # Level 0b: platform-base full architecture (chalkboard canvas)
   # ═══════════════════════════════════════════════════════════════
-  - id: jira_da_arch
-    title: "JiraDa Platform Architecture"
-    title_hu: "JiraDa Platform Architektúra"
+  - id: platform_base_arch
+    title: "platform-base Architecture"
+    title_hu: "platform-base Architektúra"
     render: image
-    image: layers/jira-da/jira_da_arch.png
-    doc: jira-da/jira_da.md
+    image: layers/platform-base/platform_base_arch.png
+    doc: platform-base/platform_base.md
     clickRegions:
       - label: "JIRA Cloud API"
         rect: [1, 8, 11, 12]
@@ -183,7 +183,7 @@ layers:
         rect: [16, 36, 28, 12]
         drilldown: mcp_forge
         tooltip: "MCP Builder, 7 Adapters, 4 Generators, Claude Teacher"
-      - label: "aichat"
+      - label: "ai-chat"
         rect: [16, 50, 28, 10]
         drilldown: aichat_module
         tooltip: "Shared AI Module — pipeline, types, feedback, persona, utils"
@@ -327,10 +327,10 @@ layers:
         rect: [70, 50, 16, 8]
         drilldown: ingestion
         tooltip: "ETL Orchestrator"
-      - label: "aichat module"
+      - label: "ai-chat module"
         rect: [65, 70, 18, 8]
         drilldown: aichat_module
-        tooltip: "⚡ aichat shared module"
+        tooltip: "⚡ ai-chat shared module"
       - label: "Gemini"
         rect: [65, 80, 18, 6]
         tooltip: "Gemini LLM"
@@ -376,17 +376,17 @@ layers:
         rect: [2, 4, 16, 22]
         drilldown: mcp_forge
         tooltip: "MCP-Forge generated chains"
-      - label: "aichat Package"
+      - label: "ai-chat Package"
         rect: [72, 30, 17, 25]
         drilldown: aichat_module
         tooltip: "RunPipeline(), AIClient, RAGProvider"
 
   # ═══════════════════════════════════════════════════════════════
-  # Level 2c: AI-Chat module
+  # Level 2c: ai-chat module
   # ═══════════════════════════════════════════════════════════════
   - id: aichat_module
-    title: "AI-Chat Module"
-    title_hu: "AI-Chat Modul"
+    title: "ai-chat Module"
+    title_hu: "ai-chat Modul"
     file: layers/aichat/aichat_module.mmd
     source: aichat
     doc: aichat/aichat_module.md

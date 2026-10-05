@@ -185,7 +185,7 @@ graph TB
     subgraph UI["🖼️ User Interface"]
         direction TB
         LOOKIN["🔭 Lookin<br/>Architecture Viewer<br/>Interactive Diagrams"]
-        JIRA_DA["📐 JiraDa<br/>Project Umbrella<br/>GitHub Pages"]
+        CLAUDE_BASE["📐 platform-base<br/>claude-base<br/>Project Umbrella"]
     end
 
     %% ============================================================
@@ -284,7 +284,7 @@ graph TB
     %% ============================================================
     %% CONNECTIONS: UI
     %% ============================================================
-    LOOKIN --> JIRA_DA
+    LOOKIN --> CLAUDE_BASE
     APP --> LOOKIN
     JOHANNA --> LOOKIN
 
@@ -321,6 +321,6 @@ graph TB
     class RAG_EMB,RAG_COLL,RAG_KNOW,RAG_ISSUE,RAG_AUDIT_LOG rag
     class H_DASH,H_KPI,H_EMP,H_IMPORT,H_ONCALL,H_DOC,H_SCHED,H_MCP_CRUD,H_RAG,AI_SQL,AI_CHAT_H,AI_COMMON,AUTH,RLS,ACL,CATALOG,DATAGRID_LIB app
     class J_CHAT,J_FB,J_CTX,J_AUTH_J,J_PIPELINE,J_RAG_Q,J_REPAIR,J_BILLING,GEMINI,OLLAMA,J_TEACH johanna
-    class LOOKIN,JIRA_DA ui
+    class LOOKIN,CLAUDE_BASE ui
     class SRV_BUT,SRV_GPU,SRV_ZEN server
     class FORGE_SRC,FORGE_EMB,FORGE_CFG rag

@@ -24,8 +24,8 @@
         $diagram.innerHTML = '<div class="loading">Loading LookIn...</div>';
 
         try {
-            // Multi-enterprise: ?config=jira-monitor (default)
-            const configName = new URLSearchParams(location.search).get('config') || 'jirada';
+            // Multi-enterprise: ?config=<name> (default: platform-base)
+            const configName = new URLSearchParams(location.search).get('config') || 'platform-base';
             const cacheBust = `?v=${Date.now()}`;
             const yamlText = await fetch(`configs/${configName}.yaml` + cacheBust).then(r => {
                 if (!r.ok) throw new Error(`Config "${configName}" not found (${r.status})`);
@@ -744,7 +744,7 @@
         else if (layer.source === 'johanna') icon = 'ph-robot';
         else if (layer.source === 'aichat') icon = 'ph-lightning';
         else if (layer.source === 'mcp-forge') icon = 'ph-wrench';
-        else if (layer.id === 'enterprise' || layer.id === 'jira_da_arch') icon = 'ph-buildings';
+        else if (layer.id === 'enterprise' || layer.id === 'platform_base_arch') icon = 'ph-buildings';
 
         const sourceColor = layer.source && config.sources[layer.source]
             ? config.sources[layer.source].color : 'var(--text-muted)';

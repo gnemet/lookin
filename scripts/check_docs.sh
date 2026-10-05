@@ -63,7 +63,7 @@ Modes:
   Everything in "md" mode, plus:
   - Regenerates .mmd Mermaid diagram files in layers/
   - Renders .mmd → .png using mmdc (mermaid-cli)
-  - Updates jirada.yaml image: references if new PNGs created
+  - Updates platform-base.yaml image: references if new PNGs created
 
 Requirements:
   python3          — for YAML manifest parsing

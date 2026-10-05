@@ -1,6 +1,6 @@
 graph TB
     %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    %% JIRA-DA — Enterprise Platform Architecture
+    %% platform-base (claude-base) — Enterprise Platform Architecture
     %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     subgraph SOURCES["📡 External Data Sources"]
@@ -42,7 +42,7 @@ graph TB
 
     subgraph SHARED["📦 Shared Libraries"]
         direction LR
-        AICHAT["🔷 aichat<br/>Go module<br/>Pipeline · Types"]
+        AICHAT["🔷 ai-chat<br/>Go module<br/>Pipeline · Types"]
         DATAGRID["🟠 datagrid<br/>Go module<br/>Pivot · Heatmap<br/>JSON Catalog"]
     end
 

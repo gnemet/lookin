@@ -1,8 +1,8 @@
-# JiraDa Platform — Fejlesztési módszer — speaker notes
+# platform-base — Fejlesztési módszer — speaker notes
 
-> Generated from jirada-dev-method.deck.md by DOC-deck_build — do not edit.
+> Generated from platform-base-dev-method.deck.md by DOC-deck_build — do not edit.
 
-## 1. JiraDa Platform — Fejlesztési módszer
+## 1. platform-base — Fejlesztési módszer
 
 _(no notes)_
 
@@ -62,7 +62,7 @@ _(no notes)_
 
 _(no notes)_
 
-## 16. RAG archítektúra — admin-knowledge 3 rétegű rendszer
+## 16. RAG architektúra — 3 rétegű MCP tudásszerver
 
 _(no notes)_
 

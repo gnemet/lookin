@@ -1,6 +1,6 @@
-# ⚡ AI-Chat Module
+# ⚡ ai-chat Module
 
-> *Shared NL→SQL→Execute→NL pipeline — `github.com/gnemet/aichat`*
+> *Shared NL→SQL→Execute→NL pipeline — `github.com/gnemet/ai-chat`*
 
 ## Pipeline Stages
 

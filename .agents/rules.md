@@ -1,9 +1,7 @@
 # Agent Rules for LookIn
 
 ## Shared Rules
-All shared agent rules are consolidated in the [jira-da](../../jira-da/.agents/rules/) repository:
+All shared agent rules live in the platform-base umbrella repo (claude-base):
 
-- [Core Behavior](file:///home/nemetg/projects/jira-da/.agents/rules/antigravity.md)
-- [Environment Handling](file:///home/nemetg/projects/jira-da/.agents/rules/env_handling.md)
-- [UI/UX Standards](file:///home/nemetg/projects/jira-da/.agents/rules/ui_ux.md)
-- [Versioning & Release](file:///home/nemetg/projects/jira-da/.agents/rules/versioning.md)
+- [Rules index](../../docs/all_rules_for_claude.md)
+- [Axioms](../../docs/00_axioms.md)
