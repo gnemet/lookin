@@ -35,12 +35,12 @@ config:
   interpreter: bash
   output_format: json
   params:
-    OUT: "${out}"          # blank when --arg out is not given → a fresh temp dir
+    OUT: "${out}"          # unset --arg arrives as the literal "{{out}}" → a fresh temp dir
   script: |
     set -eu
     SITE='landing.html index.html
     favicon.svg favicon.svg'
-    [ -n "$OUT" ] || OUT="$(mktemp -d)"
+    case "$OUT" in ''|'{{'*) OUT="$(mktemp -d)" ;; esac
     mkdir -p "$OUT"
     find "$OUT" -mindepth 1 -delete
     printf '%s\n' "$SITE" | while read -r src dst; do
