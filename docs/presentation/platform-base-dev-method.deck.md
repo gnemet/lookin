@@ -21,7 +21,7 @@ Document = Code · Declarative Logic · Four Engines
 
 ## Három alapillér {layout=cards label="Alapelvek"}
 
-### :file-text: 1. Document = Code {accent=blue}
+### :file-text: Document = Code {accent=blue}
 **Spec = Futtatható**
 
 - Az `.md` fájl egyszerre emberi spec és motor-input
@@ -31,7 +31,7 @@ Document = Code · Declarative Logic · Four Engines
 
 Artefaktok: `entities/EN-*.md` · `lov/*.md` · `pipelines/*.md`
 
-### :flow-arrow: 2. Logic in Pipelines {accent=mauve}
+### :flow-arrow: Logic in Pipelines {accent=mauve}
 **Üzleti logika ≠ Go kód**
 
 - Többlépéses folyamatok → `pipelines/*.md`
@@ -41,7 +41,7 @@ Artefaktok: `entities/EN-*.md` · `lov/*.md` · `pipelines/*.md`
 
 Motor: pipeline-forge `bin/pf`
 
-### :database: 3. Data > Hardcode {accent=green}
+### :database: Data > Hardcode {accent=green}
 **Konfiguráció = adat**
 
 - Model neveket, tenant értékeket, label-eket soha ne hardcode-olj
@@ -628,21 +628,21 @@ res, err = pipelines.ResumeWorkflow(
 
 ---
 
-### Pipeline családok {accent=green}
+### :flow-arrow: Pipeline családok {accent=green}
 
 - FY — üzleti folyamat
 - INT — integráció
 - WF — workflow scaffold (entitygen)
 - RULE — üzleti szabályok
 
-### Megfigyelhetőség {accent=teal}
+### :eye: Megfigyelhetőség {accent=teal}
 
 - Minden futás → `meta.pipeline_run` sor
 - GELF strukturált logging stdout-ra
 - `bin/pf --dry-run pipeline.md`
 - `on_error: named_step` fallback routing
 
-### Trigger típusok {accent=yellow}
+### :calendar: Trigger típusok {accent=yellow}
 
 - `manual` — kézi / API indítás
 - `cron` — ütemezett (cron kifejezés)
@@ -760,7 +760,7 @@ cur.execute(
 
 ---
 
-### JSONB function minta (SQL) {accent=sapphire scroll=panel}
+### :code: JSONB function minta (SQL) {accent=sapphire scroll=panel}
 
 ```sql
 CREATE OR REPLACE FUNCTION app.entity_list(p_data jsonb)
@@ -783,7 +783,7 @@ SET search_path = pg_catalog, app, meta AS $fn$
 $fn$;
 ```
 
-### Miért JSONB? {accent=teal}
+### :info: Miért JSONB? {accent=teal}
 
 - Mező hozzáadás = csak JSON payload változik
 - Nincs function signature change
@@ -913,21 +913,21 @@ graph TB
 
 ---
 
-### Embedding {accent=peach}
+### :cpu: Embedding {accent=peach}
 
 - Ollama `snowflake-arctic-embed2`
 - GPU szerver (Ollama)
 - pgvector HNSW index
 - Reranker: cross-encoder (llama-swap)
 
-### Search logic helye {accent=sky}
+### :magnifying-glass: Search logic helye {accent=sky}
 
 - Keresési logika: `pipelines/*.md`
 - MCP szerver = engine, nem search
 - Link rendering a szerverben
 - `pf` binary: PF_BIN → bin/pf → PATH
 
-### DWH hozzáférés {accent=green}
+### :database: DWH hozzáférés {accent=green}
 
 - Csak `dwh.*` SECURITY DEFINER function
 - Nincs `SELECT` a `dim_*` táblákon
@@ -979,21 +979,21 @@ graph LR
 
 ---
 
-### SECURITY DEFINER {accent=teal}
+### :lock: SECURITY DEFINER {accent=teal}
 
 - App role: `EXECUTE` jogosultság
 - Nincs `SELECT` a `dim_*` táblákon
 - Function: `search_path = pg_catalog, schema`
 - AI SQL: `default_transaction_read_only=on`
 
-### Tenant izoláció {accent=mauve}
+### :buildings: Tenant izoláció {accent=mauve}
 
 - RLS: `meta.has_tenant_access(tenant_code)`
 - App soha ne re-számolja a filtert
 - GUC: `SET app.tenant_code = $1` session-ben
 - SCD2 btree_gist izoláció
 
-### Web biztonság {accent=blue}
+### :shield: Web biztonság {accent=blue}
 
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
