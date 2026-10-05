@@ -61,7 +61,7 @@ Identitás értékek: env var / config — soha default
 
 > :shield: Állj meg! A platform már rendelkezik a négy szükséges motorral. Adj hozzá adaptert vagy bővítsd a spec formátumot.
 
-## entity-forge vs pipeline-forge — mikor melyiket? {layout=free label="Motor összehasonlítás" diagrams=first}
+## entity-forge vs pipeline-forge — mikor melyiket? {layout=free label="Motor összehasonlítás" diagrams=first diagram_style=storyboard highlight_path=EN,EF,SQL,PG}
 
 ```mermaid
 flowchart LR
@@ -85,14 +85,10 @@ flowchart LR
     GOH --> APP["Go App<br/>generált"]
     DBO --> PG
 
-    classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class EF blue
-    class PF mauve
-    class PG teal
-    class APP green
+    class EN,PM source
+    class EF,PF process
+    class PG storage
+    class APP output
 ```
 
 ### :gear: entity-forge — mikor? {accent=blue}
@@ -105,7 +101,7 @@ flowchart LR
 - Változás = pipeline szerkesztés, nincs recompile
 - Suspend/resume, retry, audit automatikusan
 
-## entity spec → kész alkalmazás — az egész folyamat {layout=free label="Kód generálás" diagrams=first}
+## entity spec → kész alkalmazás — az egész folyamat {layout=free label="Kód generálás" diagrams=first diagram_style=storyboard highlight_path=EN,EF,GH,APP}
 
 ```mermaid
 %%{init: {'flowchart': {'fontSize': 18}}}%%
@@ -135,14 +131,10 @@ graph LR
     GH --> APP
     CJ --> APP
     PF --> APP
-    classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class EF blue
-    class PF mauve
-    class PG teal
-    class APP green
+    class EN,LV source
+    class EF,PF process
+    class PG storage
+    class APP output
 ```
 
 ### :file-text: Bemenet: spec fájl {accent=blue}
@@ -160,7 +152,7 @@ graph LR
 - Go alkalmazás: handler, template, datagrid
 - **Generált fájlokat soha ne szerkeszd kézzel!**
 
-## RAG pipeline — dokumentumokból AI tudás {layout=free label="Tudásbázis" diagrams=first}
+## RAG pipeline — dokumentumokból AI tudás {layout=free label="Tudásbázis" diagrams=first diagram_style=storyboard highlight_path=CF,PF,OL,RD,AK}
 
 ```mermaid
 %%{init: {'flowchart': {'fontSize': 18}}}%%
@@ -183,12 +175,10 @@ graph LR
     PF --> OL
     OL --> RD
     RD --> AK & IT
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class PF mauve
-    class RD teal
-    class AK,IT green
+    class CF,JI,UR source
+    class PF,OL process
+    class RD storage
+    class AK,IT output
 ```
 
 ### :books: Forrás: vállalati tudás {accent=blue}
@@ -206,7 +196,7 @@ graph LR
 - pf-mcpd: távoli, multi-tenant MCP szerver
 - Tenantonként RLS-izolált tudásbázis
 
-## AI chat futás — kérdéstől a válaszig {layout=free label="AI chat" diagrams=first}
+## AI chat futás — kérdéstől a válaszig {layout=free label="AI chat" diagrams=first diagram_style=storyboard highlight_path=USR,AUTH,ORCH,MCP}
 
 ```mermaid
 %%{init: {'flowchart': {'fontSize': 18}}}%%
@@ -229,14 +219,9 @@ graph LR
     ORCH --> MCP & SQL
     MCP & SQL --> LLM
     LLM -->|"válasz"| USR
-    classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class AUTH,ORCH blue
-    class MCP green
-    class SQL teal
-    class OLM,GMN mauve
+    class USR source
+    class AUTH,ORCH,MCP,SQL,OLM process
+    class GMN external
 ```
 
 ### :chat-circle-dots: Chat felület — belépési pont {accent=blue}
@@ -384,7 +369,7 @@ rls: true
 # ^ -> meta.has_tenant_access policy
 ```
 
-## Generálás folyamata — Entity spec → Production kód {layout=free label="entity-forge" diagrams=first}
+## Generálás folyamata — Entity spec → Production kód {layout=free label="entity-forge" diagrams=first diagram_style=storyboard highlight_path=SPEC,PARSER,SQL,DB}
 
 ```mermaid
 flowchart LR
@@ -401,12 +386,10 @@ flowchart LR
     HDL -->|"go build"| BIN["server binary"]
     UI  -->|"go:embed"| BIN
     BI  --> GOBI["GoBI engine"]
-    classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    class SPEC blue
-    class PARSER mauve
-    class DB teal
+    class SPEC source
+    class PARSER process
+    class DB storage
+    class BIN output
 ```
 
 ### 1. Spec szerkesztése {accent=blue}
@@ -572,7 +555,7 @@ ${ETL_OPS_EMAIL}   # env var
 ${TODAY}           # beepitett valtozo
 ```
 
-## Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással {layout=free label="pipeline-forge" diagrams=left ratio=60-40}
+## Workflow pipeline-ok — Suspend / Resume emberi jóváhagyással {layout=free label="pipeline-forge" diagrams=left ratio=60-40 diagram_style=storyboard}
 
 ```mermaid
 sequenceDiagram
@@ -863,7 +846,7 @@ CREATE POLICY p_write
 | `btree_gist &&` constraint | Közepes → RLS kötelező | App nem re-számolja a tenant filtert |
 | | Magas → RLS + auditlog | SECURITY DEFINER + `search_path` |
 
-## RAG architektúra — 3 rétegű MCP tudásszerver {layout=free label="RAG" diagrams=left ratio=60-40}
+## RAG architektúra — 3 rétegű MCP tudásszerver {layout=free label="RAG" diagrams=left ratio=60-40 diagram_style=storyboard highlight_path=CC,MCP,PF,P1,RAG}
 
 ```mermaid
 graph TB
@@ -888,14 +871,10 @@ graph TB
     P2 -->|"dwh.user_*"| DWH
     P3 -->|"Audit loop"| JIRA
     P3 -->|"audit row"| DWH
-    classDef blue fill:var(--surface0),stroke:var(--blue),color:var(--text)
-    classDef mauve fill:var(--surface0),stroke:var(--mauve),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    class MCP mauve
-    class PF blue
-    class RAG teal
-    class DWH green
+    class CC source
+    class MCP,PF process
+    class RAG,DWH storage
+    class JIRA external
 ```
 
 ### RAG collectionök {accent=blue}
@@ -934,7 +913,7 @@ graph TB
 - LDAP tilos — DWH tükrözi az attribútumokat
 - `'me'`: `$USER` env var → DWH
 
-## Biztonsági modell — Védelemben mélység (Defense in Depth) {layout=free label="Biztonság" diagrams=left ratio=60-40}
+## Biztonsági modell — Védelemben mélység (Defense in Depth) {layout=free label="Biztonság" diagrams=left ratio=60-40 diagram_style=storyboard highlight_path=DEV,GPG,APP,SEC}
 
 ```mermaid
 %%{init: {'flowchart': {'fontSize': 18}}}%%
@@ -956,12 +935,9 @@ graph LR
     APP -->|"EXECUTE only"| SEC
     RLS --> SEC
     APP -->|"sslmode=require"| TLS
-    classDef yellow fill:var(--surface0),stroke:var(--yellow),color:var(--text)
-    classDef green fill:var(--surface0),stroke:var(--green),color:var(--text)
-    classDef teal fill:var(--surface0),stroke:var(--teal),color:var(--text)
-    class GPG yellow
-    class RLS green
-    class SEC teal
+    class DEV source
+    class GPG storage
+    class APP,SEC,RLS process
 ```
 
 ### GPG Vault szabályok {accent=yellow}
