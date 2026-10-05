@@ -152,49 +152,40 @@ graph LR
 - Go alkalmazás: handler, template, datagrid
 - **Generált fájlokat soha ne szerkeszd kézzel!**
 
-## RAG pipeline — dokumentumokból AI tudás {layout=free label="Tudásbázis" diagrams=first diagram_style=storyboard highlight_path=CF,PF,OL,RD,AK}
+## RAG — tartalom és kontextus együtt {layout=free label="Tudásbázis" diagrams=first diagram_style=storyboard highlight_path=Q,V,G,R,P,M,A id=s5}
 
 ```mermaid
-%%{init: {'flowchart': {'fontSize': 18}}}%%
-graph LR
-    subgraph SRC["Forrás dokumentumok"]
-        CF["Confluence<br/>oldalak"]
-        JI["JIRA<br/>ticketek"]
-        UR["URL / egyéb<br/>források"]
-    end
-    subgraph ENG["Motorok"]
-        PF["pipeline-forge<br/>fetch → chunk → embed"]
-        OL["Ollama<br/>embedding — GPU szerver"]
-    end
-    RD[("RAG DB<br/>pgvector")]
-    subgraph MCPS["MCP szerverek"]
-        AK["pf-mcpd<br/>multi-tenant MCP"]
-        IT["tenant tudásbázisok<br/>RLS-izolált"]
-    end
-    CF & JI & UR --> PF
-    PF --> OL
-    OL --> RD
-    RD --> AK & IT
-    class CF,JI,UR source
-    class PF,OL process
-    class RD storage
-    class AK,IT output
+flowchart LR
+  SRC[Confluence · JIRA<br/>URL-források] --> ING[pipeline-forge<br/>fetch → chunk → embed]
+  ING --> V[(vektor DB<br/>tartalom)]
+  ING --> G[(él-gráf<br/>kontextus)]
+  Q[kérdés] --> V
+  V --> G
+  G --> R[reranker<br/>cross-encoder]
+  R --> P[teljes prompt<br/>kérdés + tartalom + kontextus]
+  P --> M[LLM]
+  M --> A[válasz<br/>forrásokkal]
+  class SRC,Q source
+  class ING,R,P process
+  class V,G storage
+  class M external
+  class A output
 ```
 
-### :books: Forrás: vállalati tudás {accent=blue}
-- Confluence: specifikációk, döntések, leírások
-- JIRA: ticketek, kommentek, státuszok
-- URL: külső dokumentumok, API leírások
+### :books: Tartalom — vektor DB {accent=blue}
+- A chunkok beágyazása (pgvector, HNSW)
+- Szemantikus keresés: *mi* szól a kérdésről
+- Az alkatrészek
 
-### :cpu: Motor: pipeline-forge {accent=mauve}
-- Forrás konfig + RAG pipeline: `pipelines/*.md`
-- pipeline-forge: fetch → chunk → embed lépések
-- Ollama: szöveg → vektor (snowflake-arctic-embed2)
+### :graph: Kontextus — él-gráf {accent=teal}
+- Kapcsolatok a dokumentumok között: hivatkozás, szerző, kulcsszó
+- A találatok szomszédai: *hogyan* függ össze
+- Az összeszerelés — tartalom nélkül üres, kontextus nélkül szétszórt
 
-### :brain: Kimenet: AI tudásbázis {accent=green}
-- RAG DB: pgvector — szemantikus keresés
-- pf-mcpd: távoli, multi-tenant MCP szerver
-- Tenantonként RLS-izolált tudásbázis
+### :sparkle: Rangsor → prompt → LLM {accent=green}
+- Reranker: a jelöltekből a legjobb N (cross-encoder)
+- Teljes prompt: kérdés + tartalom + kontextus
+- LLM-válasz, a forrásokra hivatkozva
 
 ## AI chat futás — kérdéstől a válaszig {layout=free label="AI chat" diagrams=first diagram_style=storyboard highlight_path=USR,AUTH,ORCH,MCP}
 
