@@ -17,7 +17,7 @@ Deployed at: [gnemet.github.io/lookin](https://gnemet.github.io/lookin/)
 - **Bilingual** — EN/HU toggle via header button
 - **100% static** — no backend, open `index.html` in any browser
 - **Auto-generated** — `generate_docs.py` builds documentation, `generate_png.sh` renders diagrams
-- **GitHub Pages** — auto-deployed to `gnemet.github.io/lookin`
+- **GitHub Pages** — the landing page is published to `gnemet.github.io/lookin` by `pipelines/OPS-publish_pages.md` (no GitHub Actions)
 
 ## 🚀 Quick Start
 

@@ -16,6 +16,7 @@ Pure static HTML/CSS/JS — single `index.html` rendered dynamically by `app.js`
 ## Commands
 - `./generate_png.sh` — regenerate diagrams (one-time, requires `npm install`).
 - `./deploy_butalam.sh` — deploy.
+- `../pipeline-forge/bin/pf pipelines/OPS-publish_pages.md --arg push=true` — publish the landing page to GitHub Pages (`gh-pages` branch; no Actions).
 
 ## SDD — spec-driven development
 
