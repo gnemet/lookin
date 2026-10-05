@@ -232,7 +232,7 @@ graph LR
 
 ## entity-forge — Mi mit generál? {layout=split ratio=40-60 label="entity-forge"}
 
-### Input: Entity spec {accent=blue}
+### :file-text: Input: Entity spec {accent=blue}
 `entities/EN-018_dokumentum_tipus.md`
 
 - **HEADER** — metaadat (schema, SCD2, RLS…)
@@ -334,7 +334,7 @@ list:
   page_sizes: [25, 50]
 ```
 
-### HEADER kulcsmezők {accent=blue}
+### :list-checks: HEADER kulcsmezők {accent=blue}
 | Mező | Hatás |
 |---|---|
 | `scd2: true` | Generál `valid_period tstzrange`, `is_current`, audit mezőket, btree_gist constraint-et |
@@ -383,12 +383,12 @@ flowchart LR
     class BIN output
 ```
 
-### 1. Spec szerkesztése {accent=blue}
+### :file-text: Spec szerkesztése {accent=blue}
 - Mező hozzáadás/módosítás az `EN-*.md`-ben
 - LOV hivatkozás, sensitivity, scd2 flag
 - Form variáns, CRUD műveletek
 
-### 2. Generálás + build {accent=mauve}
+### :gear: Generálás + build {accent=mauve}
 ```bash
 SKIP_DIRTY_CHECK=1 \
   bash scripts/build.sh
@@ -397,7 +397,7 @@ SKIP_DIRTY_CHECK=1 \
 - entitygen parser futása
 - `go build ./...` az összes generált fájllal
 
-### 3. Migration {accent=teal}
+### :database: Migration {accent=teal}
 ```bash
 migrate \
   -path ./migrations \
@@ -409,7 +409,7 @@ migrate \
 
 ## Pipeline formátum — Valós példa: Napi ETL {layout=split ratio=40-60 label="pipeline-forge"}
 
-### Napi ETL {accent=sapphire scroll=panel}
+### :calendar: Napi ETL {accent=sapphire scroll=panel}
 #### Pipeline
 
 ```yaml
@@ -481,7 +481,7 @@ config:
   body_key: email_body
 ```
 
-### Pipeline fájl sémája {accent=mauve}
+### :file-text: Pipeline fájl sémája {accent=mauve}
 - `# Title` — H1 első sorban
 - `## Pipeline` YAML blokk: `name`, `trigger`, `schedule`
 - `## Adapters` blokk: megosztott kapcsolatok
@@ -522,7 +522,7 @@ config:
 | **IO** | `smtp` | Email küldés |
 | | `shell` | Shell script futtatás |
 
-### Teljes adapter regisztrálása — 6 hely {accent=mauve}
+### :plug: Teljes adapter regisztrálása — 6 hely {accent=mauve}
 1. `adapter/<type>/<type>.go` — Adapter interface
 2. `cmd/pf/main.go` — `reg.Register(...)`
 3. `cmd/pf-ui/server.go` NewServer() — Register
@@ -570,7 +570,7 @@ sequenceDiagram
     Engine-->>Handler: RunSuccess
 ```
 
-### Step: Manager Approval — human_task {accent=mauve}
+### :hand: Step: Manager Approval — human_task {accent=mauve}
 ```yaml
 config:
   name:        "Vezető jóváhagyás"
@@ -585,7 +585,7 @@ config:
 #   lezárt sor olvasása és folytatás.
 ```
 
-### Go Workflow API {accent=blue}
+### :code: Go Workflow API {accent=blue}
 ```go
 // Inditas
 res, err := pipelines.StartWorkflow(
@@ -625,7 +625,7 @@ res, err = pipelines.ResumeWorkflow(
 
 ## GoBI — BI lekérdezések és mks_sql_parser dinamikus SQL {layout=split label="GoBI"}
 
-### Document types {accent=sapphire}
+### :file-text: Document types {accent=sapphire}
 #### Report
 
 ```yaml
@@ -675,7 +675,7 @@ SELECT dt.dokumentum_tipus_code,
   labels: {en: Status, hu: Statusz}
 ```
 
-### mks_sql_parser — Dinamikus SQL szintaxis {accent=mauve}
+### :code: mks_sql_parser — Dinamikus SQL szintaxis {accent=mauve}
 ```sql
 SELECT id, name, status
   FROM app.entity
@@ -777,7 +777,7 @@ VALUES ($1, now());
 
 ## SCD2 — Temporal Versioning & Row Level Security {layout=split label="Adatbázis"}
 
-### SCD2 táblaszerkezet (generált DDL) {accent=teal}
+### :database: SCD2 táblaszerkezet (generált DDL) {accent=teal}
 ```sql
 CREATE TABLE app.dokumentum_tipus (
   id          uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -800,7 +800,7 @@ CREATE TABLE app.dokumentum_tipus (
 );
 ```
 
-### SCD2 olvasás és mutáció {accent=yellow}
+### :clock: SCD2 olvasás és mutáció {accent=yellow}
 ```sql
 -- Aktualis rekordok (ket egyenerteeku mod):
 WHERE upper_inf(valid_period)  -- pontos
@@ -868,7 +868,7 @@ graph TB
     class JIRA external
 ```
 
-### RAG collectionök {accent=blue}
+### :books: RAG collectionök {accent=blue}
 | Collection | Tartalom |
 |---|---|
 | JIRA | ticketek, kommentek |
@@ -876,7 +876,7 @@ graph TB
 | Web | külső dokumentáció |
 | DWH | issue metaadat + worklog |
 
-### Write: 3-step Audit Loop {accent=teal}
+### :list-checks: Write: 3-step Audit Loop {accent=teal}
 1. Enqueue: INSERT audit sor (`pending`)
 2. Call: JIRA REST POST (per-user PAT)
 3. Finalize: UPDATE audit sor (HTTP status, key)
@@ -931,13 +931,13 @@ graph LR
     class APP,SEC,RLS process
 ```
 
-### GPG Vault szabályok {accent=yellow}
+### :lock: GPG Vault szabályok {accent=yellow}
 - Commitálva: `.env.gpg` (titkosított)
 - Gitignore: `.env` — soha ne commitáld
 - API kulcsok fejlécben, soha URL-ben
 - Log-ban titkot soha — `***` masking
 
-### Input validation szabályok {accent=red}
+### :shield: Input validation szabályok {accent=red}
 - SQL injection: soha string concat, `$1` mindig
 - Path traversal: `filepath.Clean()` + base ellenőrzés
 - Dynamic identifier: `^[a-zA-Z_][a-zA-Z0-9_.]*$`
@@ -969,7 +969,7 @@ graph LR
 
 ## Git workflow · Build · Deploy · Cross-project blast radius {layout=split label="Fejlesztési workflow"}
 
-### Branch naming {accent=blue}
+### :git-branch: Branch naming {accent=blue}
 `feature/*` `fix/*` `data/*` `ai/*` `docs/*`
 
 - Solo repo: közvetlen push `main`-re, ellenőrzés után
@@ -984,7 +984,7 @@ graph LR
 3. **Push** — git push main branch
 4. **Deploy** — deploy script + systemctl restart
 
-### Cross-project blast radius {accent=yellow}
+### :warning: Cross-project blast radius {accent=yellow}
 - Library szerkesztés előtt: olvasd a `projects.md` Connections-t
 - Nyilvános API változás → build összes consumer előbb
 - `mks_parser($sql text, $json text)` — soha ne törd
