@@ -16,7 +16,7 @@ Deployed at: [gnemet.github.io/lookin](https://gnemet.github.io/lookin/)
 - **Doc Manifest** — `doc_manifest.yaml` tracks per-diagram documentation metadata
 - **Bilingual** — EN/HU toggle via header button
 - **100% static** — no backend, open `index.html` in any browser
-- **Auto-generated** — `generate_docs.py` builds documentation, `generate_png.sh` renders diagrams
+- **Pre-rendered diagrams** — `generate_png.sh` renders the Mermaid sources to PNG
 - **GitHub Pages** — the landing page is published to `gnemet.github.io/lookin` by `pipelines/OPS-publish_pages.md` (no GitHub Actions)
 
 ## 🚀 Quick Start
@@ -27,9 +27,6 @@ open index.html
 
 # Or serve locally
 python3 -m http.server 8000
-
-# Regenerate docs from source projects
-python3 generate_docs.py
 
 # Regenerate PNG diagrams (requires Puppeteer)
 ./generate_png.sh
@@ -56,7 +53,6 @@ lookin/
 │   └── mcp-forge/      # RAG builder docs
 ├── catalogs/           # JSON table catalogs for data panel
 ├── doc_manifest.yaml   # Doc freshness tracking
-├── generate_docs.py    # Auto-generate docs from source projects
 ├── generate_png.sh     # Render MMD → PNG (chalkboard style)
 └── deploy.sh           # Deploy to the prod server (target in .env.deploy)
 ```
