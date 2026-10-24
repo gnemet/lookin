@@ -51,6 +51,16 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'C=$(git -C \"$CLAUDE_PROJECT_DIR\" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) && S=\"$(dirname \"$(dirname \"$C\")\")/.claude/hooks/pre-bash-destructive-check.sh\" && [ -f \"$S\" ] && bash \"$S\" || true'",
+            "timeout": 10
+          }
+        ]
       }
     ]
   }
