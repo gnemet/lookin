@@ -46,7 +46,7 @@ lookin/
 │   ├── jiramntr/       # DWH architecture layers (10 diagrams)
 │   ├── johanna/        # AI chat architecture
 │   ├── mcp-forge/      # RAG pipeline
-│   └── ai-chat/        # AI module
+│   └── aichat/         # AI module
 ├── docs/               # Markdown documentation per layer
 │   ├── jiramntr/       # 9 docs (architecture, star_schema, security...)
 │   ├── johanna/        # AI pipeline docs
@@ -64,5 +64,5 @@ lookin/
 | **Jiramntr** | DWH, ETL, BI, KPI | 🔵 |
 | **Johanna** | AI Chat, RAG, LLM | 🟢 |
 | **Datagrid** | UI Component Library | 🟠 |
-| **MCP-Forge** | RAG Pipeline | 🟣 |
+| **MCP-Forge** (archived 2026-10-22) | RAG Pipeline | 🟣 |
 | **ai-chat** | AI Module | 🟡 |
